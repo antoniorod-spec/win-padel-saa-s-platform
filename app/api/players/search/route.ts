@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { Sex } from "@prisma/client"
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
                 ],
               }
             : {},
-          sex ? { sex: sex as "MALE" | "FEMALE" } : {},
+          sex ? { sex: sex as Sex } : {},
         ],
       },
       include: {
