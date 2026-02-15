@@ -355,11 +355,11 @@ export default function RankingPage() {
           <div className="mt-12">
             <h2 className="mb-4 font-display text-xl font-bold uppercase text-foreground">Tabla de Puntos por Torneo</h2>
             <div className="grid gap-4 md:grid-cols-3">
-              {(["categoryA", "categoryB", "categoryC"] as const).map((cat) => (
+              {(["A", "B", "C"] as const).map((cat) => (
                 <Card key={cat} className="border-border/50">
                   <CardHeader className="pb-2">
                     <CardTitle className="font-display text-lg text-card-foreground">
-                      Categoria {cat === "categoryA" ? "A (Major)" : cat === "categoryB" ? "B (Open)" : "C (Express)"}
+                      Categoria {cat === "A" ? "A (Major)" : cat === "B" ? "B (Open)" : "C (Express)"}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
