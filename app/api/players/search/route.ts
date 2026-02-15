@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { Sex } from "@prisma/client"
+import { Sex, Modality } from "@prisma/client"
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
         user: { select: { name: true, email: true, image: true } },
         rankings: modality && category ? {
           where: {
-            modality,
+            modality: modality as Modality,
             category,
           },
         } : true,
