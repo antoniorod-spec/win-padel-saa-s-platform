@@ -1,0 +1,4 @@
+{
+  "installCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "npm run db:generate && npm run build"
+}

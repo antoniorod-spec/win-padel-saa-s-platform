@@ -17,3 +17,7 @@ node_modules/
 
 # Prisma generated files are in node_modules
 lib/generated/
+
+# Lock files - using npm
+pnpm-lock.yaml
+yarn.lock
