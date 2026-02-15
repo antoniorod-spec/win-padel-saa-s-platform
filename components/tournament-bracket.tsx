@@ -5,15 +5,15 @@ import { Trophy } from "lucide-react"
 
 interface Team {
   name: string
-  seed: number
+  seed: number | null
   score: number[]
 }
 
 interface Match {
-  id: number
+  id: number | string
   teamA: Team
   teamB: Team
-  winner: "A" | "B"
+  winner: "A" | "B" | null
 }
 
 interface Round {
