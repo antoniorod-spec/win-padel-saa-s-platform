@@ -389,7 +389,7 @@ export default function PlayerDashboard() {
 
         <TabsContent value="tournaments" className="mt-4">
           <div className="space-y-3">
-            {tournamentsData?.data.data.map((t: any) => (
+            {tournamentsData?.data?.data?.map((t: any) => (
               <Card key={t.id} className="border-border/50">
                 <CardContent className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-4">
@@ -424,7 +424,7 @@ export default function PlayerDashboard() {
                 </CardContent>
               </Card>
             ))}
-            {(!tournamentsData || tournamentsData.data.data.length === 0) && (
+            {(!tournamentsData || !tournamentsData.data || tournamentsData.data.data.length === 0) && (
               <Card className="border-border/50">
                 <CardContent className="p-8 text-center">
                   <p className="text-muted-foreground">No hay torneos disponibles en este momento</p>
