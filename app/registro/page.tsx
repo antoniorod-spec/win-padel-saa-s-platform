@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Trophy, User, Building2, Loader2 } from "lucide-react"
+import { Trophy, User, Building2, Loader2, ArrowLeft } from "lucide-react"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -110,6 +110,15 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.08),transparent_60%)]" />
+
+      {/* Botón de volver */}
+      <Link 
+        href="/" 
+        className="absolute left-4 top-4 z-20 flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Volver al inicio
+      </Link>
 
       <Card className="relative z-10 w-full max-w-lg border-border/50 bg-card">
         <CardHeader className="items-center pb-2 pt-8">

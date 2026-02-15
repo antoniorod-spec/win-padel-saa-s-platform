@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { Trophy, Loader2 } from "lucide-react"
+import { Trophy, Loader2, ArrowLeft } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -72,6 +72,15 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.08),transparent_60%)]" />
+
+      {/* Botón de volver */}
+      <Link 
+        href="/" 
+        className="absolute left-4 top-4 z-20 flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Volver al inicio
+      </Link>
 
       <Card className="relative z-10 w-full max-w-md border-border/50 bg-card">
         <CardHeader className="items-center pb-2 pt-8">
