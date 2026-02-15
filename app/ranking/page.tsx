@@ -25,7 +25,7 @@ import {
 import { TrendingUp, TrendingDown, Minus, Trophy, Medal, Award, Zap, Info, ArrowUpCircle, ArrowDownCircle, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRankings } from "@/hooks/use-rankings"
-import { ascensionRules, descentRules, POINTS_TABLE } from "@/lib/types"
+import { ASCENSION_RULES, DESCENT_RULES, POINTS_TABLE } from "@/lib/types"
 
 function TrendIcon({ trend }: { trend: "up" | "down" | "same" }) {
   if (trend === "up") return <TrendingUp className="h-4 w-4 text-primary" />
@@ -219,7 +219,7 @@ export default function RankingPage() {
                             <ArrowUpCircle className="h-4 w-4 text-primary" /> Reglas de Ascenso
                           </h3>
                           <ul className="mt-3 space-y-2">
-                            {ascensionRules.map((r, i) => (
+                            {ASCENSION_RULES.map((r, i) => (
                               <li key={i} className="flex items-start gap-2 text-sm">
                                 <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                                 <div>
@@ -235,7 +235,7 @@ export default function RankingPage() {
                             <ArrowDownCircle className="h-4 w-4 text-destructive" /> Reglas de Descenso
                           </h3>
                           <ul className="mt-3 space-y-2">
-                            {descentRules.map((r, i) => (
+                            {DESCENT_RULES.map((r, i) => (
                               <li key={i} className="flex items-start gap-2 text-sm">
                                 <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-destructive" />
                                 <div>

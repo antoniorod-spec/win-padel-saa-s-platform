@@ -29,7 +29,7 @@ import {
   useApproveClub, 
   useReviewCategoryChange 
 } from "@/hooks/use-admin"
-import { ascensionRules, descentRules } from "@/lib/types"
+import { ASCENSION_RULES, DESCENT_RULES } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 
 const navItems = [
@@ -302,7 +302,7 @@ export default function AdminDashboard() {
                   <div>
                     <h4 className="mb-2 text-sm font-semibold text-card-foreground">Ascenso</h4>
                     <ul className="space-y-1.5">
-                      {ascensionRules.map((r, i) => (
+                      {ASCENSION_RULES.map((r, i) => (
                         <li key={i} className="flex items-start gap-2 text-xs">
                           <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                           <span className="text-muted-foreground">
@@ -315,7 +315,7 @@ export default function AdminDashboard() {
                   <div>
                     <h4 className="mb-2 text-sm font-semibold text-card-foreground">Descenso</h4>
                     <ul className="space-y-1.5">
-                      {descentRules.map((r, i) => (
+                      {DESCENT_RULES.map((r, i) => (
                         <li key={i} className="flex items-start gap-2 text-xs">
                           <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-destructive" />
                           <span className="text-muted-foreground">
