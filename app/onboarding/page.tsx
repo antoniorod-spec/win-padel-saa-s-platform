@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Trophy, User, Building2, Loader2 } from "lucide-react"
+import { AddressAutocomplete } from "@/components/address-autocomplete"
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -287,19 +288,14 @@ export default function OnboardingPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="club-address">Direccion Completa</Label>
-                  <Input 
-                    id="club-address" 
-                    placeholder="Av. Insurgentes Sur 1234, Col. Centro" 
-                    className="bg-background" 
-                    value={clubAddress} 
-                    onChange={(e) => setClubAddress(e.target.value)} 
-                    required 
-                    minLength={10}
-                  />
-                  <span className="text-xs text-muted-foreground">Ingresa la direccion completa con calle, numero y colonia</span>
-                </div>
+                <AddressAutocomplete
+                  label="Direccion Completa"
+                  placeholder="Busca o escribe la dirección..."
+                  value={clubAddress}
+                  onChange={setClubAddress}
+                  required
+                  helperText="Busca tu dirección en Google Maps o escríbela manualmente"
+                />
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="club-rfc">RFC (opcional)</Label>
                   <Input 
