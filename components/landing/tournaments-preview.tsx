@@ -9,7 +9,7 @@ import { useTournaments } from "@/hooks/use-tournaments"
 
 export function TournamentsPreview() {
   const { data: tournamentsData } = useTournaments({ status: "UPCOMING", pageSize: 4 })
-  const tournaments = tournamentsData?.data.data || []
+  const tournaments = tournamentsData?.data?.items || []
 
   return (
     <section className="py-20 lg:py-28">

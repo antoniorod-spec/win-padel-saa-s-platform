@@ -22,7 +22,7 @@ export default function TorneosPage() {
     city,
   })
 
-  const tournaments = tournamentsData?.data.data || []
+  const tournaments = tournamentsData?.data?.items || []
 
   return (
     <div className="min-h-screen bg-background">
