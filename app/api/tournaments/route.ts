@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     const where: Record<string, unknown> = {}
     if (status) where.status = status
     if (category) where.category = category
-    if (city) where.club = { city }
+    if (city) where.club = { is: { city } }
     if (search) where.name = { contains: search, mode: "insensitive" }
     if (modality) {
       where.modalities = { some: { modality } }
