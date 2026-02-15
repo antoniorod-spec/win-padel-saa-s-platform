@@ -14,6 +14,7 @@ export async function GET(
       where: { id },
       include: {
         user: { select: { name: true, email: true, image: true, role: true } },
+        homeClub: { select: { id: true, name: true, city: true } },
         rankings: { orderBy: { points: "desc" } },
         categoryChanges: { orderBy: { createdAt: "desc" }, take: 10 },
       },
@@ -38,6 +39,8 @@ export async function GET(
         sex: player.sex,
         age: player.age,
         avatarUrl: player.user.image,
+        homeClubId: player.homeClubId,
+        homeClub: player.homeClub,
         rankings: player.rankings,
         categoryHistory: player.categoryChanges,
       },

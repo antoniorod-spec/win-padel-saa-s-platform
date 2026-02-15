@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       const {
         firstName, lastName, sex, city, state, country, age, phone, birthDate,
         documentType, documentNumber, courtPosition, dominantHand, starShot,
-        playStyle, preferredMatchType, playsMixed, preferredSchedule, preferredAgeRange,
+        playStyle, preferredMatchType, playsMixed, preferredSchedule, preferredAgeRange, homeClubId,
       } = parsed.data
 
       // Actualizar usuario y crear/actualizar perfil de jugador
@@ -80,6 +80,7 @@ export async function POST(request: NextRequest) {
                 playsMixed,
                 preferredSchedule,
                 preferredAgeRange,
+                homeClubId: homeClubId || null,
               },
               update: {
               firstName,
@@ -101,6 +102,7 @@ export async function POST(request: NextRequest) {
               playsMixed,
               preferredSchedule,
               preferredAgeRange,
+              homeClubId: homeClubId || null,
               },
             },
           },

@@ -15,6 +15,7 @@ const dayScheduleSchema = z.object({
 
 export const updateClubSchema = z.object({
   name: z.string().min(3).optional(),
+  description: z.string().max(500).optional(),
   legalName: z.string().optional(),
   rfc: z.string().optional(),
   city: z.string().min(2).optional(),

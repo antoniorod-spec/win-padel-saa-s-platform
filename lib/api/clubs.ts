@@ -1,18 +1,20 @@
 import { api } from "./client"
 
-interface ClubListItem {
+export interface ClubListItem {
   id: string
   name: string
   city: string
   country: string
   courts: number
   rating: number
+  description: string | null
+  phone: string | null
   logoUrl: string | null
   tournaments: number
   status: string
 }
 
-interface ClubDetail extends ClubListItem {
+export interface ClubDetail extends ClubListItem {
   legalName: string | null
   address: string | null
   state: string
@@ -56,6 +58,7 @@ interface ClubDetail extends ClubListItem {
   x: string | null
   whatsapp: string | null
   totalTournaments: number
+  totalHomePlayers?: number
   activeTournaments: Array<{
     id: string
     name: string
@@ -69,6 +72,60 @@ interface ClubDetail extends ClubListItem {
       modality: string
       category: string
     }>
+  }>
+  pastTournaments?: Array<{
+    id: string
+    name: string
+    startDate: string
+    status: string
+    category: string
+    format: string
+    inscriptionPrice: number | string
+    modalities: Array<{
+      id: string
+      modality: string
+      category: string
+    }>
+  }>
+  currentTournaments?: Array<{
+    id: string
+    name: string
+    startDate: string
+    status: string
+    category: string
+    format: string
+    inscriptionPrice: number | string
+    modalities: Array<{
+      id: string
+      modality: string
+      category: string
+    }>
+  }>
+  upcomingTournaments?: Array<{
+    id: string
+    name: string
+    startDate: string
+    status: string
+    category: string
+    format: string
+    inscriptionPrice: number | string
+    modalities: Array<{
+      id: string
+      modality: string
+      category: string
+    }>
+  }>
+  playersRanking?: Array<{
+    id: string
+    fullName: string
+    city: string
+    avatarUrl: string | null
+    points: number
+    played: number
+    wins: number
+    losses: number
+    modality: string | null
+    category: string | null
   }>
   news: ClubNews[]
 }

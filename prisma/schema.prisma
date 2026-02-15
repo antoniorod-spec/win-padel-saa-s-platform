@@ -234,6 +234,7 @@ model Player {
   preferredAgeRange String?
   bio       String?
   avatarUrl String?
+  homeClubId String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -250,6 +251,7 @@ model Player {
   associationMemberships PlayerAssociation[]
   resultRowsAsPlayer1 TournamentResultRow[] @relation("ResultRowPlayer1")
   resultRowsAsPlayer2 TournamentResultRow[] @relation("ResultRowPlayer2")
+  homeClub Club? @relation("HomeClubPlayers", fields: [homeClubId], references: [id], onDelete: SetNull)
 
   @@map("players")
 }
@@ -269,6 +271,7 @@ model Club {
   phone         String                    // Teléfono del club
   email         String?                   // Email del club (puede ser diferente al de registro)
   website       String?                   // Sitio web
+  description   String?                   // Descripcion corta del club
   
   // Datos del Responsable/Contacto (Paso 1)
   contactName     String                  // Nombre completo del responsable
@@ -330,6 +333,7 @@ model Club {
   importBatches TournamentImportBatch[]
   importedPlayers ImportedPlayer[]
   resultRows  TournamentResultRow[]
+  homePlayers Player[] @relation("HomeClubPlayers")
 
   @@map("clubs")
 }

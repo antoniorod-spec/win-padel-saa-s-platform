@@ -66,6 +66,7 @@ export async function PUT(request: NextRequest) {
       typeof value === "string" && value.trim() === "" ? null : value
 
     const nullableTextFields = [
+      "description",
       "legalName",
       "email",
       "website",

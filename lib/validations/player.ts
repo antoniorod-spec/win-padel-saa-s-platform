@@ -8,6 +8,7 @@ export const updatePlayerSchema = z.object({
   age: z.number().int().min(10).max(99).optional(),
   phone: z.string().optional(),
   bio: z.string().max(500).optional(),
+  homeClubId: z.string().nullable().optional(),
 })
 
 export type UpdatePlayerInput = z.infer<typeof updatePlayerSchema>

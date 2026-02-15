@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search")
 
     const where: Record<string, unknown> = { status }
-    if (city) where.city = city
+    if (city) where.city = { equals: city, mode: "insensitive" }
     if (search) {
       where.name = { contains: search, mode: "insensitive" }
     }
@@ -33,6 +33,8 @@ export async function GET(request: NextRequest) {
         country: club.country,
         courts: club.courts,
         rating: club.rating,
+        description: club.description,
+        phone: club.phone,
         logoUrl: club.logoUrl,
         tournaments: club._count.tournaments,
         status: club.status,

@@ -13,15 +13,7 @@ export async function GET(
     const club = await prisma.club.findUnique({
       where: { id },
       include: {
-        _count: { select: { tournaments: true } },
-        tournaments: {
-          where: { status: { in: ["OPEN", "IN_PROGRESS"] } },
-          take: 5,
-          orderBy: { startDate: "asc" },
-          include: {
-            modalities: true,
-          },
-        },
+        _count: { select: { tournaments: true, homePlayers: true } },
         news: {
           where: { published: true },
           orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
@@ -37,11 +29,58 @@ export async function GET(
       )
     }
 
+    const [pastTournaments, currentTournaments, upcomingTournaments, homePlayers] = await Promise.all([
+      prisma.tournament.findMany({
+        where: { clubId: id, status: "COMPLETED" },
+        orderBy: { startDate: "desc" },
+        include: { modalities: true },
+      }),
+      prisma.tournament.findMany({
+        where: { clubId: id, status: "IN_PROGRESS" },
+        orderBy: { startDate: "asc" },
+        include: { modalities: true },
+      }),
+      prisma.tournament.findMany({
+        where: { clubId: id, status: { in: ["OPEN", "DRAFT"] } },
+        orderBy: { startDate: "asc" },
+        include: { modalities: true },
+      }),
+      prisma.player.findMany({
+        where: { homeClubId: id },
+        include: {
+          user: { select: { image: true } },
+          rankings: {
+            where: { scope: "NATIONAL" },
+            orderBy: { points: "desc" },
+          },
+        },
+      }),
+    ])
+
+    const playersRanking = homePlayers
+      .map((player) => {
+        const topRanking = player.rankings[0] || null
+        return {
+          id: player.id,
+          fullName: `${player.firstName} ${player.lastName}`,
+          city: player.city,
+          avatarUrl: player.user.image,
+          points: topRanking?.points ?? 0,
+          played: topRanking?.played ?? 0,
+          wins: topRanking?.wins ?? 0,
+          losses: topRanking?.losses ?? 0,
+          modality: topRanking?.modality ?? null,
+          category: topRanking?.category ?? null,
+        }
+      })
+      .sort((a, b) => b.points - a.points)
+
     return NextResponse.json({
       success: true,
       data: {
         id: club.id,
         name: club.name,
+        description: club.description,
         legalName: club.legalName,
         city: club.city,
         state: club.state,
@@ -87,7 +126,12 @@ export async function GET(
         whatsapp: club.whatsapp,
         status: club.status,
         totalTournaments: club._count.tournaments,
-        activeTournaments: club.tournaments,
+        totalHomePlayers: club._count.homePlayers,
+        activeTournaments: currentTournaments,
+        pastTournaments,
+        currentTournaments,
+        upcomingTournaments,
+        playersRanking,
         news: club.news,
       },
     })
@@ -138,6 +182,7 @@ export async function PUT(
     const normalizeEmpty = (value: unknown) =>
       typeof value === "string" && value.trim() === "" ? null : value
     const nullableTextFields = [
+      "description",
       "legalName",
       "email",
       "website",

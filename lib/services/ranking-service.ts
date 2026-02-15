@@ -2,6 +2,15 @@ import { prisma } from "@/lib/prisma"
 import { POINTS_TABLE } from "@/lib/types"
 import type { TournamentCategory, Modality } from "@/lib/types"
 
+type FinalStage =
+  | "CHAMPION"
+  | "RUNNER_UP"
+  | "SEMIFINAL"
+  | "QUARTERFINAL"
+  | "ROUND_OF_16"
+  | "ROUND_OF_32"
+  | "GROUP_STAGE"
+
 function rankingUniqueWhere(
   playerId: string,
   modality: Modality,
@@ -528,7 +537,7 @@ export async function recalculateAllRankings() {
 
 function pointsForFinalStage(
   category: TournamentCategory,
-  finalStage: "CHAMPION" | "RUNNER_UP" | "SEMIFINAL" | "QUARTERFINAL" | "ROUND_OF_16" | "ROUND_OF_32" | "GROUP_STAGE"
+  finalStage: FinalStage
 ) {
   const table = POINTS_TABLE[category]
   const byKeyword: Record<string, string> = {
@@ -545,69 +554,99 @@ function pointsForFinalStage(
   return hit?.points ?? 0
 }
 
-export async function applyApprovedResultSubmission(submissionId: string, associationId: string) {
-  const submission = await prisma.tournamentResultSubmission.findUnique({
-    where: { id: submissionId },
-    include: {
-      tournament: true,
-      rows: true,
+async function addDeclaredResultPoints(
+  playerId: string,
+  modality: Modality,
+  category: string,
+  cityAssociationId: string | null,
+  points: number
+) {
+  await prisma.ranking.upsert({
+    where: rankingUniqueWhere(playerId, modality, category, "CITY"),
+    update: { points: { increment: points } },
+    create: {
+      playerId,
+      modality,
+      category,
+      scope: "CITY",
+      associationId: cityAssociationId,
+      points,
+      played: 0,
+      wins: 0,
+      losses: 0,
     },
   })
-  if (!submission) return
-  if (submission.status !== "APPROVED") return
-  if (submission.tournament.type === "BASIC" && !submission.tournament.affectsRanking) {
-    // BASIC remains gated by approval only; once approved proceed
-  }
+  await prisma.ranking.upsert({
+    where: rankingUniqueWhere(playerId, modality, category, "NATIONAL"),
+    update: { points: { increment: points } },
+    create: {
+      playerId,
+      modality,
+      category,
+      scope: "NATIONAL",
+      associationId: null,
+      points,
+      played: 0,
+      wins: 0,
+      losses: 0,
+    },
+  })
+}
 
-  for (const row of submission.rows) {
-    const points = pointsForFinalStage(
-      submission.tournament.category as TournamentCategory,
-      row.finalStage as "CHAMPION" | "RUNNER_UP" | "SEMIFINAL" | "QUARTERFINAL" | "ROUND_OF_16" | "ROUND_OF_32" | "GROUP_STAGE"
-    )
-    if (points <= 0) continue
+async function applyApprovedDeclaredResultsPoints() {
+  const submissions = await prisma.tournamentResultSubmission.findMany({
+    where: { status: "APPROVED" },
+    include: {
+      tournament: { select: { id: true, category: true } },
+      rows: true,
+      validatedByAssociation: { select: { id: true } },
+    },
+  })
 
-    const playerIds = [row.player1Id, row.player2Id].filter(Boolean) as string[]
-    for (const playerId of playerIds) {
-      await prisma.ranking.upsert({
-        where: rankingUniqueWhere(
-          playerId,
-          row.modality as Modality,
-          row.category,
-          "CITY"
-        ),
-        update: { points: { increment: points } },
-        create: {
-          playerId,
-          modality: row.modality as Modality,
-          category: row.category,
-          scope: "CITY",
-          associationId,
-          points,
-          played: 0,
-          wins: 0,
-          losses: 0,
-        },
-      })
-      await prisma.ranking.upsert({
-        where: rankingUniqueWhere(
-          playerId,
-          row.modality as Modality,
-          row.category,
-          "NATIONAL"
-        ),
-        update: { points: { increment: points } },
-        create: {
-          playerId,
-          modality: row.modality as Modality,
-          category: row.category,
-          scope: "NATIONAL",
-          associationId: null,
-          points,
-          played: 0,
-          wins: 0,
-          losses: 0,
-        },
-      })
+  // Deduplicate by player/tournament/modality, keeping highest stage points.
+  const bestByPlayerTournamentModality = new Map<
+    string,
+    { playerId: string; modality: Modality; category: string; points: number; associationId: string | null }
+  >()
+
+  for (const submission of submissions) {
+    for (const row of submission.rows) {
+      const stagePoints = pointsForFinalStage(
+        submission.tournament.category as TournamentCategory,
+        row.finalStage as FinalStage
+      )
+      if (stagePoints <= 0) continue
+
+      const playerIds = [row.player1Id, row.player2Id].filter(Boolean) as string[]
+      for (const playerId of playerIds) {
+        const dedupeKey = `${submission.tournament.id}::${playerId}::${row.modality}`
+        const current = bestByPlayerTournamentModality.get(dedupeKey)
+        if (!current || stagePoints > current.points) {
+          bestByPlayerTournamentModality.set(dedupeKey, {
+            playerId,
+            modality: row.modality as Modality,
+            category: row.category,
+            points: stagePoints,
+            associationId: submission.validatedByAssociation?.id ?? null,
+          })
+        }
+      }
     }
   }
+
+  for (const row of bestByPlayerTournamentModality.values()) {
+    await addDeclaredResultPoints(
+      row.playerId,
+      row.modality,
+      row.category,
+      row.associationId,
+      row.points
+    )
+  }
+}
+
+export async function applyApprovedResultSubmission(_submissionId: string, _associationId: string) {
+  // Keep this API for callers, but recalculate globally to guarantee
+  // consistency when submissions are approved/rejected or corrected.
+  await recalculateAllRankings()
 }

@@ -51,6 +51,7 @@ export const registerPlayerCompleteSchema = z.object({
   playsMixed: z.boolean(),
   preferredSchedule: z.string().min(2, "Selecciona horario preferido"),
   preferredAgeRange: z.string().min(2, "Selecciona rango de edad"),
+  homeClubId: z.string().optional(),
 })
 
 // Registro inicial simplificado de jugador (email + password)

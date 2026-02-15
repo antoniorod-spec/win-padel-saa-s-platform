@@ -70,7 +70,7 @@ function ClubDashboardContent() {
   const [venue, setVenue] = useState("")
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
-  const [category, setCategory] = useState<"A" | "B" | "C">("C")
+  const defaultTournamentCategory: "A" | "B" | "C" = "C"
   const [format, setFormat] = useState<"ELIMINATION" | "ROUND_ROBIN" | "LEAGUE" | "EXPRESS">("ROUND_ROBIN")
   const [tournamentType, setTournamentType] = useState<"FULL" | "BASIC">("FULL")
   const [registrationDeadline, setRegistrationDeadline] = useState("")
@@ -95,6 +95,7 @@ function ClubDashboardContent() {
   // Club profile form
   const [clubId, setClubId] = useState("")
   const [clubName, setClubName] = useState("")
+  const [clubDescription, setClubDescription] = useState("")
   const [legalName, setLegalName] = useState("")
   const [clubRfc, setClubRfc] = useState("")
   const [clubPhone, setClubPhone] = useState("")
@@ -192,6 +193,7 @@ function ClubDashboardContent() {
         const c = payload.data
         setClubId(c.id)
         setClubName(c.name || "")
+        setClubDescription(c.description || "")
         setLegalName(c.legalName || "")
         setClubRfc(c.rfc || "")
         setClubPhone(c.phone || "")
@@ -265,7 +267,7 @@ function ClubDashboardContent() {
       venue,
       startDate,
       endDate,
-      category,
+      category: defaultTournamentCategory,
       format,
       type: tournamentType,
       registrationDeadline: registrationDeadline || undefined,
@@ -293,6 +295,7 @@ function ClubDashboardContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: clubName,
+          description: clubDescription || undefined,
           legalName: legalName || undefined,
           rfc: clubRfc || undefined,
           phone: clubPhone,
@@ -547,13 +550,6 @@ function ClubDashboardContent() {
                           <Label>Sede</Label>
                           <Input placeholder="Club / dirección visible" className="bg-background" value={venue} onChange={(e) => setVenue(e.target.value)} />
                         </div>
-                        <div className="flex flex-col gap-2">
-                          <Label>Categoría principal</Label>
-                          <Select value={category} onValueChange={(v: "A" | "B" | "C") => setCategory(v)}>
-                            <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
-                            <SelectContent><SelectItem value="A">A</SelectItem><SelectItem value="B">B</SelectItem><SelectItem value="C">C</SelectItem></SelectContent>
-                          </Select>
-                        </div>
                       </div>
                       <div className="flex flex-col gap-2">
                         <Label>Fecha límite inscripción</Label>
@@ -600,7 +596,7 @@ function ClubDashboardContent() {
                       <div className="grid grid-cols-3 gap-3">
                         {["VARONIL", "FEMENIL", "MIXTO"].map((mod) => (
                           <Card key={mod} className="cursor-pointer border-2 border-border/50 transition-colors hover:border-primary">
-                            <CardContent className="p-4 text-center" onClick={() => setSelectedModalities([{ modality: mod as "VARONIL" | "FEMENIL" | "MIXTO", category }])}>
+                            <CardContent className="p-4 text-center" onClick={() => setSelectedModalities([{ modality: mod as "VARONIL" | "FEMENIL" | "MIXTO", category: defaultTournamentCategory }])}>
                               <p className="font-display font-bold text-card-foreground">{mod}</p>
                             </CardContent>
                           </Card>
@@ -656,6 +652,14 @@ function ClubDashboardContent() {
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2"><Label>Nombre del club</Label><Input value={clubName} onChange={(e) => setClubName(e.target.value)} /></div>
+            <div className="space-y-2 md:col-span-2">
+              <Label>Descripcion corta</Label>
+              <Textarea
+                value={clubDescription}
+                onChange={(e) => setClubDescription(e.target.value)}
+                placeholder="Describe en pocas lineas el club, su propuesta y ambiente."
+              />
+            </div>
             <div className="space-y-2"><Label>Razon social</Label><Input value={legalName} onChange={(e) => setLegalName(e.target.value)} /></div>
             <div className="space-y-2"><Label>RFC</Label><Input value={clubRfc} onChange={(e) => setClubRfc(e.target.value)} /></div>
             <div className="space-y-2"><Label>Telefono del club</Label><Input value={clubPhone} onChange={(e) => setClubPhone(e.target.value)} /></div>
