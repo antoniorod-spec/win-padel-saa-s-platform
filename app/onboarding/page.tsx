@@ -1,20 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { signIn } from "next-auth/react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Trophy, User, Building2, Loader2, ArrowLeft } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Trophy, User, Building2, Loader2 } from "lucide-react"
 
-export default function RegisterPage() {
+export default function OnboardingPage() {
   const router = useRouter()
+  const { data: session, status, update } = useSession()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -22,8 +21,6 @@ export default function RegisterPage() {
   // Player fields
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
   const [sex, setSex] = useState("")
   const [city, setCity] = useState("")
   const [country, setCountry] = useState("")
@@ -31,24 +28,54 @@ export default function RegisterPage() {
 
   // Club fields
   const [clubName, setClubName] = useState("")
-  const [clubEmail, setClubEmail] = useState("")
-  const [clubPassword, setClubPassword] = useState("")
   const [clubCity, setClubCity] = useState("")
   const [courts, setCourts] = useState("")
 
-  async function handlePlayerRegister(e: React.FormEvent) {
+  // Pre-llenar nombre si viene de Google
+  useEffect(() => {
+    if (session?.user?.name) {
+      const nameParts = session.user.name.split(" ")
+      if (nameParts.length >= 2) {
+        setFirstName(nameParts[0])
+        setLastName(nameParts.slice(1).join(" "))
+      } else {
+        setFirstName(session.user.name)
+      }
+      setClubName(session.user.name)
+    }
+  }, [session?.user?.name])
+
+  // Redirigir si ya tiene perfil completo
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.role) {
+      if (session.user.role === "ADMIN") {
+        router.push("/admin")
+      } else if (session.user.role === "CLUB") {
+        router.push("/club")
+      } else if (session.user.role === "PLAYER") {
+        router.push("/jugador")
+      }
+    }
+  }, [status, session, router])
+
+  // Redirigir si no está autenticado
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login")
+    }
+  }, [status, router])
+
+  async function handlePlayerSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError("")
     setLoading(true)
 
     try {
-      const res = await fetch("/api/auth/register", {
+      const res = await fetch("/api/auth/complete-profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: "player",
-          email,
-          password,
           firstName,
           lastName,
           sex,
@@ -61,11 +88,15 @@ export default function RegisterPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error ?? "Error al registrarse")
+        setError(data.error ?? "Error al completar perfil")
         return
       }
 
-      router.push("/login?registered=true")
+      // Actualizar sesión
+      await update()
+      
+      // Redirigir al dashboard
+      router.push("/jugador")
     } catch {
       setError("Error de conexion. Intenta de nuevo.")
     } finally {
@@ -73,19 +104,17 @@ export default function RegisterPage() {
     }
   }
 
-  async function handleClubRegister(e: React.FormEvent) {
+  async function handleClubSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError("")
     setLoading(true)
 
     try {
-      const res = await fetch("/api/auth/register", {
+      const res = await fetch("/api/auth/complete-profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: "club",
-          email: clubEmail,
-          password: clubPassword,
           clubName,
           city: clubCity,
           courts: courts ? parseInt(courts) : undefined,
@@ -95,11 +124,15 @@ export default function RegisterPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error ?? "Error al registrarse")
+        setError(data.error ?? "Error al completar perfil")
         return
       }
 
-      router.push("/login?registered=true&type=club")
+      // Actualizar sesión
+      await update()
+      
+      // Redirigir al dashboard
+      router.push("/club")
     } catch {
       setError("Error de conexion. Intenta de nuevo.")
     } finally {
@@ -107,29 +140,28 @@ export default function RegisterPage() {
     }
   }
 
+  if (status === "loading") {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.08),transparent_60%)]" />
 
-      {/* Botón de volver */}
-      <Link 
-        href="/" 
-        className="absolute left-4 top-4 z-20 flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Volver al inicio
-      </Link>
-
       <Card className="relative z-10 w-full max-w-lg border-border/50 bg-card">
         <CardHeader className="items-center pb-2 pt-8">
-          <Link href="/" className="mb-4 flex items-center gap-2">
+          <div className="mb-4 flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
               <Trophy className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className="font-display text-2xl font-bold uppercase text-card-foreground">WhinPadel</span>
-          </Link>
-          <h1 className="font-display text-xl font-bold text-card-foreground">Crear Cuenta</h1>
-          <p className="text-sm text-muted-foreground">Selecciona tu tipo de cuenta y completa tu perfil</p>
+          </div>
+          <h1 className="font-display text-xl font-bold text-card-foreground">Completa tu Perfil</h1>
+          <p className="text-sm text-muted-foreground">Para comenzar, dinos que tipo de cuenta necesitas</p>
         </CardHeader>
         <CardContent className="px-8 pb-8">
           {error && (
@@ -152,52 +184,27 @@ export default function RegisterPage() {
 
             <TabsContent value="jugador" className="mt-6">
               {step === 1 && (
-                <>
-                  <form className="flex flex-col gap-4" onSubmit={(e) => { e.preventDefault(); setStep(2) }}>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor="nombre">Nombre</Label>
-                        <Input id="nombre" placeholder="Carlos" className="bg-background" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor="apellido">Apellido</Label>
-                        <Input id="apellido" placeholder="Mendoza" className="bg-background" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-                      </div>
+                <div className="flex flex-col gap-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="nombre">Nombre</Label>
+                      <Input id="nombre" placeholder="Carlos" className="bg-background" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
                     </div>
                     <div className="flex flex-col gap-2">
-                      <Label htmlFor="reg-email">Correo electronico</Label>
-                      <Input id="reg-email" type="email" placeholder="carlos@email.com" className="bg-background" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                      <Label htmlFor="apellido">Apellido</Label>
+                      <Input id="apellido" placeholder="Mendoza" className="bg-background" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <Label htmlFor="reg-pass">Contrasena</Label>
-                      <Input id="reg-pass" type="password" placeholder="Min. 8 caracteres" className="bg-background" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
-                    </div>
-                    <Button type="submit" className="mt-2 w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                      Continuar
-                    </Button>
-                  </form>
-
-                  <div className="my-6 flex items-center gap-3">
-                    <Separator className="flex-1" />
-                    <span className="text-xs text-muted-foreground">o registrate con</span>
-                    <Separator className="flex-1" />
                   </div>
-
-                  <Button 
-                    variant="outline" 
-                    className="w-full gap-2" 
-                    onClick={() => signIn("google", { callbackUrl: "/onboarding" })}
-                  >
-                    <svg className="h-4 w-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                    Google
+                  <Button onClick={() => setStep(2)} className="mt-2 w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                    Continuar
                   </Button>
-                </>
+                </div>
               )}
               {step === 2 && (
-                <form className="flex flex-col gap-4" onSubmit={handlePlayerRegister}>
+                <form className="flex flex-col gap-4" onSubmit={handlePlayerSubmit}>
                   <div className="flex flex-col gap-2">
                     <Label>Sexo</Label>
-                    <Select value={sex} onValueChange={setSex}>
+                    <Select value={sex} onValueChange={setSex} required>
                       <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Selecciona" />
                       </SelectTrigger>
@@ -210,7 +217,7 @@ export default function RegisterPage() {
                   <div className="grid grid-cols-2 gap-3">
                     <div className="flex flex-col gap-2">
                       <Label>Ciudad</Label>
-                      <Select value={city} onValueChange={setCity}>
+                      <Select value={city} onValueChange={setCity} required>
                         <SelectTrigger className="bg-background">
                           <SelectValue placeholder="Ciudad" />
                         </SelectTrigger>
@@ -226,7 +233,7 @@ export default function RegisterPage() {
                     </div>
                     <div className="flex flex-col gap-2">
                       <Label>Pais</Label>
-                      <Select value={country} onValueChange={setCountry}>
+                      <Select value={country} onValueChange={setCountry} required>
                         <SelectTrigger className="bg-background">
                           <SelectValue placeholder="Pais" />
                         </SelectTrigger>
@@ -248,7 +255,7 @@ export default function RegisterPage() {
                     </Button>
                     <Button type="submit" className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
                       {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Crear Cuenta
+                      Completar Perfil
                     </Button>
                   </div>
                 </form>
@@ -256,23 +263,15 @@ export default function RegisterPage() {
             </TabsContent>
 
             <TabsContent value="club" className="mt-6">
-              <form className="flex flex-col gap-4" onSubmit={handleClubRegister}>
+              <form className="flex flex-col gap-4" onSubmit={handleClubSubmit}>
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="club-name">Nombre del Club</Label>
                   <Input id="club-name" placeholder="Padel Center CDMX" className="bg-background" value={clubName} onChange={(e) => setClubName(e.target.value)} required />
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="club-email">Correo del Club</Label>
-                  <Input id="club-email" type="email" placeholder="info@padelcenter.mx" className="bg-background" value={clubEmail} onChange={(e) => setClubEmail(e.target.value)} required />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="club-pass">Contrasena</Label>
-                  <Input id="club-pass" type="password" placeholder="Min. 8 caracteres" className="bg-background" value={clubPassword} onChange={(e) => setClubPassword(e.target.value)} required minLength={8} />
-                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex flex-col gap-2">
                     <Label>Ciudad</Label>
-                    <Select value={clubCity} onValueChange={setClubCity}>
+                    <Select value={clubCity} onValueChange={setClubCity} required>
                       <SelectTrigger className="bg-background"><SelectValue placeholder="Ciudad" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="San Luis Potosi">San Luis Potosi</SelectItem>
@@ -289,33 +288,11 @@ export default function RegisterPage() {
                 </div>
                 <Button type="submit" className="mt-2 w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Registrar Club
+                  Completar Perfil
                 </Button>
               </form>
-
-              <div className="my-6 flex items-center gap-3">
-                <Separator className="flex-1" />
-                <span className="text-xs text-muted-foreground">o registrate con</span>
-                <Separator className="flex-1" />
-              </div>
-
-              <Button 
-                variant="outline" 
-                className="w-full gap-2" 
-                onClick={() => signIn("google", { callbackUrl: "/onboarding" })}
-              >
-                <svg className="h-4 w-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                Google
-              </Button>
             </TabsContent>
           </Tabs>
-
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            Ya tienes cuenta?{" "}
-            <Link href="/login" className="font-semibold text-primary hover:underline">
-              Inicia sesion
-            </Link>
-          </p>
         </CardContent>
       </Card>
     </div>

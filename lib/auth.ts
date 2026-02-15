@@ -80,11 +80,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id as string
         token.role = user.role
       }
+      
+      // Si se llama update(), refrescar el rol desde la BD
+      if (trigger === "update") {
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true },
+        })
+        if (updatedUser) {
+          token.role = updatedUser.role
+        }
+      }
+      
       return token
     },
     async session({ session, token }) {
@@ -94,14 +106,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return session
     },
+    async signIn({ user, account }) {
+      // Si es OAuth (Google), verificar si tiene perfil completo
+      if (account?.provider === "google") {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          include: { player: true, club: true },
+        })
+        
+        // Si no tiene rol asignado o no tiene perfil, necesita onboarding
+        if (dbUser && !dbUser.role) {
+          return true // Permitir login pero redirigir a onboarding
+        }
+      }
+      return true
+    },
     async redirect({ url, baseUrl }) {
-      // Redirigir según el rol del usuario
-      // Si la URL ya incluye un destino, úsala
-      if (url.startsWith("/")) return `${baseUrl}${url}`
-      if (url.startsWith(baseUrl)) return url
+      // Si viene de Google OAuth y no tiene perfil, ir a onboarding
+      if (url.startsWith(baseUrl)) {
+        return url
+      }
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`
+      }
       
-      // Por defecto, ir al home
-      return baseUrl
+      // Por defecto, ir a onboarding (se redirigirá automáticamente si ya tiene perfil)
+      return `${baseUrl}/onboarding`
     },
   },
 })
