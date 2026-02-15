@@ -11,6 +11,7 @@ const libraries: ("places")[] = ["places"]
 interface AddressAutocompleteProps {
   value: string
   onChange: (address: string) => void
+  onPlaceSelected?: (place: google.maps.places.PlaceResult) => void
   required?: boolean
   placeholder?: string
   label?: string
@@ -20,8 +21,9 @@ interface AddressAutocompleteProps {
 export function AddressAutocomplete({
   value,
   onChange,
+  onPlaceSelected,
   required = false,
-  placeholder = "Buscar dirección...",
+  placeholder = "Buscar dirección o negocio...",
   label = "Dirección",
   helperText,
 }: AddressAutocompleteProps) {
@@ -42,6 +44,10 @@ export function AddressAutocomplete({
       const place = autocomplete.getPlace()
       if (place.formatted_address) {
         onChange(place.formatted_address)
+      }
+      // Llamar callback adicional si existe (para extraer más datos)
+      if (onPlaceSelected) {
+        onPlaceSelected(place)
       }
     }
   }
@@ -103,7 +109,7 @@ export function AddressAutocomplete({
         onLoad={onLoad}
         onPlaceChanged={onPlaceChanged}
         options={{
-          types: ["address"],
+          types: ["establishment", "address"], // Buscar negocios Y direcciones
           componentRestrictions: { country: ["mx", "es", "ar"] }, // México, España, Argentina
         }}
       >

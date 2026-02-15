@@ -289,12 +289,18 @@ export default function OnboardingPage() {
                   </Select>
                 </div>
                 <AddressAutocomplete
-                  label="Direccion Completa"
-                  placeholder="Busca o escribe la dirección..."
+                  label="Direccion o Negocio"
+                  placeholder="Busca tu club o escribe la dirección..."
                   value={clubAddress}
                   onChange={setClubAddress}
+                  onPlaceSelected={(place) => {
+                    // Si el usuario selecciona un negocio, auto-completar el nombre
+                    if (place.name && !clubName) {
+                      setClubName(place.name)
+                    }
+                  }}
                   required
-                  helperText="Busca tu dirección en Google Maps o escríbela manualmente"
+                  helperText="Busca tu negocio en Google Maps por nombre o dirección"
                 />
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="club-rfc">RFC (opcional)</Label>
