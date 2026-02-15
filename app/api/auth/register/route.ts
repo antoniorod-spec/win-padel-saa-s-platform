@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const { email, password, clubName, city, address, rfc, indoorCourts, outdoorCourts } = parsed.data
+      const { email, password, clubName, city, address, latitude, longitude, rfc, indoorCourts, outdoorCourts } = parsed.data
 
       const existing = await prisma.user.findUnique({ where: { email } })
       if (existing) {
@@ -97,6 +97,8 @@ export async function POST(request: NextRequest) {
               name: clubName,
               city,
               address,
+              latitude,
+              longitude,
               rfc,
               indoorCourts: indoorCourts || 0,
               outdoorCourts: outdoorCourts || 0,

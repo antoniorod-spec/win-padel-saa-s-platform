@@ -36,6 +36,8 @@ export default function RegisterPage() {
   const [clubPassword, setClubPassword] = useState("")
   const [clubCity, setClubCity] = useState("")
   const [clubAddress, setClubAddress] = useState("")
+  const [clubLatitude, setClubLatitude] = useState<number | undefined>(undefined)
+  const [clubLongitude, setClubLongitude] = useState<number | undefined>(undefined)
   const [clubRfc, setClubRfc] = useState("")
   const [indoorCourts, setIndoorCourts] = useState("")
   const [outdoorCourts, setOutdoorCourts] = useState("")
@@ -94,6 +96,8 @@ export default function RegisterPage() {
           clubName,
           city: clubCity,
           address: clubAddress,
+          latitude: clubLatitude,
+          longitude: clubLongitude,
           rfc: clubRfc || undefined,
           indoorCourts: indoorCourts ? parseInt(indoorCourts) : undefined,
           outdoorCourts: outdoorCourts ? parseInt(outdoorCourts) : undefined,
@@ -294,6 +298,10 @@ export default function RegisterPage() {
                   placeholder="Busca tu club o escribe la dirección..."
                   value={clubAddress}
                   onChange={setClubAddress}
+                  onCoordinatesChange={(lat, lng) => {
+                    setClubLatitude(lat)
+                    setClubLongitude(lng)
+                  }}
                   onPlaceSelected={(place) => {
                     // Si el usuario selecciona un negocio, auto-completar el nombre
                     if (place.name && !clubName) {

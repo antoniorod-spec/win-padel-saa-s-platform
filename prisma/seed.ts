@@ -46,6 +46,8 @@ async function main() {
           name: "Advantage Padel",
           city: "San Luis Potosi",
           address: "Av. Carranza 2450, Col. Tangamanga",
+          latitude: 22.1442,
+          longitude: -100.9803,
           indoorCourts: 4,
           outdoorCourts: 4,
           courts: 8,
@@ -70,6 +72,8 @@ async function main() {
           name: "Marietta Padel",
           city: "San Luis Potosi",
           address: "Boulevard Río Santiago 150, Lomas 2a Secc",
+          latitude: 22.1524,
+          longitude: -100.9634,
           indoorCourts: 2,
           outdoorCourts: 4,
           courts: 6,
@@ -94,6 +98,8 @@ async function main() {
           name: "Loma Golf",
           city: "San Luis Potosi",
           address: "Privada Loma de San Luis 2001, Lomas Del Tec",
+          latitude: 22.1485,
+          longitude: -100.9245,
           indoorCourts: 6,
           outdoorCourts: 4,
           courts: 10,
@@ -208,9 +214,9 @@ async function main() {
 
   // Create pending clubs for admin review
   const pendingClubData = [
-    { email: "padel.cancun@email.com", name: "Padel Arena Cancun", city: "Cancun", address: "Av. Bonampak 123, Zona Hotelera", courts: 6, indoorCourts: 3, outdoorCourts: 3 },
-    { email: "pro.tijuana@email.com", name: "Pro Padel Tijuana", city: "Tijuana", address: "Blvd. Agua Caliente 456, Zona Rio", courts: 4, indoorCourts: 2, outdoorCourts: 2 },
-    { email: "padel.leon@email.com", name: "Padel Zone Leon", city: "Leon", address: "Blvd. Adolfo Lopez Mateos 789", courts: 8, indoorCourts: 4, outdoorCourts: 4 },
+    { email: "padel.cancun@email.com", name: "Padel Arena Cancun", city: "Cancun", address: "Av. Bonampak 123, Zona Hotelera", latitude: 21.1619, longitude: -86.8515, courts: 6, indoorCourts: 3, outdoorCourts: 3 },
+    { email: "pro.tijuana@email.com", name: "Pro Padel Tijuana", city: "Tijuana", address: "Blvd. Agua Caliente 456, Zona Rio", latitude: 32.5149, longitude: -117.0382, courts: 4, indoorCourts: 2, outdoorCourts: 2 },
+    { email: "padel.leon@email.com", name: "Padel Zone Leon", city: "Leon", address: "Blvd. Adolfo Lopez Mateos 789", latitude: 21.1216, longitude: -101.6827, courts: 8, indoorCourts: 4, outdoorCourts: 4 },
   ]
 
   for (const pc of pendingClubData) {
@@ -227,6 +233,8 @@ async function main() {
             name: pc.name,
             city: pc.city,
             address: pc.address,
+            latitude: pc.latitude,
+            longitude: pc.longitude,
             indoorCourts: pc.indoorCourts,
             outdoorCourts: pc.outdoorCourts,
             courts: pc.courts,

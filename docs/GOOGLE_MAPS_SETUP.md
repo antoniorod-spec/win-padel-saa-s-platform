@@ -1,15 +1,37 @@
 # Configuración de Google Maps API
 
-## Para habilitar el autocompletado de direcciones en el registro de clubes
+## Para habilitar el autocompletado de direcciones y búsqueda de negocios en el registro de clubes
+
+El sistema utiliza Google Places API y Geocoding API para ofrecer tres funcionalidades:
+1. **Búsqueda de negocios**: Encuentra tu club de padel por su nombre (ej: "Advantage Padel")
+2. **Búsqueda de direcciones**: Autocompletar direcciones completas
+3. **Geocoding**: Extrae automáticamente las coordenadas (latitud/longitud) del lugar seleccionado
+
+### Funcionalidad:
+- Cuando seleccionas un negocio o dirección en Google Maps:
+  - ✅ **El nombre del club se auto-completa** automáticamente (si es un negocio)
+  - ✅ **La dirección completa se llena** con formato de Google Maps
+  - ✅ **Las coordenadas se guardan** en la base de datos (para mostrar en mapas)
+- Soporta búsqueda en México, España y Argentina
+- Si no encuentra el negocio, puedes escribir la dirección manualmente
+
+### Beneficios de guardar coordenadas:
+- Mostrar clubes en un mapa interactivo
+- Búsqueda de "clubes cercanos a mi ubicación"
+- Calcular distancias entre clubes y torneos
+- Filtros geográficos (clubes a menos de X km)
 
 ### 1. Crear proyecto en Google Cloud Console
 
 1. Ve a [Google Cloud Console](https://console.cloud.google.com)
 2. Crea un nuevo proyecto o selecciona uno existente
-3. Habilita la **Places API**:
+3. Habilita las siguientes APIs:
    - Ve a "APIs & Services" > "Library"
-   - Busca "Places API"
-   - Click en "Enable"
+   - Busca y habilita:
+     - ✅ **Maps JavaScript API** (para el mapa base)
+     - ✅ **Places API** (para autocompletar y buscar negocios)
+     - ✅ **Geocoding API** (para obtener coordenadas lat/lng)
+   - Click en "Enable" en cada una
 
 ### 2. Crear API Key
 
@@ -31,8 +53,9 @@
 #### Restricciones de API:
 1. En "API restrictions" selecciona "Restrict key"
 2. Selecciona únicamente:
-   - **Places API**
-   - **Maps JavaScript API** (si planeas mostrar mapas)
+   - ✅ **Places API**
+   - ✅ **Maps JavaScript API**
+   - ✅ **Geocoding API**
 
 ### 4. Agregar al proyecto
 

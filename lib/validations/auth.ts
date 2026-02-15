@@ -24,6 +24,8 @@ export const registerClubSchema = z.object({
   clubName: z.string().min(3, "El nombre del club debe tener al menos 3 caracteres"),
   city: z.string().min(2, "La ciudad es requerida"),
   address: z.string().min(10, "La direccion debe tener al menos 10 caracteres"),
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional(),
   rfc: z.string().min(12).max(13).regex(/^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/, "RFC invalido").optional(),
   indoorCourts: z.number().int().min(0).optional(),
   outdoorCourts: z.number().int().min(0).optional(),

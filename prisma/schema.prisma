@@ -191,6 +191,8 @@ model Club {
   city          String
   country       String     @default("MX")
   address       String
+  latitude      Float?     // Coordenada para mapas y búsqueda geográfica
+  longitude     Float?     // Coordenada para mapas y búsqueda geográfica
   rfc           String?
   phone         String?
   courts        Int        @default(0) // Total de canchas (sum of indoor + outdoor)

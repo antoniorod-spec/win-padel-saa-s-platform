@@ -12,6 +12,7 @@ interface AddressAutocompleteProps {
   value: string
   onChange: (address: string) => void
   onPlaceSelected?: (place: google.maps.places.PlaceResult) => void
+  onCoordinatesChange?: (lat: number, lng: number) => void
   required?: boolean
   placeholder?: string
   label?: string
@@ -22,6 +23,7 @@ export function AddressAutocomplete({
   value,
   onChange,
   onPlaceSelected,
+  onCoordinatesChange,
   required = false,
   placeholder = "Buscar dirección o negocio...",
   label = "Dirección",
@@ -45,6 +47,14 @@ export function AddressAutocomplete({
       if (place.formatted_address) {
         onChange(place.formatted_address)
       }
+      
+      // Extraer coordenadas si existen
+      if (place.geometry?.location && onCoordinatesChange) {
+        const lat = place.geometry.location.lat()
+        const lng = place.geometry.location.lng()
+        onCoordinatesChange(lat, lng)
+      }
+      
       // Llamar callback adicional si existe (para extraer más datos)
       if (onPlaceSelected) {
         onPlaceSelected(place)
