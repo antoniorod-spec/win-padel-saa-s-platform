@@ -178,7 +178,7 @@ export default function FaqPage() {
                   </Button>
                 </Link>
                 <a
-                  href="https://wa.me/521XXXXXXXXXX"
+                  href="https://wa.me/524442045111"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

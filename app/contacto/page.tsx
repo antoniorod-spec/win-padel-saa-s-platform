@@ -67,12 +67,12 @@ export default function ContactoPage() {
                     <div>
                       <h4 className="text-sm font-semibold text-foreground">WhatsApp</h4>
                       <a
-                        href="https://wa.me/521XXXXXXXXXX"
+                        href="https://wa.me/524442045111"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-muted-foreground transition-colors hover:text-primary"
                       >
-                        +52 (XXX) XXX-XXXX
+                        +52 444 204 5111
                       </a>
                       <p className="mt-0.5 text-xs text-muted-foreground">Respuesta rapida</p>
                     </div>
@@ -96,7 +96,7 @@ export default function ContactoPage() {
                     Agenda una demo personalizada y te mostramos como funciona la plataforma en 15 minutos.
                   </p>
                   <a
-                    href="https://wa.me/521XXXXXXXXXX?text=Hola%2C%20quiero%20una%20demo%20de%20WhinPadel%20para%20mi%20club"
+                    href="https://wa.me/524442045111?text=Hola%2C%20quiero%20una%20demo%20de%20WhinPadel%20para%20mi%20club"
                     target="_blank"
                     rel="noopener noreferrer"
                   >

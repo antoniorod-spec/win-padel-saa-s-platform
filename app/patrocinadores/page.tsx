@@ -192,7 +192,7 @@ export default function PatrocinadoresPage() {
                   </Button>
                 </Link>
                 <a
-                  href="https://wa.me/521XXXXXXXXXX?text=Hola%2C%20me%20interesa%20patrocinar%20en%20WhinPadel"
+                  href="https://wa.me/524442045111?text=Hola%2C%20me%20interesa%20patrocinar%20en%20WhinPadel"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
