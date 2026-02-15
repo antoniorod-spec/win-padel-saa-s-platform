@@ -20,45 +20,93 @@ import {
   X,
   Newspaper,
 } from "lucide-react"
-import { adminStats, clubs, ascensionRules, descentRules, rankingsByCategory } from "@/lib/mock-data"
 import { cn } from "@/lib/utils"
+import { 
+  useAdminStats, 
+  usePendingClubs, 
+  useCategoryReviews, 
+  useRankingStats,
+  useApproveClub, 
+  useReviewCategoryChange 
+} from "@/hooks/use-admin"
+import { ascensionRules, descentRules } from "@/lib/types"
+import { useToast } from "@/hooks/use-toast"
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
-  { label: "Clubes", icon: Building2, href: "/admin", badge: 3 },
+  { label: "Clubes", icon: Building2, href: "/admin" },
   { label: "Jugadores", icon: Users, href: "/admin" },
   { label: "Torneos", icon: Trophy, href: "/admin" },
-  { label: "Comite Categorias", icon: AlertTriangle, href: "/admin", badge: 5 },
+  { label: "Comite Categorias", icon: AlertTriangle, href: "/admin" },
   { label: "Ranking Config", icon: BarChart3, href: "/admin" },
   { label: "Reportes", icon: FileText, href: "/admin" },
   { label: "Noticias", icon: Newspaper, href: "/admin" },
   { label: "Configuracion", icon: Settings, href: "/admin" },
 ]
 
-const pendingClubs = [
-  { id: 1, name: "Padel Arena Cancun", city: "Cancun", courts: 6, requestDate: "10 Feb 2026", status: "pending" },
-  { id: 2, name: "Pro Padel Tijuana", city: "Tijuana", courts: 4, requestDate: "11 Feb 2026", status: "pending" },
-  { id: 3, name: "Padel Zone Leon", city: "Leon", courts: 8, requestDate: "12 Feb 2026", status: "pending" },
-]
-
-// Ascenso/descenso review: players flagged by the system
-const categoryReviews = [
-  { id: 1, player: "Ricardo Solis", modality: "Varonil", currentCat: "4ta", proposedCat: "3ra", reason: "Gano torneo Open SLP 2026", type: "ascenso" as const, auto: true },
-  { id: 2, player: "Omar Fuentes", modality: "Varonil", currentCat: "4ta", proposedCat: "3ra", reason: "2 finales consecutivas (Copa Marietta + Loma Golf Masters)", type: "ascenso" as const, auto: true },
-  { id: 3, player: "Hector Ibarra", modality: "Varonil", currentCat: "4ta", proposedCat: "3ra", reason: "Semifinales en 3 de ultimos 5 torneos", type: "revision" as const, auto: false },
-  { id: 4, player: "Hugo Reyes", modality: "Varonil", currentCat: "4ta", proposedCat: "5ta", reason: "Eliminado en 1ra ronda en 5 torneos consecutivos - solicitud de descenso", type: "descenso" as const, auto: false },
-  { id: 5, player: "Isabella Castro", modality: "Femenil", currentCat: "3ra", proposedCat: "2da", reason: "Gano torneo Loma Golf Masters Femenil", type: "ascenso" as const, auto: true },
-]
-
-// Ranking stats by category
-const rankingCategoryStats = [
-  { modality: "Varonil", cat: "4ta", count: 25, avgPoints: 1020 },
-  { modality: "Varonil", cat: "3ra", count: 15, avgPoints: 1840 },
-  { modality: "Femenil", cat: "3ra", count: 18, avgPoints: 1290 },
-  { modality: "Mixto", cat: "C", count: 20, avgPoints: 920 },
-]
-
 export default function AdminDashboard() {
+  const { toast } = useToast()
+  const { data: statsData, isLoading: statsLoading } = useAdminStats()
+  const { data: clubsData } = usePendingClubs()
+  const { data: categoryReviewsData } = useCategoryReviews("PENDING")
+  const { data: rankingStatsData } = useRankingStats()
+  
+  const approveClubMutation = useApproveClub()
+  const reviewCategoryMutation = useReviewCategoryChange()
+
+  const stats = statsData?.data
+  const pendingClubs = clubsData?.data || []
+  const categoryReviews = categoryReviewsData?.data || []
+  const rankingStats = rankingStatsData?.data || []
+
+  const handleApproveClub = async (clubId: string, action: "approve" | "reject") => {
+    try {
+      await approveClubMutation.mutateAsync({ clubId, action })
+      toast({
+        title: action === "approve" ? "Club aprobado" : "Club rechazado",
+        description: `El club ha sido ${action === "approve" ? "aprobado" : "rechazado"} exitosamente`,
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo procesar la solicitud",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleReviewCategory = async (changeId: string, action: "approve" | "reject") => {
+    try {
+      await reviewCategoryMutation.mutateAsync({ changeId, action })
+      toast({
+        title: action === "approve" ? "Cambio aprobado" : "Cambio rechazado",
+        description: `El cambio de categoría ha sido ${action === "approve" ? "aprobado" : "rechazado"}`,
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo procesar la solicitud",
+        variant: "destructive",
+      })
+    }
+  }
+
+  if (statsLoading) {
+    return (
+      <DashboardShell
+        title="Panel de Administracion"
+        subtitle="Gestion global de la plataforma WhinPadel"
+        navItems={navItems}
+        activeItem="Dashboard"
+        role="admin"
+      >
+        <div className="flex items-center justify-center h-64">
+          <p className="text-muted-foreground">Cargando estadísticas...</p>
+        </div>
+      </DashboardShell>
+    )
+  }
+
   return (
     <DashboardShell
       title="Panel de Administracion"
@@ -69,10 +117,26 @@ export default function AdminDashboard() {
     >
       {/* Stats row */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total Clubes" value={adminStats.totalClubs} icon={Building2} trend="up" trendValue="12" />
-        <StatCard title="Jugadores Activos" value={adminStats.activePlayers.toLocaleString()} icon={Users} trend="up" trendValue="342" />
-        <StatCard title="Torneos en Curso" value={adminStats.activeTournaments} icon={Trophy} trend="up" trendValue="5" />
-        <StatCard title="Ingresos Mensuales" value={adminStats.monthlyRevenue} icon={BarChart3} trend="up" trendValue="18%" />
+        <StatCard 
+          title="Total Clubes" 
+          value={stats?.totalClubs || 0} 
+          icon={Building2} 
+        />
+        <StatCard 
+          title="Jugadores Activos" 
+          value={(stats?.activePlayers || 0).toLocaleString()} 
+          icon={Users} 
+        />
+        <StatCard 
+          title="Torneos Activos" 
+          value={stats?.activeTournaments || 0} 
+          icon={Trophy} 
+        />
+        <StatCard 
+          title="Inscripciones" 
+          value={(stats?.totalRegistrations || 0).toLocaleString()} 
+          icon={BarChart3} 
+        />
       </div>
 
       {/* Tabs for management */}
@@ -81,7 +145,11 @@ export default function AdminDashboard() {
           <TabsTrigger value="categories" className="gap-2">
             <AlertTriangle className="h-3.5 w-3.5" />
             Comite Categorias
-            <Badge className="ml-1 h-5 min-w-[20px] justify-center bg-destructive/80 p-0 px-1.5 text-[10px] text-destructive-foreground">{categoryReviews.length}</Badge>
+            {categoryReviews.length > 0 && (
+              <Badge className="ml-1 h-5 min-w-[20px] justify-center bg-destructive/80 p-0 px-1.5 text-[10px] text-destructive-foreground">
+                {categoryReviews.length}
+              </Badge>
+            )}
           </TabsTrigger>
           <TabsTrigger value="rankingConfig" className="gap-2">
             <BarChart3 className="h-3.5 w-3.5" />
@@ -90,7 +158,11 @@ export default function AdminDashboard() {
           <TabsTrigger value="clubs" className="gap-2">
             <Building2 className="h-3.5 w-3.5" />
             Clubes
-            <Badge className="ml-1 h-5 min-w-[20px] justify-center bg-primary p-0 px-1.5 text-[10px] text-primary-foreground">{pendingClubs.length}</Badge>
+            {pendingClubs.length > 0 && (
+              <Badge className="ml-1 h-5 min-w-[20px] justify-center bg-primary p-0 px-1.5 text-[10px] text-primary-foreground">
+                {pendingClubs.length}
+              </Badge>
+            )}
           </TabsTrigger>
         </TabsList>
 
@@ -106,57 +178,76 @@ export default function AdminDashboard() {
               </p>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Jugador</TableHead>
-                    <TableHead>Modalidad</TableHead>
-                    <TableHead>Actual</TableHead>
-                    <TableHead>Propuesta</TableHead>
-                    <TableHead>Tipo</TableHead>
-                    <TableHead>Razon</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {categoryReviews.map((r) => (
-                    <TableRow key={r.id}>
-                      <TableCell className="font-medium text-foreground">{r.player}</TableCell>
-                      <TableCell className="text-muted-foreground">{r.modality}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{r.currentCat}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={cn(
-                          r.type === "descenso" ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
-                        )}>{r.proposedCat}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={cn(
-                          "text-[10px]",
-                          r.type === "ascenso" && r.auto && "bg-primary/10 text-primary",
-                          r.type === "ascenso" && !r.auto && "bg-chart-4/10 text-chart-4",
-                          r.type === "revision" && "bg-chart-4/10 text-chart-4",
-                          r.type === "descenso" && "bg-destructive/10 text-destructive",
-                        )}>
-                          {r.auto ? "Auto" : "Manual"} - {r.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="max-w-[200px] text-xs text-muted-foreground">{r.reason}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button size="sm" className="h-7 gap-1 bg-primary text-primary-foreground">
-                            <Check className="h-3 w-3" /> Aprobar
-                          </Button>
-                          <Button size="sm" variant="outline" className="h-7 gap-1">
-                            <X className="h-3 w-3" /> Rechazar
-                          </Button>
-                        </div>
-                      </TableCell>
+              {categoryReviews.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">No hay revisiones pendientes</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Jugador</TableHead>
+                      <TableHead>Modalidad</TableHead>
+                      <TableHead>Desde</TableHead>
+                      <TableHead>Hacia</TableHead>
+                      <TableHead>Tipo</TableHead>
+                      <TableHead>Razon</TableHead>
+                      <TableHead className="text-right">Acciones</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {categoryReviews.map((r: any) => (
+                      <TableRow key={r.id}>
+                        <TableCell className="font-medium text-foreground">{r.player}</TableCell>
+                        <TableCell className="text-muted-foreground">{r.modality}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">{r.fromCategory}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={cn(
+                            r.type === "DESCENT" ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
+                          )}>{r.toCategory}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={cn(
+                            "text-[10px]",
+                            r.type === "TOURNAMENT_WIN" && "bg-primary/10 text-primary",
+                            r.type === "CONSECUTIVE_FINALS" && "bg-primary/10 text-primary",
+                            r.type === "COMMITTEE_REVIEW" && "bg-chart-4/10 text-chart-4",
+                            r.type === "DESCENT" && "bg-destructive/10 text-destructive",
+                          )}>
+                            {r.autoApproved ? "Auto" : "Manual"} - {r.type}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="max-w-[200px] text-xs text-muted-foreground">
+                          {r.reason || "Sin razón especificada"}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button 
+                              size="sm" 
+                              className="h-7 gap-1 bg-primary text-primary-foreground"
+                              onClick={() => handleReviewCategory(r.id, "approve")}
+                              disabled={reviewCategoryMutation.isPending}
+                            >
+                              <Check className="h-3 w-3" /> Aprobar
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="h-7 gap-1"
+                              onClick={() => handleReviewCategory(r.id, "reject")}
+                              disabled={reviewCategoryMutation.isPending}
+                            >
+                              <X className="h-3 w-3" /> Rechazar
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -170,26 +261,34 @@ export default function AdminDashboard() {
                 <p className="text-xs text-muted-foreground">Cada categoria tiene ranking independiente</p>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Modalidad</TableHead>
-                      <TableHead>Categoria</TableHead>
-                      <TableHead className="text-center">Jugadores</TableHead>
-                      <TableHead className="text-right">Pts Promedio</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {rankingCategoryStats.map((s, i) => (
-                      <TableRow key={i}>
-                        <TableCell className="font-medium text-foreground">{s.modality}</TableCell>
-                        <TableCell><Badge variant="secondary">{s.cat}</Badge></TableCell>
-                        <TableCell className="text-center text-muted-foreground">{s.count}</TableCell>
-                        <TableCell className="text-right font-display font-bold text-primary">{s.avgPoints.toLocaleString()}</TableCell>
+                {rankingStats.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">No hay estadísticas disponibles</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Modalidad</TableHead>
+                        <TableHead>Categoria</TableHead>
+                        <TableHead className="text-center">Jugadores</TableHead>
+                        <TableHead className="text-right">Pts Promedio</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {rankingStats.map((s: any, i: number) => (
+                        <TableRow key={i}>
+                          <TableCell className="font-medium text-foreground">{s.modality}</TableCell>
+                          <TableCell><Badge variant="secondary">{s.category}</Badge></TableCell>
+                          <TableCell className="text-center text-muted-foreground">{s.count}</TableCell>
+                          <TableCell className="text-right font-display font-bold text-primary">
+                            {Math.round(s.avgPoints).toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
 
@@ -206,7 +305,9 @@ export default function AdminDashboard() {
                       {ascensionRules.map((r, i) => (
                         <li key={i} className="flex items-start gap-2 text-xs">
                           <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                          <span className="text-muted-foreground"><span className="font-medium text-card-foreground">{r.rule}</span> - {r.result}</span>
+                          <span className="text-muted-foreground">
+                            <span className="font-medium text-card-foreground">{r.rule}</span> - {r.result}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -217,7 +318,9 @@ export default function AdminDashboard() {
                       {descentRules.map((r, i) => (
                         <li key={i} className="flex items-start gap-2 text-xs">
                           <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-destructive" />
-                          <span className="text-muted-foreground"><span className="font-medium text-card-foreground">{r.rule}</span> - {r.result}</span>
+                          <span className="text-muted-foreground">
+                            <span className="font-medium text-card-foreground">{r.rule}</span> - {r.result}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -238,71 +341,58 @@ export default function AdminDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Club</TableHead>
-                      <TableHead>Ciudad</TableHead>
-                      <TableHead>Canchas</TableHead>
-                      <TableHead>Fecha Solicitud</TableHead>
-                      <TableHead className="text-right">Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pendingClubs.map((club) => (
-                      <TableRow key={club.id}>
-                        <TableCell className="font-medium text-foreground">{club.name}</TableCell>
-                        <TableCell className="text-muted-foreground">{club.city}</TableCell>
-                        <TableCell className="text-muted-foreground">{club.courts}</TableCell>
-                        <TableCell className="text-muted-foreground">{club.requestDate}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button size="sm" className="h-7 gap-1 bg-primary text-primary-foreground hover:bg-primary/90">
-                              <Check className="h-3 w-3" /> Aprobar
-                            </Button>
-                            <Button size="sm" variant="outline" className="h-7 gap-1 text-destructive hover:text-destructive">
-                              <X className="h-3 w-3" /> Rechazar
-                            </Button>
-                          </div>
-                        </TableCell>
+                {pendingClubs.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">No hay solicitudes pendientes</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Club</TableHead>
+                        <TableHead>Ciudad</TableHead>
+                        <TableHead>Canchas</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Fecha</TableHead>
+                        <TableHead className="text-right">Acciones</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-
-            <Card className="border-border/50">
-              <CardHeader>
-                <CardTitle className="font-display text-lg">Clubes Registrados</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Club</TableHead>
-                      <TableHead>Ciudad</TableHead>
-                      <TableHead>Canchas</TableHead>
-                      <TableHead>Jugadores</TableHead>
-                      <TableHead>Torneos</TableHead>
-                      <TableHead>Rating</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {clubs.map((club) => (
-                      <TableRow key={club.id}>
-                        <TableCell className="font-medium text-foreground">{club.name}</TableCell>
-                        <TableCell className="text-muted-foreground">{club.city}</TableCell>
-                        <TableCell className="text-muted-foreground">{club.courts}</TableCell>
-                        <TableCell className="text-muted-foreground">{club.players}</TableCell>
-                        <TableCell className="text-muted-foreground">{club.tournaments}</TableCell>
-                        <TableCell>
-                          <Badge className="bg-primary/10 text-primary">{club.rating}</Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {pendingClubs.map((club: any) => (
+                        <TableRow key={club.id}>
+                          <TableCell className="font-medium text-foreground">{club.name}</TableCell>
+                          <TableCell className="text-muted-foreground">{club.city}</TableCell>
+                          <TableCell className="text-muted-foreground">{club.courts}</TableCell>
+                          <TableCell className="text-muted-foreground text-sm">{club.email}</TableCell>
+                          <TableCell className="text-xs text-muted-foreground">
+                            {new Date(club.requestDate).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button 
+                                size="sm" 
+                                className="h-7 gap-1 bg-primary text-primary-foreground"
+                                onClick={() => handleApproveClub(club.id, "approve")}
+                                disabled={approveClubMutation.isPending}
+                              >
+                                <Check className="h-3 w-3" /> Aprobar
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="h-7 gap-1"
+                                onClick={() => handleApproveClub(club.id, "reject")}
+                                disabled={approveClubMutation.isPending}
+                              >
+                                <X className="h-3 w-3" /> Rechazar
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/landing/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -22,18 +22,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  rankingsByCategory,
-  categoriesByModality,
-  pointsTable,
-  ascensionRules,
-  descentRules,
-  type RankingPlayer,
-} from "@/lib/mock-data"
 import { TrendingUp, TrendingDown, Minus, Trophy, Medal, Award, Zap, Info, ArrowUpCircle, ArrowDownCircle, User } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useRankings } from "@/hooks/use-rankings"
+import { ascensionRules, descentRules, pointsTable } from "@/lib/types"
 
-function TrendIcon({ trend }: { trend: string }) {
+function TrendIcon({ trend }: { trend: "up" | "down" | "same" }) {
   if (trend === "up") return <TrendingUp className="h-4 w-4 text-primary" />
   if (trend === "down") return <TrendingDown className="h-4 w-4 text-destructive" />
   return <Minus className="h-4 w-4 text-muted-foreground" />
@@ -65,7 +59,9 @@ function RankBadge({ rank }: { rank: number }) {
   )
 }
 
-function TopPlayerCard({ player, rank }: { player: RankingPlayer; rank: number }) {
+function TopPlayerCard({ player, rank }: { player: any; rank: number }) {
+  const winRate = player.played > 0 ? Math.round((player.wins / player.played) * 100) : 0
+  
   return (
     <Card className={cn("border-border/50 bg-card", rank === 1 && "ring-2 ring-primary/40")}>
       <CardContent className="p-5">
@@ -78,14 +74,14 @@ function TopPlayerCard({ player, rank }: { player: RankingPlayer; rank: number }
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <p className="font-semibold text-card-foreground">{player.name}</p>
+              <p className="font-semibold text-card-foreground">{player.playerName}</p>
               {player.ascensionStreak && (
                 <Badge className="gap-1 bg-chart-4/10 text-chart-4 text-[10px]">
                   <Zap className="h-3 w-3" /> Racha de ascenso
                 </Badge>
               )}
             </div>
-            <p className="text-xs text-muted-foreground">{player.club}</p>
+            <p className="text-xs text-muted-foreground">{player.city}</p>
           </div>
           <TrendIcon trend={player.trend} />
         </div>
@@ -103,7 +99,7 @@ function TopPlayerCard({ player, rank }: { player: RankingPlayer; rank: number }
             <p className="text-[10px] text-muted-foreground">PG</p>
           </div>
           <div>
-            <p className="font-display text-lg font-bold text-card-foreground">{player.winRate}%</p>
+            <p className="font-display text-lg font-bold text-card-foreground">{winRate}%</p>
             <p className="text-[10px] text-muted-foreground">%V</p>
           </div>
         </div>
@@ -113,27 +109,31 @@ function TopPlayerCard({ player, rank }: { player: RankingPlayer; rank: number }
 }
 
 const modalityLabels: Record<string, string> = {
-  varonil: "Varonil",
-  femenil: "Femenil",
-  mixto: "Mixto",
+  VARONIL: "Varonil",
+  FEMENIL: "Femenil",
+  MIXTO: "Mixto",
+}
+
+const categoriesByModality: Record<string, string[]> = {
+  VARONIL: ["1ra", "2da", "3ra", "4ta", "5ta", "6ta"],
+  FEMENIL: ["1ra", "2da", "3ra", "4ta", "5ta", "6ta"],
+  MIXTO: ["1ra", "2da", "3ra", "4ta", "5ta", "6ta"],
 }
 
 export default function RankingPage() {
-  const [modality, setModality] = useState("varonil")
-  const [category, setCategory] = useState("4ta")
+  const [modality, setModality] = useState<string>("VARONIL")
+  const [category, setCategory] = useState<string>("4ta")
+  const [city, setCity] = useState<string | undefined>(undefined)
   const [showRules, setShowRules] = useState(false)
 
+  const { data: rankingsData, isLoading } = useRankings(modality, category, city)
+  
   const categories = categoriesByModality[modality]
-  const players = useMemo(() => {
-    return rankingsByCategory[modality]?.[category] ?? []
-  }, [modality, category])
+  const players = rankingsData?.data || []
 
   const handleModalityChange = (val: string) => {
     setModality(val)
-    const cats = categoriesByModality[val]
-    // Pick first category that has data, or the first in the list
-    const withData = cats.find((c) => (rankingsByCategory[val]?.[c]?.length ?? 0) > 0)
-    setCategory(withData ?? cats[0])
+    setCategory("4ta") // Reset to default category
   }
 
   const top3 = players.slice(0, 3)
@@ -159,45 +159,43 @@ export default function RankingPage() {
           {/* Modality tabs */}
           <Tabs value={modality} onValueChange={handleModalityChange}>
             <TabsList className="mb-6 h-12">
-              <TabsTrigger value="varonil" className="px-6 font-display text-sm font-bold uppercase">Varonil</TabsTrigger>
-              <TabsTrigger value="femenil" className="px-6 font-display text-sm font-bold uppercase">Femenil</TabsTrigger>
-              <TabsTrigger value="mixto" className="px-6 font-display text-sm font-bold uppercase">Mixto</TabsTrigger>
+              <TabsTrigger value="VARONIL" className="px-6 font-display text-sm font-bold uppercase">Varonil</TabsTrigger>
+              <TabsTrigger value="FEMENIL" className="px-6 font-display text-sm font-bold uppercase">Femenil</TabsTrigger>
+              <TabsTrigger value="MIXTO" className="px-6 font-display text-sm font-bold uppercase">Mixto</TabsTrigger>
             </TabsList>
 
             {/* Shared content for all modalities */}
-            {["varonil", "femenil", "mixto"].map((mod) => (
+            {["VARONIL", "FEMENIL", "MIXTO"].map((mod) => (
               <TabsContent key={mod} value={mod}>
                 {/* Category selector + filters row */}
                 <div className="mb-6 flex flex-wrap items-center gap-3">
                   <div className="flex flex-wrap gap-1.5">
-                    {categories.map((cat) => {
-                      const hasData = (rankingsByCategory[modality]?.[cat]?.length ?? 0) > 0
-                      return (
-                        <Button
-                          key={cat}
-                          size="sm"
-                          variant={category === cat ? "default" : "outline"}
-                          className={cn(
-                            "min-w-[52px] font-display font-bold",
-                            category === cat && "bg-primary text-primary-foreground",
-                            !hasData && category !== cat && "opacity-50"
-                          )}
-                          onClick={() => setCategory(cat)}
-                        >
-                          {cat}
-                          {!hasData && <span className="ml-1 text-[10px] font-normal opacity-60">(0)</span>}
-                        </Button>
-                      )
-                    })}
+                    {categories.map((cat) => (
+                      <Button
+                        key={cat}
+                        size="sm"
+                        variant={category === cat ? "default" : "outline"}
+                        className={cn(
+                          "min-w-[52px] font-display font-bold",
+                          category === cat && "bg-primary text-primary-foreground"
+                        )}
+                        onClick={() => setCategory(cat)}
+                      >
+                        {cat}
+                      </Button>
+                    ))}
                   </div>
                   <div className="ml-auto flex items-center gap-2">
-                    <Select defaultValue="all">
+                    <Select value={city || "all"} onValueChange={(val) => setCity(val === "all" ? undefined : val)}>
                       <SelectTrigger className="h-9 w-[160px]">
                         <SelectValue placeholder="Ciudad" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todas las ciudades</SelectItem>
-                        <SelectItem value="slp">San Luis Potosi</SelectItem>
+                        <SelectItem value="San Luis Potosi">San Luis Potosi</SelectItem>
+                        <SelectItem value="Ciudad de Mexico">Ciudad de Mexico</SelectItem>
+                        <SelectItem value="Guadalajara">Guadalajara</SelectItem>
+                        <SelectItem value="Monterrey">Monterrey</SelectItem>
                       </SelectContent>
                     </Select>
                     <Button
@@ -257,25 +255,34 @@ export default function RankingPage() {
                 <h2 className="mb-4 font-display text-xl font-bold text-foreground">
                   Ranking {modalityLabels[modality]} - {category} Categoria
                   <span className="ml-2 text-base font-normal text-muted-foreground">
-                    ({players.length} {modality === "mixto" ? "parejas" : "jugadores"})
+                    ({players.length} {modality === "MIXTO" ? "parejas" : "jugadores"})
                   </span>
                 </h2>
 
+                {/* Loading state */}
+                {isLoading && (
+                  <Card className="border-border/50">
+                    <CardContent className="flex flex-col items-center justify-center py-16">
+                      <p className="text-lg font-medium text-muted-foreground">Cargando rankings...</p>
+                    </CardContent>
+                  </Card>
+                )}
+
                 {/* Empty state */}
-                {players.length === 0 && (
+                {!isLoading && players.length === 0 && (
                   <Card className="border-border/50">
                     <CardContent className="flex flex-col items-center justify-center py-16">
                       <User className="mb-3 h-12 w-12 text-muted-foreground/40" />
                       <p className="text-lg font-medium text-muted-foreground">Sin datos de ranking</p>
                       <p className="mt-1 text-sm text-muted-foreground/70">
-                        No hay {modality === "mixto" ? "parejas" : "jugadores"} registrados en {modalityLabels[modality]} {category} todavia.
+                        No hay {modality === "MIXTO" ? "parejas" : "jugadores"} registrados en {modalityLabels[modality]} {category} todavia.
                       </p>
                     </CardContent>
                   </Card>
                 )}
 
                 {/* Top 3 cards */}
-                {top3.length > 0 && (
+                {!isLoading && top3.length > 0 && (
                   <div className="mb-6 grid gap-4 md:grid-cols-3">
                     {top3.map((player, idx) => (
                       <TopPlayerCard key={player.id} player={player} rank={idx + 1} />
@@ -284,15 +291,15 @@ export default function RankingPage() {
                 )}
 
                 {/* Rest of the ranking table */}
-                {rest.length > 0 && (
+                {!isLoading && rest.length > 0 && (
                   <Card className="border-border/50">
                     <CardContent className="p-0">
                       <Table>
                         <TableHeader>
                           <TableRow>
                             <TableHead className="w-14">Pos</TableHead>
-                            <TableHead>{modality === "mixto" ? "Pareja" : "Jugador"}</TableHead>
-                            <TableHead>Club</TableHead>
+                            <TableHead>{modality === "MIXTO" ? "Pareja" : "Jugador"}</TableHead>
+                            <TableHead>Ciudad</TableHead>
                             <TableHead className="text-center">PJ</TableHead>
                             <TableHead className="text-center">PG</TableHead>
                             <TableHead className="text-center">PP</TableHead>
@@ -302,37 +309,39 @@ export default function RankingPage() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {rest.map((p, idx) => (
-                            <TableRow key={p.id}>
-                              <TableCell>
-                                <RankBadge rank={idx + 4} />
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex items-center gap-2">
-                                  <div>
-                                    <p className="font-medium text-foreground">{p.name}</p>
-                                    <p className="text-xs text-muted-foreground">{p.city}</p>
+                          {rest.map((p, idx) => {
+                            const winRate = p.played > 0 ? Math.round((p.wins / p.played) * 100) : 0
+                            return (
+                              <TableRow key={p.id}>
+                                <TableCell>
+                                  <RankBadge rank={idx + 4} />
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-2">
+                                    <div>
+                                      <p className="font-medium text-foreground">{p.playerName}</p>
+                                    </div>
+                                    {p.ascensionStreak && (
+                                      <Badge className="gap-0.5 bg-chart-4/10 text-chart-4 text-[10px]">
+                                        <Zap className="h-2.5 w-2.5" /> Racha
+                                      </Badge>
+                                    )}
                                   </div>
-                                  {p.ascensionStreak && (
-                                    <Badge className="gap-0.5 bg-chart-4/10 text-chart-4 text-[10px]">
-                                      <Zap className="h-2.5 w-2.5" /> Racha
-                                    </Badge>
-                                  )}
-                                </div>
-                              </TableCell>
-                              <TableCell className="text-sm text-muted-foreground">{p.club}</TableCell>
-                              <TableCell className="text-center text-sm text-muted-foreground">{p.played}</TableCell>
-                              <TableCell className="text-center text-sm text-primary">{p.wins}</TableCell>
-                              <TableCell className="text-center text-sm text-muted-foreground">{p.losses}</TableCell>
-                              <TableCell className="text-center text-sm text-muted-foreground">{p.winRate}%</TableCell>
-                              <TableCell className="text-center">
-                                <TrendIcon trend={p.trend} />
-                              </TableCell>
-                              <TableCell className="text-right font-display text-base font-bold text-primary">
-                                {p.points.toLocaleString()}
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                                </TableCell>
+                                <TableCell className="text-sm text-muted-foreground">{p.city}</TableCell>
+                                <TableCell className="text-center text-sm text-muted-foreground">{p.played}</TableCell>
+                                <TableCell className="text-center text-sm text-primary">{p.wins}</TableCell>
+                                <TableCell className="text-center text-sm text-muted-foreground">{p.losses}</TableCell>
+                                <TableCell className="text-center text-sm text-muted-foreground">{winRate}%</TableCell>
+                                <TableCell className="text-center">
+                                  <TrendIcon trend={p.trend} />
+                                </TableCell>
+                                <TableCell className="text-right font-display text-base font-bold text-primary">
+                                  {p.points.toLocaleString()}
+                                </TableCell>
+                              </TableRow>
+                            )
+                          })}
                         </TableBody>
                       </Table>
                     </CardContent>
