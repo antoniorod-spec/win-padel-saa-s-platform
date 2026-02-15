@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { signIn } from "next-auth/react"
+import { useState, useEffect } from "react"
+import { signIn, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -13,10 +13,25 @@ import { Trophy, Loader2 } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+
+  // Redirigir según el rol si ya está logueado
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      const role = session.user.role
+      if (role === "ADMIN") {
+        router.push("/admin")
+      } else if (role === "CLUB") {
+        router.push("/club")
+      } else {
+        router.push("/jugador")
+      }
+    }
+  }, [status, session, router])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -32,19 +47,26 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError("Correo o contrasena incorrectos")
-      } else {
-        router.push("/jugador")
-        router.refresh()
+        setLoading(false)
       }
+      // La redirección se maneja en el useEffect
     } catch {
       setError("Error al iniciar sesion. Intenta de nuevo.")
-    } finally {
       setLoading(false)
     }
   }
 
   async function handleGoogleSignIn() {
-    await signIn("google", { callbackUrl: "/jugador" })
+    await signIn("google")
+  }
+
+  // Mostrar loading mientras se autentica
+  if (status === "loading" || (status === "authenticated" && loading)) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   return (

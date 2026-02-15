@@ -94,5 +94,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return session
     },
+    async redirect({ url, baseUrl }) {
+      // Redirigir según el rol del usuario
+      // Si la URL ya incluye un destino, úsala
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      if (url.startsWith(baseUrl)) return url
+      
+      // Por defecto, ir al home
+      return baseUrl
+    },
   },
 })
