@@ -187,20 +187,57 @@ model Player {
 model Club {
   id            String     @id @default(cuid())
   userId        String     @unique
-  name          String
-  city          String
+  
+  // Datos del Club (Paso 2)
+  name          String                    // Nombre comercial
+  legalName     String?                   // Razón social
+  rfc           String                    // RFC obligatorio
+  phone         String                    // Teléfono del club
+  email         String?                   // Email del club (puede ser diferente al de registro)
+  website       String?                   // Sitio web
+  
+  // Datos del Responsable/Contacto (Paso 1)
+  contactName     String                  // Nombre completo del responsable
+  contactPhone    String                  // Teléfono del responsable
+  contactEmail    String?                 // Email del responsable (opcional)
+  contactPosition String?                 // Cargo (Gerente, Dueño, Administrador, etc.)
+  
+  // Ubicación (Paso 3)
   country       String     @default("MX")
-  address       String
-  latitude      Float?     // Coordenada para mapas y búsqueda geográfica
-  longitude     Float?     // Coordenada para mapas y búsqueda geográfica
-  rfc           String?
-  phone         String?
-  courts        Int        @default(0) // Total de canchas (sum of indoor + outdoor)
-  indoorCourts  Int        @default(0)
-  outdoorCourts Int        @default(0)
+  state         String                    // Estado/Provincia
+  city          String                    // Ciudad
+  address       String                    // Dirección completa
+  postalCode    String?                   // Código postal
+  latitude      Float?                    // Coordenada para mapas
+  longitude     Float?                    // Coordenada para mapas
+  
+  // Instalaciones (Paso 4)
+  indoorCourts  Int        @default(0)    // Canchas interiores
+  outdoorCourts Int        @default(0)    // Canchas exteriores
+  courts        Int        @default(0)    // Total (auto-calculado)
+  courtSurface  String?                   // Tipo de superficie (Césped sintético, Cristal, Panorámica)
+  
+  // Servicios Adicionales (Paso 5)
+  hasParking          Boolean @default(false)  // Estacionamiento
+  hasLockers          Boolean @default(false)  // Vestidores
+  hasShowers          Boolean @default(false)  // Regaderas
+  hasCafeteria        Boolean @default(false)  // Cafetería/Snack bar
+  hasProShop          Boolean @default(false)  // Tienda de equipamiento
+  hasLighting         Boolean @default(false)  // Iluminación nocturna
+  hasAirConditioning  Boolean @default(false)  // Aire acondicionado (interiores)
+  operatingHours      String?                  // Horario de operación
+  priceRange          String?                  // Rango de precios
+  acceptsOnlineBooking Boolean @default(false) // Acepta reservaciones online
+  
+  // Redes sociales (opcionales)
+  facebook      String?
+  instagram     String?
+  
+  // Sistema
   status        ClubStatus @default(PENDING)
   rating        Float      @default(0)
-  logoUrl       String?
+  logoUrl       String?                   // Se puede agregar después
+  photos        Json?                     // Array de URLs, se pueden agregar después
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 

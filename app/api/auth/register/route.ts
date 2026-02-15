@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
-import { registerPlayerSchema, registerClubSchema } from "@/lib/validations/auth"
+import { registerPlayerSchema, registerClubInitialSchema } from "@/lib/validations/auth"
 
 export async function POST(request: NextRequest) {
   try {
@@ -65,7 +65,8 @@ export async function POST(request: NextRequest) {
     }
 
     if (type === "club") {
-      const parsed = registerClubSchema.safeParse(body)
+      // Registro simplificado: solo email y contraseña
+      const parsed = registerClubInitialSchema.safeParse(body)
       if (!parsed.success) {
         return NextResponse.json(
           { success: false, error: "Datos invalidos", details: parsed.error.flatten() },
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const { email, password, clubName, city, address, latitude, longitude, rfc, indoorCourts, outdoorCourts } = parsed.data
+      const { email, password } = parsed.data
 
       const existing = await prisma.user.findUnique({ where: { email } })
       if (existing) {
@@ -84,30 +85,15 @@ export async function POST(request: NextRequest) {
       }
 
       const passwordHash = await bcrypt.hash(password, 12)
-      const totalCourts = (indoorCourts || 0) + (outdoorCourts || 0)
 
+      // Crear usuario SIN perfil de club (se completa en onboarding)
+      // Se usa el rol default PLAYER temporalmente, se cambiará a CLUB en onboarding
       const user = await prisma.user.create({
         data: {
           email,
           passwordHash,
-          name: clubName,
-          role: "CLUB",
-          club: {
-            create: {
-              name: clubName,
-              city,
-              address,
-              latitude,
-              longitude,
-              rfc,
-              indoorCourts: indoorCourts || 0,
-              outdoorCourts: outdoorCourts || 0,
-              courts: totalCourts,
-              status: "PENDING",
-            },
-          },
+          name: "Club (pendiente)",
         },
-        include: { club: true },
       })
 
       return NextResponse.json(
@@ -116,11 +102,8 @@ export async function POST(request: NextRequest) {
           data: {
             id: user.id,
             email: user.email,
-            name: user.name,
-            role: user.role,
-            clubStatus: "PENDING",
           },
-          message: "Club registrado. Pendiente de aprobacion por un administrador.",
+          message: "Cuenta creada. Completa tu perfil para continuar.",
         },
         { status: 201 }
       )

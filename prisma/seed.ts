@@ -44,6 +44,11 @@ async function main() {
       club: {
         create: {
           name: "Advantage Padel",
+          contactName: "Carlos Rodriguez",
+          contactPhone: "4441234567",
+          rfc: "ADP220101A1A",
+          phone: "4441234567",
+          state: "San Luis Potosi",
           city: "San Luis Potosi",
           address: "Av. Carranza 2450, Col. Tangamanga",
           latitude: 22.1442,
@@ -70,6 +75,11 @@ async function main() {
       club: {
         create: {
           name: "Marietta Padel",
+          contactName: "Maria Fernandez",
+          contactPhone: "4449876543",
+          rfc: "MPD210915B2B",
+          phone: "4449876543",
+          state: "San Luis Potosi",
           city: "San Luis Potosi",
           address: "Boulevard Río Santiago 150, Lomas 2a Secc",
           latitude: 22.1524,
@@ -96,6 +106,11 @@ async function main() {
       club: {
         create: {
           name: "Loma Golf",
+          contactName: "Juan Martinez",
+          contactPhone: "4445551234",
+          rfc: "LGP200520C3C",
+          phone: "4445551234",
+          state: "San Luis Potosi",
           city: "San Luis Potosi",
           address: "Privada Loma de San Luis 2001, Lomas Del Tec",
           latitude: 22.1485,
@@ -214,9 +229,54 @@ async function main() {
 
   // Create pending clubs for admin review
   const pendingClubData = [
-    { email: "padel.cancun@email.com", name: "Padel Arena Cancun", city: "Cancun", address: "Av. Bonampak 123, Zona Hotelera", latitude: 21.1619, longitude: -86.8515, courts: 6, indoorCourts: 3, outdoorCourts: 3 },
-    { email: "pro.tijuana@email.com", name: "Pro Padel Tijuana", city: "Tijuana", address: "Blvd. Agua Caliente 456, Zona Rio", latitude: 32.5149, longitude: -117.0382, courts: 4, indoorCourts: 2, outdoorCourts: 2 },
-    { email: "padel.leon@email.com", name: "Padel Zone Leon", city: "Leon", address: "Blvd. Adolfo Lopez Mateos 789", latitude: 21.1216, longitude: -101.6827, courts: 8, indoorCourts: 4, outdoorCourts: 4 },
+    { 
+      email: "padel.cancun@email.com", 
+      name: "Padel Arena Cancun", 
+      contactName: "Roberto Sanchez",
+      contactPhone: "9981234567",
+      rfc: "PAC230301D4D",
+      phone: "9981234567",
+      state: "Quintana Roo",
+      city: "Cancun", 
+      address: "Av. Bonampak 123, Zona Hotelera", 
+      latitude: 21.1619, 
+      longitude: -86.8515, 
+      courts: 6, 
+      indoorCourts: 3, 
+      outdoorCourts: 3 
+    },
+    { 
+      email: "pro.tijuana@email.com", 
+      name: "Pro Padel Tijuana", 
+      contactName: "Patricia Lopez",
+      contactPhone: "6649876543",
+      rfc: "PPT220815E5E",
+      phone: "6649876543",
+      state: "Baja California",
+      city: "Tijuana", 
+      address: "Blvd. Agua Caliente 456, Zona Rio", 
+      latitude: 32.5149, 
+      longitude: -117.0382, 
+      courts: 4, 
+      indoorCourts: 2, 
+      outdoorCourts: 2 
+    },
+    { 
+      email: "padel.leon@email.com", 
+      name: "Padel Zone Leon", 
+      contactName: "Miguel Torres",
+      contactPhone: "4775551111",
+      rfc: "PZL210601F6F",
+      phone: "4775551111",
+      state: "Guanajuato",
+      city: "Leon", 
+      address: "Blvd. Adolfo Lopez Mateos 789", 
+      latitude: 21.1216, 
+      longitude: -101.6827, 
+      courts: 8, 
+      indoorCourts: 4, 
+      outdoorCourts: 4 
+    },
   ]
 
   for (const pc of pendingClubData) {
@@ -231,6 +291,11 @@ async function main() {
         club: {
           create: {
             name: pc.name,
+            contactName: pc.contactName,
+            contactPhone: pc.contactPhone,
+            rfc: pc.rfc,
+            phone: pc.phone,
+            state: pc.state,
             city: pc.city,
             address: pc.address,
             latitude: pc.latitude,

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { registerPlayerSchema, registerClubSchema } from "@/lib/validations/auth"
+import { registerPlayerSchema, registerClubCompleteSchema } from "@/lib/validations/auth"
 
 export async function POST(request: NextRequest) {
   try {
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (type === "club") {
-      const parsed = registerClubSchema.safeParse(body)
+      const parsed = registerClubCompleteSchema.safeParse(body)
       if (!parsed.success) {
         return NextResponse.json(
           { success: false, error: "Datos invalidos", details: parsed.error.flatten() },
@@ -90,7 +90,46 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const { clubName, city, address, latitude, longitude, rfc, indoorCourts, outdoorCourts } = parsed.data
+      const {
+        // Paso 1: Responsable
+        contactName,
+        contactPhone,
+        contactEmail,
+        contactPosition,
+        // Paso 2: Club
+        clubName,
+        legalName,
+        rfc,
+        clubPhone,
+        clubEmail,
+        website,
+        // Paso 3: Ubicación
+        country,
+        state,
+        city,
+        address,
+        postalCode,
+        latitude,
+        longitude,
+        // Paso 4: Instalaciones
+        indoorCourts,
+        outdoorCourts,
+        courtSurface,
+        // Paso 5: Servicios
+        hasParking,
+        hasLockers,
+        hasShowers,
+        hasCafeteria,
+        hasProShop,
+        hasLighting,
+        hasAirConditioning,
+        operatingHours,
+        priceRange,
+        acceptsOnlineBooking,
+        facebook,
+        instagram,
+      } = parsed.data
+
       const totalCourts = (indoorCourts || 0) + (outdoorCourts || 0)
 
       // Actualizar usuario y crear perfil de club
@@ -101,15 +140,45 @@ export async function POST(request: NextRequest) {
           role: "CLUB",
           club: {
             create: {
+              // Responsable
+              contactName,
+              contactPhone,
+              contactEmail,
+              contactPosition,
+              // Club
               name: clubName,
+              legalName,
+              rfc,
+              phone: clubPhone,
+              email: clubEmail,
+              website,
+              // Ubicación
+              country,
+              state,
               city,
               address,
+              postalCode,
               latitude,
               longitude,
-              rfc,
-              indoorCourts: indoorCourts || 0,
-              outdoorCourts: outdoorCourts || 0,
+              // Instalaciones
+              indoorCourts,
+              outdoorCourts,
               courts: totalCourts,
+              courtSurface,
+              // Servicios
+              hasParking: !!hasParking,
+              hasLockers: !!hasLockers,
+              hasShowers: !!hasShowers,
+              hasCafeteria: !!hasCafeteria,
+              hasProShop: !!hasProShop,
+              hasLighting: !!hasLighting,
+              hasAirConditioning: !!hasAirConditioning,
+              operatingHours: operatingHours as string | undefined,
+              priceRange: priceRange as string | undefined,
+              acceptsOnlineBooking: !!acceptsOnlineBooking,
+              facebook: facebook as string | undefined,
+              instagram: instagram as string | undefined,
+              // Sistema
               status: "PENDING",
             },
           },

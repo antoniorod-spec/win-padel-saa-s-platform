@@ -9,39 +9,21 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Trophy, User, Building2, Loader2, ArrowLeft } from "lucide-react"
-import { AddressAutocomplete } from "@/components/address-autocomplete"
 
 export default function RegisterPage() {
   const router = useRouter()
-  const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  // Player fields
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [sex, setSex] = useState("")
-  const [city, setCity] = useState("")
-  const [country, setCountry] = useState("")
-  const [age, setAge] = useState("")
+  // Player fields (simple)
+  const [playerEmail, setPlayerEmail] = useState("")
+  const [playerPassword, setPlayerPassword] = useState("")
 
-  // Club fields
-  const [clubName, setClubName] = useState("")
+  // Club fields (simple)
   const [clubEmail, setClubEmail] = useState("")
   const [clubPassword, setClubPassword] = useState("")
-  const [clubCity, setClubCity] = useState("")
-  const [clubAddress, setClubAddress] = useState("")
-  const [clubLatitude, setClubLatitude] = useState<number | undefined>(undefined)
-  const [clubLongitude, setClubLongitude] = useState<number | undefined>(undefined)
-  const [clubRfc, setClubRfc] = useState("")
-  const [indoorCourts, setIndoorCourts] = useState("")
-  const [outdoorCourts, setOutdoorCourts] = useState("")
-  const [courts, setCourts] = useState("") // Deprecated, mantener para compatibilidad
 
   async function handlePlayerRegister(e: React.FormEvent) {
     e.preventDefault()
@@ -54,14 +36,8 @@ export default function RegisterPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: "player",
-          email,
-          password,
-          firstName,
-          lastName,
-          sex,
-          city,
-          country,
-          age: age ? parseInt(age) : undefined,
+          email: playerEmail,
+          password: playerPassword,
         }),
       })
 
@@ -72,7 +48,8 @@ export default function RegisterPage() {
         return
       }
 
-      router.push("/login?registered=true")
+      // Redirigir a onboarding para completar perfil
+      router.push("/onboarding")
     } catch {
       setError("Error de conexion. Intenta de nuevo.")
     } finally {
@@ -93,14 +70,6 @@ export default function RegisterPage() {
           type: "club",
           email: clubEmail,
           password: clubPassword,
-          clubName,
-          city: clubCity,
-          address: clubAddress,
-          latitude: clubLatitude,
-          longitude: clubLongitude,
-          rfc: clubRfc || undefined,
-          indoorCourts: indoorCourts ? parseInt(indoorCourts) : undefined,
-          outdoorCourts: outdoorCourts ? parseInt(outdoorCourts) : undefined,
         }),
       })
 
@@ -111,7 +80,8 @@ export default function RegisterPage() {
         return
       }
 
-      router.push("/login?registered=true&type=club")
+      // Redirigir a onboarding de club (wizard de 5 pasos)
+      router.push("/onboarding/club")
     } catch {
       setError("Error de conexion. Intenta de nuevo.")
     } finally {
@@ -120,39 +90,32 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.08),transparent_60%)]" />
 
-      {/* Botón de volver */}
-      <Link 
-        href="/" 
+      <Link
+        href="/"
         className="absolute left-4 top-4 z-20 flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
         Volver al inicio
       </Link>
 
-      <Card className="relative z-10 w-full max-w-lg border-border/50 bg-card">
-        <CardHeader className="items-center pb-2 pt-8">
-          <Link href="/" className="mb-4 flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <Trophy className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="font-display text-2xl font-bold uppercase text-card-foreground">WhinPadel</span>
-          </Link>
-          <h1 className="font-display text-xl font-bold text-card-foreground">Crear Cuenta</h1>
-          <p className="text-sm text-muted-foreground">Selecciona tu tipo de cuenta y completa tu perfil</p>
+      <Card className="relative z-10 w-full max-w-md border-border/50 bg-card/95 shadow-2xl backdrop-blur-sm">
+        <CardHeader className="space-y-3 pb-6 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+            <Trophy className="h-8 w-8 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Crear cuenta</h1>
+            <p className="text-sm text-muted-foreground">Unete a WhinPadel</p>
+          </div>
         </CardHeader>
-        <CardContent className="px-8 pb-8">
-          {error && (
-            <div className="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
-              {error}
-            </div>
-          )}
 
-          <Tabs defaultValue="jugador" className="mt-2">
+        <CardContent className="space-y-6">
+          <Tabs defaultValue="player" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="jugador" className="gap-2">
+              <TabsTrigger value="player" className="gap-2">
                 <User className="h-4 w-4" />
                 Jugador
               </TabsTrigger>
@@ -162,205 +125,130 @@ export default function RegisterPage() {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="jugador" className="mt-6">
-              {step === 1 && (
-                <>
-                  <form className="flex flex-col gap-4" onSubmit={(e) => { e.preventDefault(); setStep(2) }}>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor="nombre">Nombre</Label>
-                        <Input id="nombre" placeholder="Carlos" className="bg-background" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor="apellido">Apellido</Label>
-                        <Input id="apellido" placeholder="Mendoza" className="bg-background" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Label htmlFor="reg-email">Correo electronico</Label>
-                      <Input id="reg-email" type="email" placeholder="carlos@email.com" className="bg-background" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Label htmlFor="reg-pass">Contrasena</Label>
-                      <Input id="reg-pass" type="password" placeholder="Min. 8 caracteres" className="bg-background" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
-                    </div>
-                    <Button type="submit" className="mt-2 w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                      Continuar
-                    </Button>
-                  </form>
+            <TabsContent value="player" className="mt-6">
+              <form className="flex flex-col gap-4" onSubmit={handlePlayerRegister}>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="player-email">Correo Electronico</Label>
+                  <Input
+                    id="player-email"
+                    type="email"
+                    placeholder="tu@email.com"
+                    className="bg-background"
+                    value={playerEmail}
+                    onChange={(e) => setPlayerEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="player-pass">Contrasena</Label>
+                  <Input
+                    id="player-pass"
+                    type="password"
+                    placeholder="Min. 8 caracteres"
+                    className="bg-background"
+                    value={playerPassword}
+                    onChange={(e) => setPlayerPassword(e.target.value)}
+                    required
+                    minLength={8}
+                  />
+                </div>
 
-                  <div className="my-6 flex items-center gap-3">
-                    <Separator className="flex-1" />
-                    <span className="text-xs text-muted-foreground">o registrate con</span>
-                    <Separator className="flex-1" />
-                  </div>
+                {error && <p className="text-sm text-destructive">{error}</p>}
 
-                  <Button 
-                    variant="outline" 
-                    className="w-full gap-2" 
-                    onClick={() => signIn("google", { callbackUrl: "/onboarding" })}
-                  >
-                    <svg className="h-4 w-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                    Google
-                  </Button>
-                </>
-              )}
-              {step === 2 && (
-                <form className="flex flex-col gap-4" onSubmit={handlePlayerRegister}>
-                  <div className="flex flex-col gap-2">
-                    <Label>Sexo</Label>
-                    <Select value={sex} onValueChange={setSex}>
-                      <SelectTrigger className="bg-background">
-                        <SelectValue placeholder="Selecciona" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="M">Masculino</SelectItem>
-                        <SelectItem value="F">Femenino</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="flex flex-col gap-2">
-                      <Label>Ciudad</Label>
-                      <Select value={city} onValueChange={setCity}>
-                        <SelectTrigger className="bg-background">
-                          <SelectValue placeholder="Ciudad" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="San Luis Potosi">San Luis Potosi</SelectItem>
-                          <SelectItem value="Ciudad de Mexico">Ciudad de Mexico</SelectItem>
-                          <SelectItem value="Guadalajara">Guadalajara</SelectItem>
-                          <SelectItem value="Monterrey">Monterrey</SelectItem>
-                          <SelectItem value="Madrid">Madrid</SelectItem>
-                          <SelectItem value="Barcelona">Barcelona</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Label>Pais</Label>
-                      <Select value={country} onValueChange={setCountry}>
-                        <SelectTrigger className="bg-background">
-                          <SelectValue placeholder="Pais" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="MX">Mexico</SelectItem>
-                          <SelectItem value="ES">Espana</SelectItem>
-                          <SelectItem value="AR">Argentina</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="edad">Edad</Label>
-                    <Input id="edad" type="number" placeholder="28" className="bg-background" value={age} onChange={(e) => setAge(e.target.value)} />
-                  </div>
-                  <div className="flex gap-3">
-                    <Button type="button" variant="outline" className="flex-1" onClick={() => setStep(1)}>
-                      Atras
-                    </Button>
-                    <Button type="submit" className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
-                      {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Crear Cuenta
-                    </Button>
-                  </div>
-                </form>
-              )}
+                <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Crear Cuenta
+                </Button>
+
+                <p className="text-center text-xs text-muted-foreground">
+                  Completaras tu perfil en el siguiente paso
+                </p>
+              </form>
             </TabsContent>
 
             <TabsContent value="club" className="mt-6">
               <form className="flex flex-col gap-4" onSubmit={handleClubRegister}>
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="club-name">Nombre del Club</Label>
-                  <Input id="club-name" placeholder="Padel Center CDMX" className="bg-background" value={clubName} onChange={(e) => setClubName(e.target.value)} required />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="club-email">Correo del Club</Label>
-                  <Input id="club-email" type="email" placeholder="info@padelcenter.mx" className="bg-background" value={clubEmail} onChange={(e) => setClubEmail(e.target.value)} required />
+                  <Label htmlFor="club-email">Correo Electronico</Label>
+                  <Input
+                    id="club-email"
+                    type="email"
+                    placeholder="info@tuclub.mx"
+                    className="bg-background"
+                    value={clubEmail}
+                    onChange={(e) => setClubEmail(e.target.value)}
+                    required
+                  />
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="club-pass">Contrasena</Label>
-                  <Input id="club-pass" type="password" placeholder="Min. 8 caracteres" className="bg-background" value={clubPassword} onChange={(e) => setClubPassword(e.target.value)} required minLength={8} />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label>Ciudad</Label>
-                  <Select value={clubCity} onValueChange={setClubCity} required>
-                    <SelectTrigger className="bg-background"><SelectValue placeholder="Ciudad" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="San Luis Potosi">San Luis Potosi</SelectItem>
-                      <SelectItem value="Ciudad de Mexico">Ciudad de Mexico</SelectItem>
-                      <SelectItem value="Guadalajara">Guadalajara</SelectItem>
-                      <SelectItem value="Monterrey">Monterrey</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <AddressAutocomplete
-                  label="Direccion o Negocio"
-                  placeholder="Busca tu club o escribe la dirección..."
-                  value={clubAddress}
-                  onChange={setClubAddress}
-                  onCoordinatesChange={(lat, lng) => {
-                    setClubLatitude(lat)
-                    setClubLongitude(lng)
-                  }}
-                  onPlaceSelected={(place) => {
-                    // Si el usuario selecciona un negocio, auto-completar el nombre
-                    if (place.name && !clubName) {
-                      setClubName(place.name)
-                    }
-                  }}
-                  required
-                  helperText="Busca tu negocio en Google Maps por nombre o dirección"
-                />
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="club-rfc">RFC (opcional)</Label>
-                  <Input 
-                    id="club-rfc" 
-                    placeholder="ABC123456XYZ" 
-                    className="bg-background" 
-                    value={clubRfc} 
-                    onChange={(e) => setClubRfc(e.target.value.toUpperCase())} 
-                    maxLength={13}
+                  <Input
+                    id="club-pass"
+                    type="password"
+                    placeholder="Min. 8 caracteres"
+                    className="bg-background"
+                    value={clubPassword}
+                    onChange={(e) => setClubPassword(e.target.value)}
+                    required
+                    minLength={8}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="indoor">Canchas Interiores</Label>
-                    <Input id="indoor" type="number" placeholder="4" className="bg-background" value={indoorCourts} onChange={(e) => setIndoorCourts(e.target.value)} min="0" />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="outdoor">Canchas Exteriores</Label>
-                    <Input id="outdoor" type="number" placeholder="4" className="bg-background" value={outdoorCourts} onChange={(e) => setOutdoorCourts(e.target.value)} min="0" />
-                  </div>
-                </div>
-                <Button type="submit" className="mt-2 w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
+
+                {error && <p className="text-sm text-destructive">{error}</p>}
+
+                <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Registrar Club
+                  Crear Cuenta
                 </Button>
+
+                <p className="text-center text-xs text-muted-foreground">
+                  Completaras el perfil de tu club en 5 pasos
+                </p>
               </form>
-
-              <div className="my-6 flex items-center gap-3">
-                <Separator className="flex-1" />
-                <span className="text-xs text-muted-foreground">o registrate con</span>
-                <Separator className="flex-1" />
-              </div>
-
-              <Button 
-                variant="outline" 
-                className="w-full gap-2" 
-                onClick={() => signIn("google", { callbackUrl: "/onboarding" })}
-              >
-                <svg className="h-4 w-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                Google
-              </Button>
             </TabsContent>
           </Tabs>
 
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            Ya tienes cuenta?{" "}
-            <Link href="/login" className="font-semibold text-primary hover:underline">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <Separator />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">O continua con</span>
+            </div>
+          </div>
+
+          <Button
+            variant="outline"
+            className="w-full gap-2"
+            onClick={() => signIn("google", { callbackUrl: "/onboarding" })}
+          >
+            <svg className="h-5 w-5" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              />
+              <path
+                fill="currentColor"
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              />
+              <path
+                fill="currentColor"
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              />
+              <path
+                fill="currentColor"
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              />
+            </svg>
+            Google
+          </Button>
+
+          <div className="text-center text-sm">
+            <span className="text-muted-foreground">Ya tienes cuenta? </span>
+            <Link href="/login" className="font-medium text-primary hover:underline">
               Inicia sesion
             </Link>
-          </p>
+          </div>
         </CardContent>
       </Card>
     </div>
