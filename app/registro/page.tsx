@@ -115,7 +115,7 @@ export default function RegisterPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
               <Trophy className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="font-display text-2xl font-bold uppercase text-card-foreground">WinPadel</span>
+            <span className="font-display text-2xl font-bold uppercase text-card-foreground">WhinPadel</span>
           </Link>
           <h1 className="font-display text-xl font-bold text-card-foreground">Crear Cuenta</h1>
           <p className="text-sm text-muted-foreground">Selecciona tu tipo de cuenta y completa tu perfil</p>

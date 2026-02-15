@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const oswald = Oswald({ subsets: ['latin'], variable: '--font-oswald' })
 
 export const metadata: Metadata = {
-  title: 'WinPadel - Plataforma de Torneos de Padel',
+  title: 'WhinPadel - Plataforma de Torneos de Padel',
   description: 'Gestiona torneos, rankings y clubes de padel en una sola plataforma profesional.',
 }
 

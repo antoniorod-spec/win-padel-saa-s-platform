@@ -1,5 +1,5 @@
 // ============================================================
-// Shared Types for WinPadel
+// Shared Types for WhinPadel
 // These types are used by both frontend and backend
 // ============================================================
 

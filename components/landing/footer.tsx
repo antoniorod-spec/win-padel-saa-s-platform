@@ -11,7 +11,7 @@ export function Footer() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                 <Trophy className="h-4 w-4 text-primary-foreground" />
               </div>
-              <span className="font-display text-lg font-bold uppercase text-card-foreground">WinPadel</span>
+              <span className="font-display text-lg font-bold uppercase text-card-foreground">WhinPadel</span>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               La plataforma profesional para gestion de torneos de padel, rankings y clubes.
@@ -43,7 +43,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-10 border-t border-border pt-6 text-center text-xs text-muted-foreground">
-          2026 WinPadel. Todos los derechos reservados.
+          2026 WhinPadel. Todos los derechos reservados.
         </div>
       </div>
     </footer>

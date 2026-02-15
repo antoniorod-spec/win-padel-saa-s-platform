@@ -10,5 +10,10 @@ node_modules/
 .DS_Store
 .vercel
 
-# Prisma generated files are in node_modules
+# Environment files (NEVER commit these)
 .env
+.env.backup
+.env.temp
+
+# Prisma generated files are in node_modules
+lib/generated/

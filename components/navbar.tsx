@@ -50,7 +50,7 @@ export function Navbar() {
             <Trophy className="h-5 w-5 text-primary-foreground" />
           </div>
           <span className="font-display text-xl font-bold uppercase tracking-tight text-foreground">
-            WinPadel
+            WhinPadel
           </span>
         </Link>
 

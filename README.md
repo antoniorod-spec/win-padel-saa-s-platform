@@ -1,4 +1,4 @@
-# WinPadel - Sistema de Torneos y Ranking de Pádel
+# WhinPadel - Sistema de Torneos y Ranking de Pádel
 
 Sistema completo para la gestión de torneos de pádel y ranking de jugadores en México.
 
@@ -200,4 +200,4 @@ MIT
 
 ## 👨‍💻 Autor
 
-WinPadel Team
+WhinPadel Team

@@ -62,7 +62,7 @@ export default function AdminDashboard() {
   return (
     <DashboardShell
       title="Panel de Administracion"
-      subtitle="Gestion global de la plataforma WinPadel"
+      subtitle="Gestion global de la plataforma WhinPadel"
       navItems={navItems}
       activeItem="Dashboard"
       role="admin"

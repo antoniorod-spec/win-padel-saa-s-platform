@@ -67,7 +67,7 @@ export function DashboardShell({
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <Trophy className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-display text-lg font-bold uppercase text-sidebar-foreground">WinPadel</span>
+            <span className="font-display text-lg font-bold uppercase text-sidebar-foreground">WhinPadel</span>
           </Link>
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)} className="text-sidebar-foreground lg:hidden">
             <X className="h-4 w-4" />

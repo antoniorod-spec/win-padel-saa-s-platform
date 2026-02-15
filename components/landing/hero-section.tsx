@@ -25,7 +25,7 @@ export function HeroSection() {
           </h1>
 
           <p className="mx-auto mt-6 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
-            WinPadel es la plataforma SaaS completa para clubes, jugadores y organizadores de torneos de padel.
+            WhinPadel es la plataforma SaaS completa para clubes, jugadores y organizadores de torneos de padel.
             Rankings en tiempo real, brackets automaticos y gestion profesional.
           </p>
 
