@@ -25,7 +25,7 @@ import {
 import { TrendingUp, TrendingDown, Minus, Trophy, Medal, Award, Zap, Info, ArrowUpCircle, ArrowDownCircle, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRankings } from "@/hooks/use-rankings"
-import { ascensionRules, descentRules, pointsTable } from "@/lib/types"
+import { ascensionRules, descentRules, POINTS_TABLE } from "@/lib/types"
 
 function TrendIcon({ trend }: { trend: "up" | "down" | "same" }) {
   if (trend === "up") return <TrendingUp className="h-4 w-4 text-primary" />
@@ -371,7 +371,7 @@ export default function RankingPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {pointsTable[cat].map((row) => (
+                        {POINTS_TABLE[cat].map((row) => (
                           <TableRow key={row.round}>
                             <TableCell className="text-sm text-foreground">{row.round}</TableCell>
                             <TableCell className="text-right font-display font-bold text-primary">{row.points}</TableCell>
