@@ -40,6 +40,14 @@ interface RankingStat {
   avgPoints: number
 }
 
+interface SiteBannerSettings {
+  id: string
+  homeSponsorBannerEnabled: boolean
+  homeSponsorBannerImageUrl: string | null
+  homeSponsorBannerLinkUrl: string | null
+  homeSponsorBannerTitle: string | null
+}
+
 export async function fetchAdminStats() {
   return api.get<AdminStats>("/admin/stats")
 }
@@ -62,4 +70,17 @@ export async function processCategoryReview(id: string, action: "approve" | "rej
 
 export async function fetchRankingStats() {
   return api.get<RankingStat[]>("/admin/ranking-stats")
+}
+
+export async function fetchSiteBannerSettings() {
+  return api.get<SiteBannerSettings>("/admin/site-banner")
+}
+
+export async function updateSiteBannerSettings(data: {
+  homeSponsorBannerEnabled: boolean
+  homeSponsorBannerImageUrl?: string
+  homeSponsorBannerLinkUrl?: string
+  homeSponsorBannerTitle?: string
+}) {
+  return api.put<SiteBannerSettings>("/admin/site-banner", data)
 }

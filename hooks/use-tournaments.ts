@@ -10,6 +10,10 @@ import {
   fetchGroups,
   fetchTeams,
   generateBracket,
+  importTournamentFile,
+  submitTournamentResultsManual,
+  importTournamentResultsFile,
+  fetchTournamentResultSubmissions,
 } from "@/lib/api/tournaments"
 
 export function useTournaments(params?: {
@@ -18,6 +22,7 @@ export function useTournaments(params?: {
   modality?: string
   city?: string
   search?: string
+  mine?: boolean
   page?: number
   pageSize?: number
 }) {
@@ -122,6 +127,63 @@ export function useGenerateBracket() {
     onSuccess: (_, { tournamentId, modalityId }) => {
       queryClient.invalidateQueries({ queryKey: ["tournament", tournamentId, "bracket", modalityId] })
       queryClient.invalidateQueries({ queryKey: ["tournament", tournamentId] })
+    },
+  })
+}
+
+export function useImportTournamentFile() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (params: {
+      tournamentId: string
+      tournamentModalityId: string
+      importType: "players" | "pairs"
+      file: File
+    }) => importTournamentFile(params),
+    onSuccess: (_, { tournamentId }) => {
+      queryClient.invalidateQueries({ queryKey: ["tournament", tournamentId, "teams"] })
+      queryClient.invalidateQueries({ queryKey: ["tournament", tournamentId] })
+    },
+  })
+}
+
+export function useTournamentResultSubmissions(tournamentId: string | undefined) {
+  return useQuery({
+    queryKey: ["tournament", tournamentId, "result-submissions"],
+    queryFn: () => fetchTournamentResultSubmissions(tournamentId!),
+    enabled: !!tournamentId,
+  })
+}
+
+export function useSubmitTournamentResultsManual() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (params: {
+      tournamentId: string
+      rows: Array<{
+        modality: "VARONIL" | "FEMENIL" | "MIXTO"
+        category: string
+        finalStage: "CHAMPION" | "RUNNER_UP" | "SEMIFINAL" | "QUARTERFINAL" | "ROUND_OF_16" | "ROUND_OF_32" | "GROUP_STAGE"
+        player1Id?: string
+        player2Id?: string
+        importedPlayer1Name?: string
+        importedPlayer2Name?: string
+      }>
+      notes?: string
+    }) => submitTournamentResultsManual(params),
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["tournament", vars.tournamentId, "result-submissions"] })
+    },
+  })
+}
+
+export function useImportTournamentResultsFile() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (params: { tournamentId: string; file: File }) => importTournamentResultsFile(params),
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["tournament", vars.tournamentId, "result-submissions"] })
     },
   })
 }

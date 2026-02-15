@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { registerPlayerSchema, registerClubCompleteSchema } from "@/lib/validations/auth"
+import { registerPlayerCompleteSchema, registerClubCompleteSchema } from "@/lib/validations/auth"
+import { reconcileImportedPlayerWithRegistered } from "@/lib/services/imported-roster-service"
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,15 +30,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (user.player || user.club) {
-      return NextResponse.json(
-        { success: false, error: "El usuario ya tiene un perfil" },
-        { status: 400 }
-      )
-    }
-
     if (type === "player") {
-      const parsed = registerPlayerSchema.safeParse(body)
+      if (user.club) {
+        return NextResponse.json(
+          { success: false, error: "Este usuario ya es un club" },
+          { status: 400 }
+        )
+      }
+
+      const parsed = registerPlayerCompleteSchema.safeParse(body)
       if (!parsed.success) {
         return NextResponse.json(
           { success: false, error: "Datos invalidos", details: parsed.error.flatten() },
@@ -45,27 +46,76 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const { firstName, lastName, sex, city, country, age } = parsed.data
+      const {
+        firstName, lastName, sex, city, state, country, age, phone, birthDate,
+        documentType, documentNumber, courtPosition, dominantHand, starShot,
+        playStyle, preferredMatchType, playsMixed, preferredSchedule, preferredAgeRange,
+      } = parsed.data
 
-      // Actualizar usuario y crear perfil de jugador
+      // Actualizar usuario y crear/actualizar perfil de jugador
       const updatedUser = await prisma.user.update({
         where: { id: session.user.id },
         data: {
           name: `${firstName} ${lastName}`,
           role: "PLAYER",
           player: {
-            create: {
+            upsert: {
+              create: {
+                firstName,
+                lastName,
+                sex,
+                city,
+                state,
+                country,
+                age: age ?? null,
+                phone,
+                birthDate: new Date(birthDate),
+                documentType,
+                documentNumber,
+                courtPosition,
+                dominantHand,
+                starShot,
+                playStyle,
+                preferredMatchType,
+                playsMixed,
+                preferredSchedule,
+                preferredAgeRange,
+              },
+              update: {
               firstName,
               lastName,
               sex,
               city,
+              state,
               country,
               age: age ?? null,
+              phone,
+              birthDate: new Date(birthDate),
+              documentType,
+              documentNumber,
+              courtPosition,
+              dominantHand,
+              starShot,
+              playStyle,
+              preferredMatchType,
+              playsMixed,
+              preferredSchedule,
+              preferredAgeRange,
+              },
             },
           },
         },
         include: { player: true },
       })
+
+      if (updatedUser.player) {
+        await reconcileImportedPlayerWithRegistered({
+          playerId: updatedUser.player.id,
+          firstName,
+          lastName,
+          phone,
+        })
+      }
 
       return NextResponse.json(
         {
@@ -82,6 +132,13 @@ export async function POST(request: NextRequest) {
     }
 
     if (type === "club") {
+      if (user.club || user.player) {
+        return NextResponse.json(
+          { success: false, error: "El usuario ya tiene un perfil" },
+          { status: 400 }
+        )
+      }
+
       const parsed = registerClubCompleteSchema.safeParse(body)
       if (!parsed.success) {
         return NextResponse.json(
@@ -109,12 +166,14 @@ export async function POST(request: NextRequest) {
         city,
         address,
         postalCode,
+        neighborhood,
         latitude,
         longitude,
         // Paso 4: Instalaciones
         indoorCourts,
         outdoorCourts,
         courtSurface,
+        courtSurfaces,
         // Paso 5: Servicios
         hasParking,
         hasLockers,
@@ -124,10 +183,19 @@ export async function POST(request: NextRequest) {
         hasLighting,
         hasAirConditioning,
         operatingHours,
+        weeklySchedule,
         priceRange,
         acceptsOnlineBooking,
+        services,
+        photos,
+        logoUrl,
         facebook,
         instagram,
+        tiktok,
+        youtube,
+        linkedin,
+        x,
+        whatsapp,
       } = parsed.data
 
       const totalCourts = (indoorCourts || 0) + (outdoorCourts || 0)
@@ -158,6 +226,7 @@ export async function POST(request: NextRequest) {
               city,
               address,
               postalCode,
+              neighborhood,
               latitude,
               longitude,
               // Instalaciones
@@ -165,6 +234,7 @@ export async function POST(request: NextRequest) {
               outdoorCourts,
               courts: totalCourts,
               courtSurface,
+              courtSurfaces: courtSurfaces ?? undefined,
               // Servicios
               hasParking: !!hasParking,
               hasLockers: !!hasLockers,
@@ -174,10 +244,19 @@ export async function POST(request: NextRequest) {
               hasLighting: !!hasLighting,
               hasAirConditioning: !!hasAirConditioning,
               operatingHours: operatingHours as string | undefined,
+              weeklySchedule: weeklySchedule ?? undefined,
               priceRange: priceRange as string | undefined,
               acceptsOnlineBooking: !!acceptsOnlineBooking,
+              services: services ?? undefined,
+              photos: photos ?? undefined,
+              logoUrl: logoUrl as string | undefined,
               facebook: facebook as string | undefined,
               instagram: instagram as string | undefined,
+              tiktok: tiktok as string | undefined,
+              youtube: youtube as string | undefined,
+              linkedin: linkedin as string | undefined,
+              x: x as string | undefined,
+              whatsapp: whatsapp as string | undefined,
               // Sistema
               status: "PENDING",
             },

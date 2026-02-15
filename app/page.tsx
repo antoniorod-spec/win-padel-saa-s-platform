@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/landing/hero-section"
 import { FeaturesSection } from "@/components/landing/features-section"
 import { TournamentsPreview } from "@/components/landing/tournaments-preview"
 import { RankingPreview } from "@/components/landing/ranking-preview"
+import { SponsorBannerSection } from "@/components/landing/sponsor-banner"
 import { Footer } from "@/components/landing/footer"
 
 export default function Page() {
@@ -12,6 +13,7 @@ export default function Page() {
       <main>
         <HeroSection />
         <FeaturesSection />
+        <SponsorBannerSection />
         <TournamentsPreview />
         <RankingPreview />
       </main>

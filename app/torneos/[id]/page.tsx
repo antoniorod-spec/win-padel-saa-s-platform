@@ -22,16 +22,20 @@ import {
   BarChart3,
 } from "lucide-react"
 import { useTournament, useTournamentBracket, useTournamentTeams } from "@/hooks/use-tournaments"
+import { useGenerateBracket } from "@/hooks/use-tournaments"
 import { RegisterTeamModal } from "@/components/modals/register-team-modal"
+import { ImportTeamsModal } from "@/components/modals/import-teams-modal"
 
 export default function TournamentPage() {
   const params = useParams()
   const tournamentId = params.id as string
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
 
   const { data: tournamentData, isLoading } = useTournament(tournamentId)
   const { data: bracketData } = useTournamentBracket(tournamentId)
   const { data: teamsData } = useTournamentTeams(tournamentId)
+  const generateBracket = useGenerateBracket()
 
   if (isLoading) {
     return (
@@ -61,7 +65,7 @@ export default function TournamentPage() {
   const bracket = bracketData?.data
   const teams = teamsData?.data || []
 
-  const isRegistrationOpen = tournament.status === "UPCOMING" || tournament.status === "REGISTRATION_OPEN"
+  const isRegistrationOpen = tournament.status === "OPEN"
   const isAlmostFull = tournament.registeredTeams >= tournament.maxTeams * 0.9
 
   return (
@@ -76,6 +80,9 @@ export default function TournamentPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <Badge className="bg-primary/10 text-primary">Cat. {tournament.category}</Badge>
+                  {tournament.type === "BASIC" ? (
+                    <Badge variant="outline">Torneo Básico</Badge>
+                  ) : null}
                   {isRegistrationOpen && (
                     <Badge variant="secondary">Inscripciones abiertas</Badge>
                   )}
@@ -88,6 +95,12 @@ export default function TournamentPage() {
                   {tournament.status === "COMPLETED" && (
                     <Badge className="bg-muted text-muted-foreground">Finalizado</Badge>
                   )}
+                  {tournament.resultsValidationStatus === "PENDING_REVIEW" ? (
+                    <Badge variant="outline">Resultados en revisión</Badge>
+                  ) : null}
+                  {tournament.resultsValidationStatus === "APPROVED" ? (
+                    <Badge className="bg-primary/10 text-primary">Resultados validados</Badge>
+                  ) : null}
                 </div>
                 <h1 className="mt-3 font-display text-3xl font-black uppercase text-card-foreground md:text-4xl lg:text-5xl">
                   {tournament.name}
@@ -123,14 +136,46 @@ export default function TournamentPage() {
                     </p>
                   </CardContent>
                 </Card>
-                {isRegistrationOpen && (
-                  <Button 
+                {isRegistrationOpen && tournament.type !== "BASIC" && (
+                  <Button
                     size="lg" 
                     className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
                     onClick={() => setIsRegisterModalOpen(true)}
                   >
                     <Trophy className="h-4 w-4" />
                     Inscribirme Ahora
+                  </Button>
+                )}
+                {tournament.type === "BASIC" && tournament.externalRegistrationLink ? (
+                  <a href={tournament.externalRegistrationLink} target="_blank" rel="noreferrer" className="w-full">
+                    <Button
+                      size="lg"
+                      className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                    >
+                      <Trophy className="h-4 w-4" />
+                      Ir a inscripción externa
+                    </Button>
+                  </a>
+                ) : null}
+                {tournament.type !== "BASIC" ? <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setIsImportModalOpen(true)}
+                >
+                  Importar parejas (club)
+                </Button> : null}
+                {tournament.type !== "BASIC" && tournament.modalities?.[0] && (
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() =>
+                      generateBracket.mutate({
+                        tournamentId,
+                        modalityId: tournament.modalities[0].id,
+                      })
+                    }
+                  >
+                    Generar cuadros automáticos
                   </Button>
                 )}
               </div>
@@ -142,7 +187,7 @@ export default function TournamentPage() {
         <section className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
           <Tabs defaultValue="teams">
             <TabsList className="mb-6">
-              {bracket && <TabsTrigger value="bracket">Cuadro / Bracket</TabsTrigger>}
+              {bracket && tournament.type !== "BASIC" ? <TabsTrigger value="bracket">Cuadro / Bracket</TabsTrigger> : null}
               <TabsTrigger value="teams">Parejas Inscritas</TabsTrigger>
               <TabsTrigger value="info">Info del Torneo</TabsTrigger>
             </TabsList>
@@ -248,7 +293,7 @@ export default function TournamentPage() {
                       { 
                         icon: MapPin, 
                         label: "Sede", 
-                        value: `${tournament.clubName}, ${tournament.city}` 
+                        value: `${tournament.venue || tournament.clubName}, ${tournament.city}` 
                       },
                       { 
                         icon: Trophy, 
@@ -298,6 +343,19 @@ export default function TournamentPage() {
                             Premio Total
                           </p>
                           <p className="text-sm text-card-foreground">{tournament.prize}</p>
+                        </div>
+                      </div>
+                    )}
+                    {tournament.sponsorName && (
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                          <Award className="h-4 w-4 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold uppercase text-muted-foreground">
+                            Patrocinador
+                          </p>
+                          <p className="text-sm text-card-foreground">{tournament.sponsorName}</p>
                         </div>
                       </div>
                     )}
@@ -353,6 +411,12 @@ export default function TournamentPage() {
       <RegisterTeamModal
         open={isRegisterModalOpen}
         onOpenChange={setIsRegisterModalOpen}
+        tournamentId={tournamentId}
+        modalities={tournament.modalities}
+      />
+      <ImportTeamsModal
+        open={isImportModalOpen}
+        onOpenChange={setIsImportModalOpen}
         tournamentId={tournamentId}
         modalities={tournament.modalities}
       />

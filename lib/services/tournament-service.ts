@@ -71,7 +71,37 @@ export async function generateBracket(
     })
   }
 
-  // Calculate number of rounds
+  if (modality.tournament.format === "LEAGUE") {
+    const createdLeagueMatches = await createLeagueMatches(modalityId, seeded)
+    await prisma.tournament.update({
+      where: { id: tournamentId },
+      data: { status: "IN_PROGRESS" },
+    })
+    return {
+      mode: "LEAGUE",
+      totalRounds: 1,
+      totalMatches: createdLeagueMatches,
+      teams: seeded.length,
+      byes: 0,
+    }
+  }
+
+  if (modality.tournament.format === "ROUND_ROBIN") {
+    const { groupMatches, qualifiers } = await createRoundRobinWithPlayoff(modalityId, seeded)
+    await prisma.tournament.update({
+      where: { id: tournamentId },
+      data: { status: "IN_PROGRESS" },
+    })
+    return {
+      mode: "ROUND_ROBIN",
+      totalRounds: qualifiers > 0 ? Math.log2(nextPowerOf2(qualifiers)) + 1 : 1,
+      totalMatches: groupMatches,
+      teams: seeded.length,
+      byes: 0,
+    }
+  }
+
+  // ELIMINATION / EXPRESS
   const teamCount = seeded.length
   const bracketSize = nextPowerOf2(teamCount)
   const totalRounds = Math.log2(bracketSize)
@@ -97,7 +127,7 @@ export async function generateBracket(
 
     matches.push({
       roundName: roundNames[0],
-      roundOrder: 2, // Reserve 1 for group stage
+      roundOrder: 1,
       matchOrder: i + 1,
       teamARegistrationId: teamAId,
       teamBRegistrationId: teamBId,
@@ -110,7 +140,7 @@ export async function generateBracket(
     for (let i = 0; i < matchCount; i++) {
       matches.push({
         roundName: roundNames[round],
-        roundOrder: round + 2,
+        roundOrder: round + 1,
         matchOrder: i + 1,
         teamARegistrationId: null,
         teamBRegistrationId: null,
@@ -131,8 +161,8 @@ export async function generateBracket(
   }
 
   // Auto-advance byes in first round
-  const firstRoundMatches = createdMatches.filter((m) => m.roundOrder === 2)
-  const secondRoundMatches = createdMatches.filter((m) => m.roundOrder === 3)
+  const firstRoundMatches = createdMatches.filter((m) => m.roundOrder === 1)
+  const secondRoundMatches = createdMatches.filter((m) => m.roundOrder === 2)
 
   for (let i = 0; i < firstRoundMatches.length; i++) {
     const match = firstRoundMatches[i]
@@ -175,6 +205,7 @@ export async function generateBracket(
   })
 
   return {
+    mode: modality.tournament.format,
     totalRounds,
     totalMatches: createdMatches.length,
     teams: seeded.length,
@@ -298,4 +329,92 @@ function generateSeedPositions(size: number): number[] {
   }
 
   return result
+}
+
+async function createLeagueMatches(
+  modalityId: string,
+  seeded: Array<{ id: string }>
+) {
+  let created = 0
+  for (let i = 0; i < seeded.length; i++) {
+    for (let j = i + 1; j < seeded.length; j++) {
+      await prisma.match.create({
+        data: {
+          tournamentModalityId: modalityId,
+          roundName: "Liga",
+          roundOrder: 1,
+          matchOrder: created + 1,
+          teamARegistrationId: seeded[i].id,
+          teamBRegistrationId: seeded[j].id,
+        },
+      })
+      created += 1
+    }
+  }
+  return created
+}
+
+async function createRoundRobinWithPlayoff(
+  modalityId: string,
+  seeded: Array<{ id: string }>
+) {
+  const groupSize = 4
+  const groupsCount =
+    seeded.length <= groupSize
+      ? 1
+      : Math.max(2, Math.ceil(seeded.length / groupSize))
+  const groups: string[][] = Array.from({ length: groupsCount }, () => [])
+
+  // Snake seeding distribution
+  seeded.forEach((team, index) => {
+    const bucket = index % groupsCount
+    const reverse = Math.floor(index / groupsCount) % 2 === 1
+    const groupIndex = reverse ? groupsCount - 1 - bucket : bucket
+    groups[groupIndex].push(team.id)
+  })
+
+  let createdGroupMatches = 0
+  for (let g = 0; g < groups.length; g++) {
+    const teamIds = groups[g]
+    const groupName = `Grupo ${String.fromCharCode(65 + g)}`
+    for (let i = 0; i < teamIds.length; i++) {
+      for (let j = i + 1; j < teamIds.length; j++) {
+        await prisma.match.create({
+          data: {
+            tournamentModalityId: modalityId,
+            roundName: groupName,
+            roundOrder: 1,
+            matchOrder: createdGroupMatches + 1,
+            teamARegistrationId: teamIds[i],
+            teamBRegistrationId: teamIds[j],
+          },
+        })
+        createdGroupMatches += 1
+      }
+    }
+  }
+
+  // Create playoff scaffold (top 2 by group)
+  const qualifiers = Math.max(4, groupsCount * 2)
+  const playoffSize = nextPowerOf2(qualifiers)
+  const playoffRounds = Math.log2(playoffSize)
+  const roundNames = getRoundNames(playoffRounds)
+
+  for (let r = 0; r < playoffRounds; r++) {
+    const matchCount = playoffSize / Math.pow(2, r + 1)
+    for (let m = 0; m < matchCount; m++) {
+      await prisma.match.create({
+        data: {
+          tournamentModalityId: modalityId,
+          roundName: `Playoff - ${roundNames[r]}`,
+          roundOrder: r + 2,
+          matchOrder: m + 1,
+          teamARegistrationId: null,
+          teamBRegistrationId: null,
+        },
+      })
+    }
+  }
+
+  return { groupMatches: createdGroupMatches, qualifiers }
 }

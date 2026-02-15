@@ -5,6 +5,12 @@ import {
   updateClub,
   fetchClubTournaments,
   fetchClubStats,
+  fetchMyClub,
+  updateMyClub,
+  fetchMyClubNews,
+  createMyClubNews,
+  updateMyClubNews,
+  deleteMyClubNews,
 } from "@/lib/api/clubs"
 import { createTournament } from "@/lib/api/tournaments"
 
@@ -49,6 +55,74 @@ export function useUpdateClub() {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["club", id] })
       queryClient.invalidateQueries({ queryKey: ["clubs"] })
+    },
+  })
+}
+
+export function useMyClub() {
+  return useQuery({
+    queryKey: ["club", "me"],
+    queryFn: fetchMyClub,
+  })
+}
+
+export function useUpdateMyClub() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: Record<string, unknown>) => updateMyClub(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["club", "me"] })
+      queryClient.invalidateQueries({ queryKey: ["clubs"] })
+    },
+  })
+}
+
+export function useMyClubNews() {
+  return useQuery({
+    queryKey: ["club", "me", "news"],
+    queryFn: fetchMyClubNews,
+  })
+}
+
+export function useCreateMyClubNews() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: {
+      title: string
+      content: string
+      coverImageUrl?: string
+      published?: boolean
+    }) => createMyClubNews(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["club", "me", "news"] })
+      queryClient.invalidateQueries({ queryKey: ["club", "me"] })
+    },
+  })
+}
+
+export function useUpdateMyClubNews() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ newsId, data }: { newsId: string; data: {
+      title?: string
+      content?: string
+      coverImageUrl?: string
+      published?: boolean
+    } }) => updateMyClubNews(newsId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["club", "me", "news"] })
+      queryClient.invalidateQueries({ queryKey: ["club", "me"] })
+    },
+  })
+}
+
+export function useDeleteMyClubNews() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (newsId: string) => deleteMyClubNews(newsId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["club", "me", "news"] })
+      queryClient.invalidateQueries({ queryKey: ["club", "me"] })
     },
   })
 }

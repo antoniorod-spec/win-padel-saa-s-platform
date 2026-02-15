@@ -2,6 +2,22 @@ import { prisma } from "@/lib/prisma"
 import { POINTS_TABLE } from "@/lib/types"
 import type { TournamentCategory, Modality } from "@/lib/types"
 
+function rankingUniqueWhere(
+  playerId: string,
+  modality: Modality,
+  category: string,
+  scope: "CITY" | "NATIONAL"
+) {
+  return {
+    playerId_modality_category_scope: {
+      playerId,
+      modality,
+      category,
+      scope,
+    },
+  } as const
+}
+
 /**
  * Get points for a round result based on tournament category
  */
@@ -126,27 +142,34 @@ async function updatePlayerRanking(
   playerId: string,
   modality: Modality,
   category: string,
-  won: boolean
+  won: boolean,
+  associationId: string | null = null
 ) {
-  await prisma.ranking.upsert({
-    where: {
-      playerId_modality_category: { playerId, modality, category },
-    },
-    update: {
-      played: { increment: 1 },
-      wins: won ? { increment: 1 } : undefined,
-      losses: won ? undefined : { increment: 1 },
-    },
-    create: {
-      playerId,
-      modality,
-      category,
-      played: 1,
-      wins: won ? 1 : 0,
-      losses: won ? 0 : 1,
-      points: 0,
-    },
-  })
+  const targets: Array<{ scope: "CITY" | "NATIONAL"; associationId: string | null }> = [
+    { scope: "CITY", associationId },
+    { scope: "NATIONAL", associationId: null },
+  ]
+  for (const target of targets) {
+    await prisma.ranking.upsert({
+      where: rankingUniqueWhere(playerId, modality, category, target.scope),
+      update: {
+        played: { increment: 1 },
+        wins: won ? { increment: 1 } : undefined,
+        losses: won ? undefined : { increment: 1 },
+      },
+      create: {
+        playerId,
+        modality,
+        category,
+        scope: target.scope,
+        associationId: target.associationId,
+        played: 1,
+        wins: won ? 1 : 0,
+        losses: won ? 0 : 1,
+        points: 0,
+      },
+    })
+  }
 }
 
 /**
@@ -203,7 +226,8 @@ async function addPointsToRegistration(
   registrationId: string,
   modality: Modality,
   category: string,
-  points: number
+  points: number,
+  associationId: string | null = null
 ) {
   const registration = await prisma.tournamentRegistration.findUnique({
     where: { id: registrationId },
@@ -211,23 +235,29 @@ async function addPointsToRegistration(
   if (!registration) return
 
   for (const playerId of [registration.player1Id, registration.player2Id]) {
-    await prisma.ranking.upsert({
-      where: {
-        playerId_modality_category: { playerId, modality, category },
-      },
-      update: {
-        points: { increment: points },
-      },
-      create: {
-        playerId,
-        modality,
-        category,
-        points,
-        played: 0,
-        wins: 0,
-        losses: 0,
-      },
-    })
+    const targets: Array<{ scope: "CITY" | "NATIONAL"; associationId: string | null }> = [
+      { scope: "CITY", associationId },
+      { scope: "NATIONAL", associationId: null },
+    ]
+    for (const target of targets) {
+      await prisma.ranking.upsert({
+      where: rankingUniqueWhere(playerId, modality, category, target.scope),
+        update: {
+          points: { increment: points },
+        },
+        create: {
+          playerId,
+          modality,
+          category,
+          scope: target.scope,
+          associationId: target.associationId,
+          points,
+          played: 0,
+          wins: 0,
+          losses: 0,
+        },
+      })
+    }
   }
 }
 
@@ -406,26 +436,32 @@ async function applyRankingReset(
   toCategory: string
 ) {
   // Create ranking entry in new category with 0 points
-  await prisma.ranking.upsert({
-    where: {
-      playerId_modality_category: { playerId, modality, category: toCategory },
-    },
-    update: {
-      points: 0,
-      played: 0,
-      wins: 0,
-      losses: 0,
-    },
-    create: {
-      playerId,
-      modality,
-      category: toCategory,
-      points: 0,
-      played: 0,
-      wins: 0,
-      losses: 0,
-    },
-  })
+  const targets: Array<{ scope: "CITY" | "NATIONAL"; associationId: string | null }> = [
+    { scope: "CITY", associationId: null },
+    { scope: "NATIONAL", associationId: null },
+  ]
+  for (const target of targets) {
+    await prisma.ranking.upsert({
+      where: rankingUniqueWhere(playerId, modality, toCategory, target.scope),
+      update: {
+        points: 0,
+        played: 0,
+        wins: 0,
+        losses: 0,
+      },
+      create: {
+        playerId,
+        modality,
+        category: toCategory,
+        scope: target.scope,
+        associationId: target.associationId,
+        points: 0,
+        played: 0,
+        wins: 0,
+        losses: 0,
+      },
+    })
+  }
 }
 
 /**
@@ -486,6 +522,92 @@ export async function recalculateAllRankings() {
     const totalRounds = mod.matches[0]?.roundOrder ?? 0
     if (totalRounds > 0) {
       await assignTournamentPoints(mod.id, mod.tournament.category, totalRounds)
+    }
+  }
+}
+
+function pointsForFinalStage(
+  category: TournamentCategory,
+  finalStage: "CHAMPION" | "RUNNER_UP" | "SEMIFINAL" | "QUARTERFINAL" | "ROUND_OF_16" | "ROUND_OF_32" | "GROUP_STAGE"
+) {
+  const table = POINTS_TABLE[category]
+  const byKeyword: Record<string, string> = {
+    CHAMPION: "Campeon",
+    RUNNER_UP: "Subcampeon",
+    SEMIFINAL: "Semifinalista",
+    QUARTERFINAL: "Cuartofinalista",
+    ROUND_OF_16: "Octavos",
+    ROUND_OF_32: "Dieciseisavos",
+    GROUP_STAGE: "grupos",
+  }
+  const keyword = byKeyword[finalStage]
+  const hit = table.find((row) => row.round.toLowerCase().includes(keyword.toLowerCase()))
+  return hit?.points ?? 0
+}
+
+export async function applyApprovedResultSubmission(submissionId: string, associationId: string) {
+  const submission = await prisma.tournamentResultSubmission.findUnique({
+    where: { id: submissionId },
+    include: {
+      tournament: true,
+      rows: true,
+    },
+  })
+  if (!submission) return
+  if (submission.status !== "APPROVED") return
+  if (submission.tournament.type === "BASIC" && !submission.tournament.affectsRanking) {
+    // BASIC remains gated by approval only; once approved proceed
+  }
+
+  for (const row of submission.rows) {
+    const points = pointsForFinalStage(
+      submission.tournament.category as TournamentCategory,
+      row.finalStage as "CHAMPION" | "RUNNER_UP" | "SEMIFINAL" | "QUARTERFINAL" | "ROUND_OF_16" | "ROUND_OF_32" | "GROUP_STAGE"
+    )
+    if (points <= 0) continue
+
+    const playerIds = [row.player1Id, row.player2Id].filter(Boolean) as string[]
+    for (const playerId of playerIds) {
+      await prisma.ranking.upsert({
+        where: rankingUniqueWhere(
+          playerId,
+          row.modality as Modality,
+          row.category,
+          "CITY"
+        ),
+        update: { points: { increment: points } },
+        create: {
+          playerId,
+          modality: row.modality as Modality,
+          category: row.category,
+          scope: "CITY",
+          associationId,
+          points,
+          played: 0,
+          wins: 0,
+          losses: 0,
+        },
+      })
+      await prisma.ranking.upsert({
+        where: rankingUniqueWhere(
+          playerId,
+          row.modality as Modality,
+          row.category,
+          "NATIONAL"
+        ),
+        update: { points: { increment: points } },
+        create: {
+          playerId,
+          modality: row.modality as Modality,
+          category: row.category,
+          scope: "NATIONAL",
+          associationId: null,
+          points,
+          played: 0,
+          wins: 0,
+          losses: 0,
+        },
+      })
     }
   }
 }

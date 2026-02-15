@@ -82,6 +82,46 @@ enum CategoryChangeStatus {
   REJECTED
 }
 
+enum TournamentType {
+  FULL
+  BASIC
+}
+
+enum ExternalRegistrationType {
+  URL
+  WHATSAPP
+  INSTAGRAM
+  FACEBOOK
+  OTHER
+}
+
+enum ResultsValidationStatus {
+  NOT_REQUIRED
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum ResultSubmissionType {
+  MANUAL
+  EXCEL
+}
+
+enum ResultFinalStage {
+  CHAMPION
+  RUNNER_UP
+  SEMIFINAL
+  QUARTERFINAL
+  ROUND_OF_16
+  ROUND_OF_32
+  GROUP_STAGE
+}
+
+enum RankingScope {
+  CITY
+  NATIONAL
+}
+
 // ============================================================
 // AUTH MODELS (NextAuth.js / Auth.js)
 // ============================================================
@@ -104,8 +144,26 @@ model User {
   // App relations
   player Player?
   club   Club?
+  platformSettingsUpdated PlatformSetting[]
+  associationsOwned Association[] @relation("AssociationOwner")
+  resultSubmissions TournamentResultSubmission[]
+  validatedPlayerAssociations PlayerAssociation[]
 
   @@map("users")
+}
+
+model PlatformSetting {
+  id                          String   @id @default("global")
+  homeSponsorBannerEnabled    Boolean  @default(false)
+  homeSponsorBannerImageUrl   String?
+  homeSponsorBannerLinkUrl    String?
+  homeSponsorBannerTitle      String?
+  updatedByUserId             String?
+  updatedAt                   DateTime @updatedAt
+
+  updatedByUser User? @relation(fields: [updatedByUserId], references: [id], onDelete: SetNull)
+
+  @@map("platform_settings")
 }
 
 model Account {
@@ -158,10 +216,22 @@ model Player {
   firstName String
   lastName  String
   city      String
+  state     String?
   country   String   @default("MX")
   sex       Sex
   age       Int?
   phone     String?
+  birthDate DateTime?
+  documentType   String?
+  documentNumber String?
+  dominantHand   String?
+  courtPosition  String?
+  starShot       String?
+  playStyle      String?
+  preferredMatchType String?
+  playsMixed     Boolean   @default(false)
+  preferredSchedule String?
+  preferredAgeRange String?
   bio       String?
   avatarUrl String?
   createdAt DateTime @default(now())
@@ -173,9 +243,13 @@ model Player {
   registrationsAsPlayer1 TournamentRegistration[] @relation("Player1Registrations")
   // Registrations where this player is player2
   registrationsAsPlayer2 TournamentRegistration[] @relation("Player2Registrations")
+  importedRecord ImportedPlayer?
 
   rankings        Ranking[]
   categoryChanges CategoryChange[]
+  associationMemberships PlayerAssociation[]
+  resultRowsAsPlayer1 TournamentResultRow[] @relation("ResultRowPlayer1")
+  resultRowsAsPlayer2 TournamentResultRow[] @relation("ResultRowPlayer2")
 
   @@map("players")
 }
@@ -208,6 +282,7 @@ model Club {
   city          String                    // Ciudad
   address       String                    // Dirección completa
   postalCode    String?                   // Código postal
+  neighborhood  String?                   // Colonia/Barrio
   latitude      Float?                    // Coordenada para mapas
   longitude     Float?                    // Coordenada para mapas
   
@@ -216,6 +291,7 @@ model Club {
   outdoorCourts Int        @default(0)    // Canchas exteriores
   courts        Int        @default(0)    // Total (auto-calculado)
   courtSurface  String?                   // Tipo de superficie (Césped sintético, Cristal, Panorámica)
+  courtSurfaces Json?                     // Multiples superficies seleccionables
   
   // Servicios Adicionales (Paso 5)
   hasParking          Boolean @default(false)  // Estacionamiento
@@ -226,12 +302,19 @@ model Club {
   hasLighting         Boolean @default(false)  // Iluminación nocturna
   hasAirConditioning  Boolean @default(false)  // Aire acondicionado (interiores)
   operatingHours      String?                  // Horario de operación
+  weeklySchedule      Json?                    // Horario semanal por dia con bloques
   priceRange          String?                  // Rango de precios
   acceptsOnlineBooking Boolean @default(false) // Acepta reservaciones online
+  services            Json?                    // Servicios personalizados adicionales
   
   // Redes sociales (opcionales)
   facebook      String?
   instagram     String?
+  tiktok        String?
+  youtube       String?
+  linkedin      String?
+  x             String?
+  whatsapp      String?
   
   // Sistema
   status        ClubStatus @default(PENDING)
@@ -243,8 +326,29 @@ model Club {
 
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   tournaments Tournament[]
+  news        ClubNews[]
+  importBatches TournamentImportBatch[]
+  importedPlayers ImportedPlayer[]
+  resultRows  TournamentResultRow[]
 
   @@map("clubs")
+}
+
+model ClubNews {
+  id            String   @id @default(cuid())
+  clubId         String
+  title          String
+  content        String
+  coverImageUrl  String?
+  published      Boolean  @default(false)
+  publishedAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@index([clubId, published, publishedAt])
+  @@map("club_news")
 }
 
 // ============================================================
@@ -256,22 +360,109 @@ model Tournament {
   clubId           String
   name             String
   description      String?
+  venue            String?
   startDate        DateTime
   endDate          DateTime
   category         TournamentCategory
   format           TournamentFormat
+  type             TournamentType    @default(FULL)
   prize            String?
+  sponsorName      String?
+  sponsorLogoUrl   String?
+  logoUrl          String?
+  images           Json?
+  news             Json?
   inscriptionPrice Decimal          @default(0) @db.Decimal(10, 2)
   maxTeams         Int              @default(64)
   rules            Json?
+  registrationDeadline DateTime?
+  externalRegistrationType ExternalRegistrationType?
+  externalRegistrationLink String?
+  posterUrl         String?
+  affectsRanking    Boolean          @default(true)
+  resultsValidationStatus ResultsValidationStatus @default(NOT_REQUIRED)
+  validatedByAssociationId String?
+  validatedAt       DateTime?
+  validationNotes   String?
   status           TournamentStatus @default(DRAFT)
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
 
   club       Club                  @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  validatedByAssociation Association? @relation("AssociationValidatedTournaments", fields: [validatedByAssociationId], references: [id], onDelete: SetNull)
   modalities TournamentModality[]
+  importBatches TournamentImportBatch[]
+  importedEntries ImportedTournamentEntry[]
+  resultSubmissions TournamentResultSubmission[]
+  resultRows TournamentResultRow[]
 
   @@map("tournaments")
+}
+
+model TournamentImportBatch {
+  id                 String   @id @default(cuid())
+  tournamentId       String
+  tournamentModalityId String?
+  sourceClubId       String
+  fileName           String
+  importType         String // players | pairs
+  totalRows          Int      @default(0)
+  importedRows       Int      @default(0)
+  failedRows         Int      @default(0)
+  createdAt          DateTime @default(now())
+
+  tournament         Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  sourceClub         Club       @relation(fields: [sourceClubId], references: [id], onDelete: Cascade)
+  importedEntries    ImportedTournamentEntry[]
+
+  @@map("tournament_import_batches")
+}
+
+model ImportedPlayer {
+  id                 String   @id @default(cuid())
+  firstName          String
+  lastName           String
+  fullNameNormalized String
+  phone              String?
+  email              String?
+  sex                Sex?
+  city               String?
+  country            String   @default("MX")
+  sourceClubId       String?
+  linkedPlayerId     String?  @unique
+  linkStatus         String   @default("PENDING") // pending | linked | conflict
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  sourceClub         Club?    @relation(fields: [sourceClubId], references: [id], onDelete: SetNull)
+  linkedPlayer       Player?  @relation(fields: [linkedPlayerId], references: [id], onDelete: SetNull)
+  entriesAsPlayer1   ImportedTournamentEntry[] @relation("ImportedEntryPlayer1")
+  entriesAsPlayer2   ImportedTournamentEntry[] @relation("ImportedEntryPlayer2")
+
+  @@index([phone, fullNameNormalized])
+  @@map("imported_players")
+}
+
+model ImportedTournamentEntry {
+  id                   String   @id @default(cuid())
+  importBatchId        String
+  tournamentId         String
+  tournamentModalityId String
+  importedPlayer1Id    String
+  importedPlayer2Id    String
+  linkedRegistrationId String?  @unique
+  seed                 Int?
+  createdAt            DateTime @default(now())
+
+  importBatch          TournamentImportBatch @relation(fields: [importBatchId], references: [id], onDelete: Cascade)
+  tournament           Tournament           @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournamentModality   TournamentModality   @relation(fields: [tournamentModalityId], references: [id], onDelete: Cascade)
+  importedPlayer1      ImportedPlayer       @relation("ImportedEntryPlayer1", fields: [importedPlayer1Id], references: [id], onDelete: Cascade)
+  importedPlayer2      ImportedPlayer       @relation("ImportedEntryPlayer2", fields: [importedPlayer2Id], references: [id], onDelete: Cascade)
+  linkedRegistration   TournamentRegistration? @relation(fields: [linkedRegistrationId], references: [id], onDelete: SetNull)
+
+  @@unique([tournamentModalityId, importedPlayer1Id, importedPlayer2Id])
+  @@map("imported_tournament_entries")
 }
 
 // ============================================================
@@ -287,6 +478,8 @@ model TournamentModality {
   tournament    Tournament               @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   registrations TournamentRegistration[]
   matches       Match[]
+  importedEntries ImportedTournamentEntry[]
+  resultSubmissions TournamentResultSubmission[]
 
   @@unique([tournamentId, modality, category])
   @@map("tournament_modalities")
@@ -313,6 +506,7 @@ model TournamentRegistration {
 
   matchesAsTeamA Match[] @relation("TeamAMatches")
   matchesAsTeamB Match[] @relation("TeamBMatches")
+  importedEntry  ImportedTournamentEntry?
 
   @@unique([tournamentModalityId, player1Id, player2Id])
   @@map("tournament_registrations")
@@ -354,14 +548,17 @@ model Ranking {
   playerId String
   modality Modality
   category String   // e.g. "1ra", "2da", "3ra", "4ta", "5ta", "6ta", "A", "B", "C", "D"
+  scope    RankingScope @default(CITY)
+  associationId String?
   points   Int      @default(0)
   played   Int      @default(0)
   wins     Int      @default(0)
   losses   Int      @default(0)
 
   player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  association Association? @relation(fields: [associationId], references: [id], onDelete: SetNull)
 
-  @@unique([playerId, modality, category])
+  @@unique([playerId, modality, category, scope])
   @@map("rankings")
 }
 
@@ -386,4 +583,90 @@ model CategoryChange {
   player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
 
   @@map("category_changes")
+}
+
+model Association {
+  id        String   @id @default(cuid())
+  name      String
+  city      String
+  state     String?
+  country   String   @default("MX")
+  status    String   @default("ACTIVE")
+  ownerUserId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ownerUser User? @relation("AssociationOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  memberships PlayerAssociation[]
+  rankings   Ranking[]
+  validatedTournaments Tournament[] @relation("AssociationValidatedTournaments")
+  validatedSubmissions TournamentResultSubmission[] @relation("AssociationValidatedSubmissions")
+
+  @@map("associations")
+}
+
+model PlayerAssociation {
+  id            String   @id @default(cuid())
+  playerId      String
+  associationId String
+  status        String   @default("PENDING")
+  validatedAt   DateTime?
+  validatedByUserId String?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  player      Player      @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  validatedByUser User?   @relation(fields: [validatedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([playerId, associationId])
+  @@map("player_associations")
+}
+
+model TournamentResultSubmission {
+  id             String   @id @default(cuid())
+  tournamentId   String
+  tournamentModalityId String?
+  submittedByUserId String
+  submissionType ResultSubmissionType
+  fileName       String?
+  status         ResultsValidationStatus @default(PENDING_REVIEW)
+  validatedByAssociationId String?
+  validatedAt    DateTime?
+  validationNotes String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournamentModality TournamentModality? @relation(fields: [tournamentModalityId], references: [id], onDelete: SetNull)
+  submittedByUser User @relation(fields: [submittedByUserId], references: [id], onDelete: Cascade)
+  validatedByAssociation Association? @relation("AssociationValidatedSubmissions", fields: [validatedByAssociationId], references: [id], onDelete: SetNull)
+  rows TournamentResultRow[]
+
+  @@map("tournament_result_submissions")
+}
+
+model TournamentResultRow {
+  id            String   @id @default(cuid())
+  submissionId  String
+  tournamentId  String
+  modality      Modality
+  category      String
+  finalStage    ResultFinalStage
+  player1Id     String?
+  player2Id     String?
+  importedPlayer1Name String?
+  importedPlayer2Name String?
+  sourceClubId  String?
+  createdAt     DateTime @default(now())
+
+  submission TournamentResultSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  player1    Player?    @relation("ResultRowPlayer1", fields: [player1Id], references: [id], onDelete: SetNull)
+  player2    Player?    @relation("ResultRowPlayer2", fields: [player2Id], references: [id], onDelete: SetNull)
+  sourceClub Club?      @relation(fields: [sourceClubId], references: [id], onDelete: SetNull)
+
+  @@index([tournamentId, modality, category, finalStage])
+  @@map("tournament_result_rows")
 }

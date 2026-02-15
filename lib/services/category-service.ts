@@ -14,30 +14,35 @@ export async function applyCategoryChange(categoryChangeId: string) {
   }
 
   // Reset points in new category
-  await prisma.ranking.upsert({
-    where: {
-      playerId_modality_category: {
+  for (const scope of ["CITY", "NATIONAL"] as const) {
+    await prisma.ranking.upsert({
+      where: {
+        playerId_modality_category_scope: {
+          playerId: change.playerId,
+          modality: change.modality,
+          category: change.toCategory,
+          scope,
+        },
+      },
+      update: {
+        points: 0,
+        played: 0,
+        wins: 0,
+        losses: 0,
+      },
+      create: {
         playerId: change.playerId,
         modality: change.modality,
         category: change.toCategory,
+        scope,
+        associationId: null,
+        points: 0,
+        played: 0,
+        wins: 0,
+        losses: 0,
       },
-    },
-    update: {
-      points: 0,
-      played: 0,
-      wins: 0,
-      losses: 0,
-    },
-    create: {
-      playerId: change.playerId,
-      modality: change.modality,
-      category: change.toCategory,
-      points: 0,
-      played: 0,
-      wins: 0,
-      losses: 0,
-    },
-  })
+    })
+  }
 
   return change
 }

@@ -12,6 +12,14 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
 import { Loader2, User, Building2, MapPin, Home, Wrench, ArrowLeft, ArrowRight, Check } from "lucide-react"
 import { AddressAutocomplete } from "@/components/address-autocomplete"
+import {
+  DaySchedule,
+  defaultWeeklySchedule,
+  WeeklyScheduleEditor,
+} from "@/components/club/weekly-schedule-editor"
+import { ImageUploadField } from "@/components/club/image-upload-field"
+
+const surfaceOptions = ["Cesped Sintetico", "Mondo", "Cemento", "Mixta"]
 
 export default function ClubOnboardingPage() {
   const router = useRouter()
@@ -40,13 +48,14 @@ export default function ClubOnboardingPage() {
   const [city, setCity] = useState("")
   const [address, setAddress] = useState("")
   const [postalCode, setPostalCode] = useState("")
+  const [neighborhood, setNeighborhood] = useState("")
   const [latitude, setLatitude] = useState<number | undefined>(undefined)
   const [longitude, setLongitude] = useState<number | undefined>(undefined)
 
   // Paso 4: Instalaciones
   const [indoorCourts, setIndoorCourts] = useState("")
   const [outdoorCourts, setOutdoorCourts] = useState("")
-  const [courtSurface, setCourtSurface] = useState("")
+  const [courtSurfaces, setCourtSurfaces] = useState<string[]>([])
 
   // Paso 5: Servicios Adicionales
   const [hasParking, setHasParking] = useState(false)
@@ -57,10 +66,19 @@ export default function ClubOnboardingPage() {
   const [hasLighting, setHasLighting] = useState(false)
   const [hasAirConditioning, setHasAirConditioning] = useState(false)
   const [operatingHours, setOperatingHours] = useState("")
+  const [weeklySchedule, setWeeklySchedule] = useState<DaySchedule[]>(defaultWeeklySchedule())
   const [priceRange, setPriceRange] = useState("")
   const [acceptsOnlineBooking, setAcceptsOnlineBooking] = useState(false)
   const [facebook, setFacebook] = useState("")
   const [instagram, setInstagram] = useState("")
+  const [tiktok, setTiktok] = useState("")
+  const [youtube, setYoutube] = useState("")
+  const [linkedin, setLinkedin] = useState("")
+  const [x, setX] = useState("")
+  const [whatsapp, setWhatsapp] = useState("")
+  const [logoUrls, setLogoUrls] = useState<string[]>([])
+  const [servicesText, setServicesText] = useState("")
+  const [galleryUrls, setGalleryUrls] = useState<string[]>([])
 
   // Pre-llenar datos si ya existen
   useEffect(() => {
@@ -121,12 +139,14 @@ export default function ClubOnboardingPage() {
           city,
           address,
           postalCode: postalCode || undefined,
+          neighborhood: neighborhood || undefined,
           latitude,
           longitude,
           // Paso 4
           indoorCourts: indoorCourts ? parseInt(indoorCourts) : 0,
           outdoorCourts: outdoorCourts ? parseInt(outdoorCourts) : 0,
-          courtSurface: courtSurface || undefined,
+          courtSurface: courtSurfaces[0] || undefined,
+          courtSurfaces,
           // Paso 5
           hasParking,
           hasLockers,
@@ -136,10 +156,19 @@ export default function ClubOnboardingPage() {
           hasLighting,
           hasAirConditioning,
           operatingHours: operatingHours || undefined,
+          weeklySchedule,
           priceRange: priceRange || undefined,
           acceptsOnlineBooking,
+          services: servicesText.split(",").map((s) => s.trim()).filter(Boolean),
+          photos: galleryUrls,
+          logoUrl: logoUrls[0] || undefined,
           facebook: facebook || undefined,
           instagram: instagram || undefined,
+          tiktok: tiktok || undefined,
+          youtube: youtube || undefined,
+          linkedin: linkedin || undefined,
+          x: x || undefined,
+          whatsapp: whatsapp || undefined,
         }),
       })
 
@@ -461,6 +490,17 @@ export default function ClubOnboardingPage() {
                   />
                 </div>
 
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="neighborhood">Colonia/Barrio</Label>
+                  <Input
+                    id="neighborhood"
+                    placeholder="Del Valle"
+                    className="bg-background"
+                    value={neighborhood}
+                    onChange={(e) => setNeighborhood(e.target.value)}
+                  />
+                </div>
+
                 <div className="md:col-span-2">
                   <AddressAutocomplete
                     label="Direccion Completa"
@@ -526,18 +566,22 @@ export default function ClubOnboardingPage() {
                 </div>
 
                 <div className="flex flex-col gap-2 md:col-span-2">
-                  <Label htmlFor="surface">Tipo de Superficie</Label>
-                  <Select value={courtSurface} onValueChange={setCourtSurface}>
-                    <SelectTrigger className="bg-background">
-                      <SelectValue placeholder="Selecciona el tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Cesped Sintetico">Cesped Sintetico</SelectItem>
-                      <SelectItem value="Cristal">Cristal</SelectItem>
-                      <SelectItem value="Panoramica">Panoramica</SelectItem>
-                      <SelectItem value="Mixto">Mixto</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label>Superficies disponibles</Label>
+                  <div className="grid gap-2 md:grid-cols-2">
+                    {surfaceOptions.map((surface) => (
+                      <label key={surface} className="flex items-center gap-2 text-sm">
+                        <Checkbox
+                          checked={courtSurfaces.includes(surface)}
+                          onCheckedChange={(checked) =>
+                            setCourtSurfaces((prev) =>
+                              checked ? [...new Set([...prev, surface])] : prev.filter((item) => item !== surface)
+                            )
+                          }
+                        />
+                        {surface}
+                      </label>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="md:col-span-2 rounded-md border border-muted p-4">
@@ -615,7 +659,7 @@ export default function ClubOnboardingPage() {
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="flex flex-col gap-2 md:col-span-2">
-                    <Label htmlFor="hours">Horario de Operacion</Label>
+                    <Label htmlFor="hours">Horario base (legacy)</Label>
                     <Input
                       id="hours"
                       placeholder="Lunes a Domingo 6:00 - 23:00"
@@ -623,6 +667,11 @@ export default function ClubOnboardingPage() {
                       value={operatingHours}
                       onChange={(e) => setOperatingHours(e.target.value)}
                     />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <Label>Horario semanal por dia y bloques</Label>
+                    <WeeklyScheduleEditor value={weeklySchedule} onChange={setWeeklySchedule} />
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -669,6 +718,83 @@ export default function ClubOnboardingPage() {
                         className="bg-background"
                         value={instagram}
                         onChange={(e) => setInstagram(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="tiktok">TikTok</Label>
+                      <Input
+                        id="tiktok"
+                        placeholder="https://tiktok.com/@tuclub"
+                        className="bg-background"
+                        value={tiktok}
+                        onChange={(e) => setTiktok(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="youtube">YouTube</Label>
+                      <Input
+                        id="youtube"
+                        placeholder="https://youtube.com/@tuclub"
+                        className="bg-background"
+                        value={youtube}
+                        onChange={(e) => setYoutube(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="linkedin">LinkedIn</Label>
+                      <Input
+                        id="linkedin"
+                        placeholder="https://linkedin.com/company/tuclub"
+                        className="bg-background"
+                        value={linkedin}
+                        onChange={(e) => setLinkedin(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="x">X</Label>
+                      <Input
+                        id="x"
+                        placeholder="https://x.com/tuclub"
+                        className="bg-background"
+                        value={x}
+                        onChange={(e) => setX(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="whatsapp">WhatsApp</Label>
+                      <Input
+                        id="whatsapp"
+                        placeholder="524441234567"
+                        className="bg-background"
+                        value={whatsapp}
+                        onChange={(e) => setWhatsapp(e.target.value)}
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <ImageUploadField
+                        label="Logo del club"
+                        endpoint="/api/uploads/club/logo"
+                        value={logoUrls}
+                        onChange={setLogoUrls}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2 md:col-span-2">
+                      <Label htmlFor="servicesText">Servicios adicionales (coma separada)</Label>
+                      <Input
+                        id="servicesText"
+                        placeholder="clases, fisioterapia, kids academy"
+                        className="bg-background"
+                        value={servicesText}
+                        onChange={(e) => setServicesText(e.target.value)}
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <ImageUploadField
+                        label="Galeria del club"
+                        endpoint="/api/uploads/club/gallery"
+                        multiple
+                        value={galleryUrls}
+                        onChange={setGalleryUrls}
                       />
                     </div>
                   </div>

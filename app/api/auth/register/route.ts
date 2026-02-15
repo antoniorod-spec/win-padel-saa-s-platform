@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
-import { registerPlayerSchema, registerClubInitialSchema } from "@/lib/validations/auth"
+import { registerPlayerSchema, registerPlayerInitialSchema, registerClubInitialSchema } from "@/lib/validations/auth"
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,15 +9,31 @@ export async function POST(request: NextRequest) {
     const { type } = body
 
     if (type === "player") {
-      const parsed = registerPlayerSchema.safeParse(body)
-      if (!parsed.success) {
+      const parsedFull = registerPlayerSchema.safeParse(body)
+      const parsedInitial = registerPlayerInitialSchema.safeParse(body)
+      if (!parsedFull.success && !parsedInitial.success) {
         return NextResponse.json(
-          { success: false, error: "Datos invalidos", details: parsed.error.flatten() },
+          { success: false, error: "Datos invalidos" },
           { status: 400 }
         )
       }
 
-      const { email, password, firstName, lastName, sex, city, country, age } = parsed.data
+      const isInitial = parsedInitial.success && !parsedFull.success
+      let email: string
+      let password: string
+
+      if (parsedFull.success) {
+        email = parsedFull.data.email
+        password = parsedFull.data.password
+      } else if (parsedInitial.success) {
+        email = parsedInitial.data.email
+        password = parsedInitial.data.password
+      } else {
+        return NextResponse.json(
+          { success: false, error: "Datos invalidos" },
+          { status: 400 }
+        )
+      }
 
       // Check if user already exists
       const existing = await prisma.user.findUnique({ where: { email } })
@@ -30,20 +46,24 @@ export async function POST(request: NextRequest) {
 
       const passwordHash = await bcrypt.hash(password, 12)
 
+      // Si viene el registro simplificado, crear un perfil base para evitar errores en /jugador
+      const defaultFirstName = "Jugador"
+      const defaultLastName = "Nuevo"
+
       const user = await prisma.user.create({
         data: {
           email,
           passwordHash,
-          name: `${firstName} ${lastName}`,
+          name: parsedFull.success ? `${parsedFull.data.firstName} ${parsedFull.data.lastName}` : `${defaultFirstName} ${defaultLastName}`,
           role: "PLAYER",
           player: {
             create: {
-              firstName,
-              lastName,
-              sex,
-              city,
-              country,
-              age: age ?? null,
+              firstName: parsedFull.success ? parsedFull.data.firstName : defaultFirstName,
+              lastName: parsedFull.success ? parsedFull.data.lastName : defaultLastName,
+              sex: parsedFull.success ? parsedFull.data.sex : "M",
+              city: parsedFull.success ? parsedFull.data.city : "San Luis Potosi",
+              country: parsedFull.success ? parsedFull.data.country : "MX",
+              age: parsedFull.success ? (parsedFull.data.age ?? null) : null,
             },
           },
         },
@@ -59,6 +79,7 @@ export async function POST(request: NextRequest) {
             name: user.name,
             role: user.role,
           },
+          message: isInitial ? "Cuenta creada. Ya puedes completar tu perfil más adelante." : undefined,
         },
         { status: 201 }
       )

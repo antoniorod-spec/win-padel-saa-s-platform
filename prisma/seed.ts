@@ -171,10 +171,11 @@ async function main() {
 
       await prisma.ranking.upsert({
         where: {
-          playerId_modality_category: {
+          playerId_modality_category_scope: {
             playerId: user.player.id,
             modality,
             category,
+            scope: "NATIONAL",
           },
         },
         update: {
@@ -187,6 +188,8 @@ async function main() {
           playerId: user.player.id,
           modality,
           category,
+          scope: "NATIONAL",
+          associationId: null,
           points: pd.points,
           played: pd.played,
           wins: pd.wins,

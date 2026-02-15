@@ -48,8 +48,17 @@ export default function RegisterPage() {
         return
       }
 
-      // Redirigir a onboarding para completar perfil
-      router.push("/onboarding")
+      // Login automático tras registro para evitar fricción
+      const login = await signIn("credentials", {
+        email: playerEmail,
+        password: playerPassword,
+        redirect: false,
+      })
+      if (login?.error) {
+        router.push("/login?registered=true")
+        return
+      }
+      router.push("/onboarding/player")
     } catch {
       setError("Error de conexion. Intenta de nuevo.")
     } finally {
@@ -80,7 +89,16 @@ export default function RegisterPage() {
         return
       }
 
-      // Redirigir a onboarding de club (wizard de 5 pasos)
+      // Login automático para entrar directo al wizard de club
+      const login = await signIn("credentials", {
+        email: clubEmail,
+        password: clubPassword,
+        redirect: false,
+      })
+      if (login?.error) {
+        router.push("/login?registered=true&type=club")
+        return
+      }
       router.push("/onboarding/club")
     } catch {
       setError("Error de conexion. Intenta de nuevo.")

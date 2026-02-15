@@ -54,14 +54,23 @@ export default function OnboardingPage() {
 
   // Redirigir si ya tiene perfil completo
   useEffect(() => {
-    if (status === "authenticated" && session?.user?.role) {
-      if (session.user.role === "ADMIN") {
-        router.push("/admin")
-      } else if (session.user.role === "CLUB") {
-        router.push("/club")
-      } else if (session.user.role === "PLAYER") {
-        router.push("/jugador")
-      }
+    if (status !== "authenticated") return
+    let active = true
+    fetch("/api/auth/profile-status")
+      .then((r) => r.json())
+      .then((payload) => {
+        if (!active || !payload?.success) return
+        const profile = payload.data
+        if (profile.role === "ADMIN") {
+          router.push("/admin")
+        } else if (profile.hasClub) {
+          router.push("/club")
+        } else if (profile.hasPlayer && !profile.isPendingClub) {
+          router.push("/jugador")
+        }
+      })
+    return () => {
+      active = false
     }
   }, [status, session, router])
 

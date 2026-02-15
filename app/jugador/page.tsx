@@ -26,6 +26,7 @@ import Link from "next/link"
 import { usePlayer, usePlayerStats, usePlayerMatches } from "@/hooks/use-player"
 import { useTournaments } from "@/hooks/use-tournaments"
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/jugador" },
@@ -39,6 +40,7 @@ const navItems = [
 
 export default function PlayerDashboard() {
   const { data: session, status } = useSession()
+  const router = useRouter()
   const [playerId, setPlayerId] = useState<string | undefined>(undefined)
 
   // Get playerId from userId
@@ -58,6 +60,23 @@ export default function PlayerDashboard() {
     }
     fetchPlayerId()
   }, [session?.user?.id])
+
+  useEffect(() => {
+    if (status !== "authenticated") return
+    let active = true
+    fetch("/api/auth/profile-status")
+      .then((r) => r.json())
+      .then((payload) => {
+        if (!active || !payload?.success) return
+        if (!payload.data.isPlayerProfileComplete) {
+          router.push("/onboarding/player")
+        }
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [status, router])
 
   const { data: playerData, isLoading: playerLoading } = usePlayer(playerId)
   const { data: statsData, isLoading: statsLoading } = usePlayerStats(playerId)

@@ -15,6 +15,19 @@ export type PaymentStatus = "PENDING" | "CONFIRMED" | "REJECTED" | "REFUNDED"
 export type MatchWinner = "TEAM_A" | "TEAM_B" | "NONE"
 export type CategoryChangeType = "ASCENSION" | "DESCENT"
 export type CategoryChangeStatus = "PENDING" | "APPROVED" | "REJECTED"
+export type TournamentType = "FULL" | "BASIC"
+export type ExternalRegistrationType = "URL" | "WHATSAPP" | "INSTAGRAM" | "FACEBOOK" | "OTHER"
+export type ResultsValidationStatus = "NOT_REQUIRED" | "PENDING_REVIEW" | "APPROVED" | "REJECTED"
+export type ResultSubmissionType = "MANUAL" | "EXCEL"
+export type ResultFinalStage =
+  | "CHAMPION"
+  | "RUNNER_UP"
+  | "SEMIFINAL"
+  | "QUARTERFINAL"
+  | "ROUND_OF_16"
+  | "ROUND_OF_32"
+  | "GROUP_STAGE"
+export type RankingScope = "CITY" | "NATIONAL"
 
 // ============================================================
 // API Response types
@@ -65,6 +78,8 @@ export interface RankingEntry {
   playerId: string
   playerName: string
   city: string
+  associationId?: string | null
+  associationName?: string | null
   club: string
   points: number
   played: number
@@ -89,6 +104,12 @@ export interface TournamentListItem {
   endDate: string
   category: string
   modalities: string[]
+  type?: TournamentType
+  externalRegistrationType?: ExternalRegistrationType | null
+  externalRegistrationLink?: string | null
+  registrationDeadline?: string | null
+  posterUrl?: string | null
+  resultsValidationStatus?: ResultsValidationStatus
   registeredTeams: number
   maxTeams: number
   prize: string | null

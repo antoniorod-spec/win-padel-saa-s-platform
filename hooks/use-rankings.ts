@@ -4,11 +4,13 @@ import { fetchRankings, fetchPointsTable, recalculateRankings } from "@/lib/api/
 export function useRankings(
   modality: string = "VARONIL",
   category: string = "4ta",
-  city?: string
+  city?: string,
+  scope: "CITY" | "NATIONAL" = "NATIONAL",
+  associationId?: string
 ) {
   return useQuery({
-    queryKey: ["rankings", modality, category, city],
-    queryFn: () => fetchRankings({ modality, category, city }),
+    queryKey: ["rankings", modality, category, city, scope, associationId],
+    queryFn: () => fetchRankings({ modality, category, city, scope, associationId }),
     staleTime: 60 * 1000, // 1 minute
   })
 }

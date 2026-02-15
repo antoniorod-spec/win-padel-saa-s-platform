@@ -10,7 +10,18 @@ interface TournamentListItem {
   endDate: string
   category: string
   format: string
+  type?: "FULL" | "BASIC"
+  venue?: string | null
+  registrationDeadline?: string | null
+  externalRegistrationType?: "URL" | "WHATSAPP" | "INSTAGRAM" | "FACEBOOK" | "OTHER" | null
+  externalRegistrationLink?: string | null
+  posterUrl?: string | null
+  affectsRanking?: boolean
+  resultsValidationStatus?: "NOT_REQUIRED" | "PENDING_REVIEW" | "APPROVED" | "REJECTED"
   prize: string | null
+  sponsorName?: string | null
+  sponsorLogoUrl?: string | null
+  logoUrl?: string | null
   inscriptionPrice: number
   maxTeams: number
   status: string
@@ -27,7 +38,19 @@ interface TournamentDetail {
   endDate: string
   category: string
   format: string
+  type?: "FULL" | "BASIC"
+  venue?: string | null
+  registrationDeadline?: string | null
+  externalRegistrationType?: "URL" | "WHATSAPP" | "INSTAGRAM" | "FACEBOOK" | "OTHER" | null
+  externalRegistrationLink?: string | null
+  posterUrl?: string | null
+  affectsRanking?: boolean
+  resultsValidationStatus?: "NOT_REQUIRED" | "PENDING_REVIEW" | "APPROVED" | "REJECTED"
+  validationNotes?: string | null
   prize: string | null
+  sponsorName?: string | null
+  sponsorLogoUrl?: string | null
+  logoUrl?: string | null
   inscriptionPrice: number
   maxTeams: number
   status: string
@@ -36,6 +59,8 @@ interface TournamentDetail {
   clubId: string
   courts: number
   rules: Record<string, unknown> | null
+  images?: string[] | null
+  news?: Array<{ title: string; body: string; publishedAt?: string }> | null
   modalities: Array<{
     id: string
     modality: string
@@ -64,12 +89,32 @@ interface TeamInfo {
   paymentStatus: string
 }
 
+interface TournamentResultSubmission {
+  id: string
+  submissionType: "MANUAL" | "EXCEL"
+  status: "NOT_REQUIRED" | "PENDING_REVIEW" | "APPROVED" | "REJECTED"
+  fileName?: string | null
+  validatedAt?: string | null
+  validationNotes?: string | null
+  rows: Array<{
+    id: string
+    modality: string
+    category: string
+    finalStage: string
+    player1Id?: string | null
+    player2Id?: string | null
+    importedPlayer1Name?: string | null
+    importedPlayer2Name?: string | null
+  }>
+}
+
 export async function fetchTournaments(params?: {
   status?: string
   category?: string
   modality?: string
   city?: string
   search?: string
+  mine?: boolean
   page?: number
   pageSize?: number
 }) {
@@ -119,4 +164,59 @@ export async function fetchTeams(tournamentId: string, modalityId?: string) {
 
 export async function generateBracket(tournamentId: string, modalityId: string) {
   return api.post(`/tournaments/${tournamentId}/generate-bracket`, { modalityId })
+}
+
+export async function importTournamentFile(params: {
+  tournamentId: string
+  tournamentModalityId: string
+  importType: "players" | "pairs"
+  file: File
+}) {
+  const formData = new FormData()
+  formData.append("file", params.file)
+  formData.append("tournamentModalityId", params.tournamentModalityId)
+  formData.append("importType", params.importType)
+
+  const response = await fetch(`/api/tournaments/${params.tournamentId}/import`, {
+    method: "POST",
+    body: formData,
+  })
+
+  return response.json()
+}
+
+export async function submitTournamentResultsManual(params: {
+  tournamentId: string
+  rows: Array<{
+    modality: "VARONIL" | "FEMENIL" | "MIXTO"
+    category: string
+    finalStage: "CHAMPION" | "RUNNER_UP" | "SEMIFINAL" | "QUARTERFINAL" | "ROUND_OF_16" | "ROUND_OF_32" | "GROUP_STAGE"
+    player1Id?: string
+    player2Id?: string
+    importedPlayer1Name?: string
+    importedPlayer2Name?: string
+  }>
+  notes?: string
+}) {
+  return api.post<TournamentResultSubmission>(`/tournaments/${params.tournamentId}/results/manual`, {
+    rows: params.rows,
+    notes: params.notes,
+  })
+}
+
+export async function importTournamentResultsFile(params: {
+  tournamentId: string
+  file: File
+}) {
+  const formData = new FormData()
+  formData.append("file", params.file)
+  const response = await fetch(`/api/tournaments/${params.tournamentId}/results/import`, {
+    method: "POST",
+    body: formData,
+  })
+  return response.json()
+}
+
+export async function fetchTournamentResultSubmissions(tournamentId: string) {
+  return api.get<TournamentResultSubmission[]>(`/tournaments/${tournamentId}/results/submissions`)
 }

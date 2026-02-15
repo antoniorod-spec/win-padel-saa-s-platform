@@ -1,13 +1,17 @@
 "use client"
 
+import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/landing/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { clubs } from "@/lib/mock-data"
-import { Building2, MapPin, Users, Trophy, Star } from "lucide-react"
+import { useClubs } from "@/hooks/use-club"
+import { Building2, MapPin, Trophy, Star } from "lucide-react"
 
 export default function ClubesPage() {
+  const { data, isLoading } = useClubs()
+  const clubs = data?.data ?? []
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -24,6 +28,9 @@ export default function ClubesPage() {
         </section>
 
         <section className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground">Cargando clubes...</p>
+          ) : null}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {clubs.map((club) => (
               <Card key={club.id} className="group border-border/50 bg-card transition-all hover:border-primary/30 hover:shadow-lg">
@@ -49,12 +56,6 @@ export default function ClubesPage() {
                         <Building2 className="h-3.5 w-3.5" />
                       </div>
                       <span>{club.courts} canchas</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-md bg-muted">
-                        <Users className="h-3.5 w-3.5" />
-                      </div>
-                      <span>{club.players} jugadores</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <div className="flex h-7 w-7 items-center justify-center rounded-md bg-muted">
@@ -85,6 +86,12 @@ export default function ClubesPage() {
                       Verificado
                     </Badge>
                   </div>
+                  <Link
+                    href={`/clubes/${club.id}`}
+                    className="mt-3 inline-flex text-sm font-medium text-primary hover:underline"
+                  >
+                    Ver perfil publico
+                  </Link>
                 </CardContent>
               </Card>
             ))}

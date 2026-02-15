@@ -21,15 +21,47 @@ export default function LoginPage() {
 
   // Redirigir según el rol si ya está logueado
   useEffect(() => {
-    if (status === "authenticated" && session?.user) {
-      const role = session.user.role
-      if (role === "ADMIN") {
-        router.push("/admin")
-      } else if (role === "CLUB") {
-        router.push("/club")
-      } else {
-        router.push("/jugador")
+    if (status !== "authenticated" || !session?.user) return
+
+    let active = true
+    const resolveDestination = async () => {
+      try {
+        const res = await fetch("/api/auth/profile-status")
+        const payload = await res.json()
+        if (!active || !payload?.success) return
+
+        const profile = payload.data
+        if (profile.role === "ADMIN") {
+          router.push("/admin")
+          return
+        }
+        if (profile.hasClub && !profile.isClubProfileComplete) {
+          router.push("/onboarding/club")
+          return
+        }
+        if (profile.hasPlayer && !profile.isPlayerProfileComplete) {
+          router.push("/onboarding/player")
+          return
+        }
+        if (profile.isPendingClub) {
+          router.push("/onboarding/club")
+          return
+        }
+
+        if (profile.role === "CLUB") {
+          router.push("/club")
+        } else {
+          router.push("/jugador")
+        }
+      } catch {
+        const role = session.user.role
+        router.push(role === "CLUB" ? "/club" : role === "ADMIN" ? "/admin" : "/jugador")
       }
+    }
+
+    resolveDestination()
+    return () => {
+      active = false
     }
   }, [status, session, router])
 

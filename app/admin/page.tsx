@@ -5,6 +5,10 @@ import { StatCard } from "@/components/stat-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
@@ -21,13 +25,16 @@ import {
   Newspaper,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useEffect, useState } from "react"
 import { 
   useAdminStats, 
   usePendingClubs, 
   useCategoryReviews, 
   useRankingStats,
   useApproveClub, 
-  useReviewCategoryChange 
+  useReviewCategoryChange,
+  useSiteBannerSettings,
+  useUpdateSiteBannerSettings,
 } from "@/hooks/use-admin"
 import { ASCENSION_RULES, DESCENT_RULES } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
@@ -50,14 +57,48 @@ export default function AdminDashboard() {
   const { data: clubsData } = usePendingClubs()
   const { data: categoryReviewsData } = useCategoryReviews("PENDING")
   const { data: rankingStatsData } = useRankingStats()
+  const { data: siteBannerData } = useSiteBannerSettings()
   
   const approveClubMutation = useApproveClub()
   const reviewCategoryMutation = useReviewCategoryChange()
+  const updateSiteBannerMutation = useUpdateSiteBannerSettings()
 
   const stats = statsData?.data
   const pendingClubs = clubsData?.data || []
   const categoryReviews = categoryReviewsData?.data || []
   const rankingStats = rankingStatsData?.data || []
+  const siteBanner = siteBannerData?.data
+  const [bannerEnabled, setBannerEnabled] = useState(false)
+  const [bannerImageUrl, setBannerImageUrl] = useState("")
+  const [bannerLinkUrl, setBannerLinkUrl] = useState("")
+  const [bannerTitle, setBannerTitle] = useState("")
+  const [associations, setAssociations] = useState<Array<{ id: string; name: string; city: string }>>([])
+  const [pendingResultSubmissions, setPendingResultSubmissions] = useState<Array<any>>([])
+  const [selectedAssociationBySubmission, setSelectedAssociationBySubmission] = useState<Record<string, string>>({})
+  const [reviewingSubmissionId, setReviewingSubmissionId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!siteBanner) return
+    setBannerEnabled(siteBanner.homeSponsorBannerEnabled)
+    setBannerImageUrl(siteBanner.homeSponsorBannerImageUrl ?? "")
+    setBannerLinkUrl(siteBanner.homeSponsorBannerLinkUrl ?? "")
+    setBannerTitle(siteBanner.homeSponsorBannerTitle ?? "")
+  }, [siteBanner])
+
+  useEffect(() => {
+    fetch("/api/associations")
+      .then((r) => r.json())
+      .then((payload) => {
+        if (payload?.success && Array.isArray(payload.data)) setAssociations(payload.data)
+      })
+      .catch(() => {})
+    fetch("/api/associations/results/pending")
+      .then((r) => r.json())
+      .then((payload) => {
+        if (payload?.success && Array.isArray(payload.data)) setPendingResultSubmissions(payload.data)
+      })
+      .catch(() => {})
+  }, [])
 
   const handleApproveClub = async (clubId: string, action: "approve" | "reject") => {
     try {
@@ -88,6 +129,55 @@ export default function AdminDashboard() {
         description: "No se pudo procesar la solicitud",
         variant: "destructive",
       })
+    }
+  }
+
+  const handleSaveSiteBanner = async () => {
+    try {
+      await updateSiteBannerMutation.mutateAsync({
+        homeSponsorBannerEnabled: bannerEnabled,
+        homeSponsorBannerImageUrl: bannerImageUrl,
+        homeSponsorBannerLinkUrl: bannerLinkUrl,
+        homeSponsorBannerTitle: bannerTitle,
+      })
+      toast({
+        title: "Configuración guardada",
+        description: "El banner público se actualizó correctamente",
+      })
+    } catch {
+      toast({
+        title: "Error",
+        description: "No se pudo guardar la configuración del banner",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleReviewResultSubmission = async (submissionId: string, action: "approve" | "reject") => {
+    const associationId = selectedAssociationBySubmission[submissionId]
+    if (!associationId) {
+      toast({ title: "Selecciona asociación", description: "Debes elegir una asociación para validar.", variant: "destructive" })
+      return
+    }
+    try {
+      setReviewingSubmissionId(submissionId)
+      const response = await fetch(`/api/associations/${associationId}/results/${submissionId}/review`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      })
+      const payload = await response.json()
+      if (!response.ok) throw new Error(payload.error || "No se pudo revisar")
+      setPendingResultSubmissions((prev) => prev.filter((item) => item.id !== submissionId))
+      toast({ title: "Revisión registrada", description: action === "approve" ? "Resultados aprobados." : "Resultados rechazados." })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "No se pudo revisar el envío.",
+        variant: "destructive",
+      })
+    } finally {
+      setReviewingSubmissionId(null)
     }
   }
 
@@ -163,6 +253,14 @@ export default function AdminDashboard() {
                 {pendingClubs.length}
               </Badge>
             )}
+          </TabsTrigger>
+          <TabsTrigger value="siteConfig" className="gap-2">
+            <Settings className="h-3.5 w-3.5" />
+            Configuración
+          </TabsTrigger>
+          <TabsTrigger value="resultValidation" className="gap-2">
+            <Check className="h-3.5 w-3.5" />
+            Validación Resultados
           </TabsTrigger>
         </TabsList>
 
@@ -396,6 +494,131 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="siteConfig">
+          <Card className="mt-4 border-border/50">
+            <CardHeader>
+              <CardTitle className="font-display text-lg">Banner de patrocinio en home</CardTitle>
+              <p className="text-xs text-muted-foreground">
+                Solo se mostrará al público cuando esté activado y tenga imagen.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between rounded-lg border border-border/50 p-3">
+                <div>
+                  <p className="text-sm font-medium text-card-foreground">Mostrar banner en home</p>
+                  <p className="text-xs text-muted-foreground">Controlado por superadmin</p>
+                </div>
+                <Switch checked={bannerEnabled} onCheckedChange={setBannerEnabled} />
+              </div>
+
+              <div className="space-y-2">
+                <Label>URL de imagen del banner</Label>
+                <Input
+                  placeholder="https://.../banner.jpg"
+                  value={bannerImageUrl}
+                  onChange={(e) => setBannerImageUrl(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Título (opcional)</Label>
+                <Input
+                  placeholder="Patrocinador oficial"
+                  value={bannerTitle}
+                  onChange={(e) => setBannerTitle(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>URL de destino (opcional)</Label>
+                <Input
+                  placeholder="https://sitio-del-patrocinador.com"
+                  value={bannerLinkUrl}
+                  onChange={(e) => setBannerLinkUrl(e.target.value)}
+                />
+              </div>
+
+              <Button
+                onClick={handleSaveSiteBanner}
+                disabled={updateSiteBannerMutation.isPending}
+                className="bg-primary text-primary-foreground"
+              >
+                {updateSiteBannerMutation.isPending ? "Guardando..." : "Guardar configuración"}
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="resultValidation">
+          <Card className="mt-4 border-border/50">
+            <CardHeader>
+              <CardTitle className="font-display text-lg">Pendientes de validación de resultados</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {pendingResultSubmissions.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No hay envíos pendientes.</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Torneo</TableHead>
+                      <TableHead>Tipo</TableHead>
+                      <TableHead>Filas</TableHead>
+                      <TableHead>Asociación</TableHead>
+                      <TableHead className="text-right">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {pendingResultSubmissions.map((submission) => (
+                      <TableRow key={submission.id}>
+                        <TableCell className="font-medium">{submission.tournament?.name}</TableCell>
+                        <TableCell>{submission.submissionType}</TableCell>
+                        <TableCell>{submission.rows?.length ?? 0}</TableCell>
+                        <TableCell>
+                          <Select
+                            value={selectedAssociationBySubmission[submission.id] || ""}
+                            onValueChange={(value) => setSelectedAssociationBySubmission((prev) => ({ ...prev, [submission.id]: value }))}
+                          >
+                            <SelectTrigger className="w-[240px]">
+                              <SelectValue placeholder="Selecciona asociación" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {associations.map((association) => (
+                                <SelectItem key={association.id} value={association.id}>
+                                  {association.name} ({association.city})
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => handleReviewResultSubmission(submission.id, "approve")}
+                              disabled={reviewingSubmissionId === submission.id}
+                            >
+                              Aprobar
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleReviewResultSubmission(submission.id, "reject")}
+                              disabled={reviewingSubmissionId === submission.id}
+                            >
+                              Rechazar
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </DashboardShell>

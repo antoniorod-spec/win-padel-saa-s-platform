@@ -1,5 +1,18 @@
 import { z } from "zod"
 
+const scheduleSlotSchema = z.object({
+  start: z.string().regex(/^\d{2}:\d{2}$/),
+  end: z.string().regex(/^\d{2}:\d{2}$/),
+})
+
+const dayScheduleSchema = z.object({
+  day: z.enum(["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]),
+  closed: z.boolean(),
+  slots: z.array(scheduleSlotSchema),
+}).refine((value) => (value.closed ? value.slots.length === 0 : value.slots.length > 0), {
+  message: "Cada dia abierto debe tener al menos un bloque de horario",
+})
+
 export const loginSchema = z.object({
   email: z.string().email("Correo electronico invalido"),
   password: z.string().min(8, "La contrasena debe tener al menos 8 caracteres"),
@@ -15,6 +28,36 @@ export const registerPlayerSchema = z.object({
   city: z.string().min(2, "La ciudad es requerida"),
   country: z.string().min(2, "El pais es requerido"),
   age: z.number().int().min(10).max(99).optional(),
+})
+
+export const registerPlayerCompleteSchema = z.object({
+  type: z.literal("player"),
+  firstName: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  lastName: z.string().min(2, "El apellido debe tener al menos 2 caracteres"),
+  city: z.string().min(2, "La ciudad es requerida"),
+  state: z.string().min(2, "La provincia es requerida"),
+  country: z.string().min(2, "El pais es requerido"),
+  phone: z.string().min(10, "El telefono debe tener al menos 10 digitos"),
+  birthDate: z.string().min(8, "La fecha de nacimiento es requerida"),
+  sex: z.enum(["M", "F"]),
+  age: z.number().int().min(10).max(99).optional(),
+  documentType: z.string().min(2, "Selecciona tipo de documento"),
+  documentNumber: z.string().min(6, "Documento invalido"),
+  courtPosition: z.string().min(2, "Selecciona posicion en pista"),
+  dominantHand: z.string().min(2, "Selecciona mano dominante"),
+  starShot: z.string().min(2, "Selecciona golpe estrella"),
+  playStyle: z.string().min(2, "Selecciona estilo de juego"),
+  preferredMatchType: z.string().min(2, "Selecciona tipo de partido"),
+  playsMixed: z.boolean(),
+  preferredSchedule: z.string().min(2, "Selecciona horario preferido"),
+  preferredAgeRange: z.string().min(2, "Selecciona rango de edad"),
+})
+
+// Registro inicial simplificado de jugador (email + password)
+export const registerPlayerInitialSchema = z.object({
+  type: z.literal("player"),
+  email: z.string().email("Correo electronico invalido"),
+  password: z.string().min(8, "La contrasena debe tener al menos 8 caracteres"),
 })
 
 // Schema simplificado para registro inicial de club (solo email + password)
@@ -49,6 +92,7 @@ export const clubLocationSchema = z.object({
   city: z.string().min(2, "La ciudad es requerida"),
   address: z.string().min(10, "La direccion debe tener al menos 10 caracteres"),
   postalCode: z.string().transform(val => val === "" ? undefined : val).optional(),
+  neighborhood: z.string().transform(val => val === "" ? undefined : val).optional(),
   latitude: z.number().min(-90).max(90).optional(),
   longitude: z.number().min(-180).max(180).optional(),
 })
@@ -58,6 +102,7 @@ const clubFacilitiesBase = z.object({
   indoorCourts: z.number().int().min(0),
   outdoorCourts: z.number().int().min(0),
   courtSurface: z.string().transform(val => val === "" ? undefined : val).optional(),
+  courtSurfaces: z.array(z.string()).optional(),
 })
 
 export const clubFacilitiesSchema = clubFacilitiesBase.refine(
@@ -78,10 +123,19 @@ export const clubServicesSchema = z.object({
   hasLighting: z.boolean().default(false),
   hasAirConditioning: z.boolean().default(false),
   operatingHours: z.string().transform(val => val === "" ? undefined : val).optional(),
+  weeklySchedule: z.array(dayScheduleSchema).length(7).optional(),
   priceRange: z.string().transform(val => val === "" ? undefined : val).optional(),
   acceptsOnlineBooking: z.boolean().default(false),
+  services: z.array(z.string()).optional(),
+  photos: z.array(z.string().url()).optional(),
+  logoUrl: z.string().url("URL invalida").transform(val => val === "" ? undefined : val).optional(),
   facebook: z.string().transform(val => val === "" ? undefined : val).optional(),
   instagram: z.string().transform(val => val === "" ? undefined : val).optional(),
+  tiktok: z.string().transform(val => val === "" ? undefined : val).optional(),
+  youtube: z.string().transform(val => val === "" ? undefined : val).optional(),
+  linkedin: z.string().transform(val => val === "" ? undefined : val).optional(),
+  x: z.string().transform(val => val === "" ? undefined : val).optional(),
+  whatsapp: z.string().transform(val => val === "" ? undefined : val).optional(),
 })
 
 // Schema completo para onboarding (todos los pasos combinados)
@@ -103,6 +157,8 @@ export const registerClubCompleteSchema = clubResponsibleSchema
 
 export type LoginInput = z.infer<typeof loginSchema>
 export type RegisterPlayerInput = z.infer<typeof registerPlayerSchema>
+export type RegisterPlayerCompleteInput = z.infer<typeof registerPlayerCompleteSchema>
+export type RegisterPlayerInitialInput = z.infer<typeof registerPlayerInitialSchema>
 export type RegisterClubInitialInput = z.infer<typeof registerClubInitialSchema>
 export type ClubResponsibleInput = z.infer<typeof clubResponsibleSchema>
 export type ClubInfoInput = z.infer<typeof clubInfoSchema>

@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search")
     const page = parseInt(searchParams.get("page") ?? "1")
     const pageSize = parseInt(searchParams.get("pageSize") ?? "20")
+    const includeImported = searchParams.get("includeImported") === "true"
 
     const where: Record<string, unknown> = {}
 
@@ -40,10 +41,47 @@ export async function GET(request: NextRequest) {
       prisma.player.count({ where }),
     ])
 
+    let imported: Array<{
+      id: string
+      firstName: string
+      lastName: string
+      fullName: string
+      city: string | null
+      country: string
+      sex: "M" | "F" | null
+      avatarUrl: null
+      rankings: unknown[]
+      sourceClub: string | null
+      imported: boolean
+    }> = []
+
+    if (includeImported) {
+      const importedPlayers = await prisma.importedPlayer.findMany({
+        where: { linkedPlayerId: null },
+        include: { sourceClub: { select: { name: true } } },
+        take: 50,
+        orderBy: { createdAt: "desc" },
+      })
+      imported = importedPlayers.map((p) => ({
+        id: p.id,
+        firstName: p.firstName,
+        lastName: p.lastName,
+        fullName: `${p.firstName} ${p.lastName}`,
+        city: p.city ?? null,
+        country: p.country,
+        sex: p.sex,
+        avatarUrl: null,
+        rankings: [],
+        sourceClub: p.sourceClub?.name ?? null,
+        imported: true,
+      }))
+    }
+
     return NextResponse.json({
       success: true,
       data: {
-        items: players.map((p) => ({
+        items: [
+          ...players.map((p) => ({
           id: p.id,
           firstName: p.firstName,
           lastName: p.lastName,
@@ -53,7 +91,10 @@ export async function GET(request: NextRequest) {
           sex: p.sex,
           avatarUrl: p.user.image,
           rankings: p.rankings,
+          imported: false,
         })),
+          ...imported,
+        ],
         total,
         page,
         pageSize,

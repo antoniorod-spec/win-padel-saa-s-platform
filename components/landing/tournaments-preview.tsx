@@ -8,7 +8,7 @@ import { Calendar, MapPin, Users, Trophy, ArrowRight } from "lucide-react"
 import { useTournaments } from "@/hooks/use-tournaments"
 
 export function TournamentsPreview() {
-  const { data: tournamentsData } = useTournaments({ status: "UPCOMING", pageSize: 4 })
+  const { data: tournamentsData } = useTournaments({ status: "OPEN", pageSize: 4 })
   const tournaments = tournamentsData?.data?.items || []
 
   return (
@@ -52,6 +52,9 @@ export function TournamentsPreview() {
                         {t.name}
                       </h3>
                       <p className="mt-1 text-sm text-muted-foreground">{t.clubName}</p>
+                      {t.sponsorName ? (
+                        <p className="mt-1 text-xs text-muted-foreground">Patrocina: {t.sponsorName}</p>
+                      ) : null}
                     </div>
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                       <Trophy className="h-6 w-6 text-primary" />

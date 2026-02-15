@@ -5,6 +5,8 @@ export async function fetchRankings(params?: {
   modality?: string
   category?: string
   city?: string
+  scope?: "CITY" | "NATIONAL"
+  associationId?: string
 }) {
   return api.get<RankingEntry[]>("/rankings", params)
 }

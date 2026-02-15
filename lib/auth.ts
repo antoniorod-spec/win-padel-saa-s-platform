@@ -6,6 +6,58 @@ import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import type { UserRole } from "@/lib/types"
 
+function isPlayerComplete(player: {
+  phone: string | null
+  birthDate: Date | null
+  state: string | null
+  documentType: string | null
+  documentNumber: string | null
+  courtPosition: string | null
+  dominantHand: string | null
+  starShot: string | null
+  playStyle: string | null
+  preferredMatchType: string | null
+  preferredSchedule: string | null
+  preferredAgeRange: string | null
+}) {
+  return Boolean(
+    player.phone &&
+      player.birthDate &&
+      player.state &&
+      player.documentType &&
+      player.documentNumber &&
+      player.courtPosition &&
+      player.dominantHand &&
+      player.starShot &&
+      player.playStyle &&
+      player.preferredMatchType &&
+      player.preferredSchedule &&
+      player.preferredAgeRange
+  )
+}
+
+function isClubComplete(club: {
+  name: string
+  rfc: string
+  phone: string
+  contactName: string
+  contactPhone: string
+  state: string
+  city: string
+  address: string
+}) {
+  return Boolean(
+    club.name &&
+      club.rfc &&
+      club.phone &&
+      club.contactName &&
+      club.contactPhone &&
+      club.state &&
+      club.city &&
+      club.address
+  )
+}
+
 declare module "next-auth" {
   interface Session {
     user: {
@@ -107,17 +159,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session
     },
     async signIn({ user, account }) {
-      // Si es OAuth (Google), verificar si tiene perfil completo
-      if (account?.provider === "google") {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          include: { player: true, club: true },
-        })
-        
-        // Si no tiene rol asignado o no tiene perfil, necesita onboarding
-        if (dbUser && !dbUser.role) {
-          return true // Permitir login pero redirigir a onboarding
-        }
+      const dbUser = await prisma.user.findUnique({
+        where: { id: user.id },
+        include: { player: true, club: true },
+      })
+
+      if (dbUser?.name === "Club (pendiente)" && !dbUser.club) {
+        return "/onboarding/club"
+      }
+
+      if (dbUser?.club && !isClubComplete(dbUser.club)) {
+        return "/onboarding/club"
+      }
+
+      if (dbUser?.player && !isPlayerComplete(dbUser.player)) {
+        return "/onboarding/player"
+      }
+
+      // Google nuevo sin perfil: ir al selector onboarding
+      if (account?.provider === "google" && dbUser && !dbUser.player && !dbUser.club) {
+        return "/onboarding"
       }
       return true
     },

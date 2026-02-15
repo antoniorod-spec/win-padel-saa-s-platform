@@ -6,6 +6,8 @@ import {
   fetchCategoryReviews,
   processCategoryReview,
   fetchRankingStats,
+  fetchSiteBannerSettings,
+  updateSiteBannerSettings,
 } from "@/lib/api/admin"
 
 export function useAdminStats() {
@@ -62,6 +64,28 @@ export function useReviewCategoryChange() {
       queryClient.invalidateQueries({ queryKey: ["admin", "categoryReviews"] })
       queryClient.invalidateQueries({ queryKey: ["admin", "stats"] })
       queryClient.invalidateQueries({ queryKey: ["rankings"] })
+    },
+  })
+}
+
+export function useSiteBannerSettings() {
+  return useQuery({
+    queryKey: ["admin", "siteBannerSettings"],
+    queryFn: () => fetchSiteBannerSettings(),
+  })
+}
+
+export function useUpdateSiteBannerSettings() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: {
+      homeSponsorBannerEnabled: boolean
+      homeSponsorBannerImageUrl?: string
+      homeSponsorBannerLinkUrl?: string
+      homeSponsorBannerTitle?: string
+    }) => updateSiteBannerSettings(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "siteBannerSettings"] })
     },
   })
 }

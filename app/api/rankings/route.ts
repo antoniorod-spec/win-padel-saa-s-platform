@@ -7,10 +7,19 @@ export async function GET(request: NextRequest) {
     const modality = searchParams.get("modality") ?? "VARONIL"
     const category = searchParams.get("category") ?? "4ta"
     const city = searchParams.get("city")
+    const scope = (searchParams.get("scope") ?? "NATIONAL").toUpperCase()
+    const associationId = searchParams.get("associationId")
 
     const where: Record<string, unknown> = {
       modality,
       category,
+      scope,
+    }
+
+    if (scope === "CITY") {
+      where.associationId = associationId ?? undefined
+    } else {
+      where.associationId = null
     }
 
     if (city) {
@@ -20,6 +29,9 @@ export async function GET(request: NextRequest) {
     const rankings = await prisma.ranking.findMany({
       where,
       include: {
+        association: {
+          select: { id: true, name: true, city: true },
+        },
         player: {
           select: {
             id: true,
@@ -51,6 +63,8 @@ export async function GET(request: NextRequest) {
         playerId: r.player.id,
         playerName: `${r.player.firstName} ${r.player.lastName}`,
         city: r.player.city,
+        associationId: r.association?.id ?? null,
+        associationName: r.association?.name ?? null,
         club: r.player.registrationsAsPlayer1[0]?.tournamentModality?.tournament?.club?.name ?? "Sin club",
         points: r.points,
         played: r.played,
