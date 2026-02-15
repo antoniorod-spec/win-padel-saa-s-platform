@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const { email, password, clubName, city, courts } = parsed.data
+      const { email, password, clubName, city, address, rfc, indoorCourts, outdoorCourts } = parsed.data
 
       const existing = await prisma.user.findUnique({ where: { email } })
       if (existing) {
@@ -84,6 +84,7 @@ export async function POST(request: NextRequest) {
       }
 
       const passwordHash = await bcrypt.hash(password, 12)
+      const totalCourts = (indoorCourts || 0) + (outdoorCourts || 0)
 
       const user = await prisma.user.create({
         data: {
@@ -95,7 +96,11 @@ export async function POST(request: NextRequest) {
             create: {
               name: clubName,
               city,
-              courts: courts ?? 0,
+              address,
+              rfc,
+              indoorCourts: indoorCourts || 0,
+              outdoorCourts: outdoorCourts || 0,
+              courts: totalCourts,
               status: "PENDING",
             },
           },

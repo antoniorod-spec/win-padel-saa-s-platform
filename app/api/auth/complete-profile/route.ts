@@ -90,7 +90,8 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const { clubName, city, courts } = parsed.data
+      const { clubName, city, address, rfc, indoorCourts, outdoorCourts } = parsed.data
+      const totalCourts = (indoorCourts || 0) + (outdoorCourts || 0)
 
       // Actualizar usuario y crear perfil de club
       const updatedUser = await prisma.user.update({
@@ -102,7 +103,11 @@ export async function POST(request: NextRequest) {
             create: {
               name: clubName,
               city,
-              courts: courts ?? 0,
+              address,
+              rfc,
+              indoorCourts: indoorCourts || 0,
+              outdoorCourts: outdoorCourts || 0,
+              courts: totalCourts,
               status: "PENDING",
             },
           },

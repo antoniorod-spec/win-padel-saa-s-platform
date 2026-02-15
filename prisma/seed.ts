@@ -45,6 +45,9 @@ async function main() {
         create: {
           name: "Advantage Padel",
           city: "San Luis Potosi",
+          address: "Av. Carranza 2450, Col. Tangamanga",
+          indoorCourts: 4,
+          outdoorCourts: 4,
           courts: 8,
           status: "APPROVED",
           rating: 4.8,
@@ -66,6 +69,9 @@ async function main() {
         create: {
           name: "Marietta Padel",
           city: "San Luis Potosi",
+          address: "Boulevard Río Santiago 150, Lomas 2a Secc",
+          indoorCourts: 2,
+          outdoorCourts: 4,
           courts: 6,
           status: "APPROVED",
           rating: 4.7,
@@ -87,6 +93,9 @@ async function main() {
         create: {
           name: "Loma Golf",
           city: "San Luis Potosi",
+          address: "Privada Loma de San Luis 2001, Lomas Del Tec",
+          indoorCourts: 6,
+          outdoorCourts: 4,
           courts: 10,
           status: "APPROVED",
           rating: 4.9,
@@ -199,9 +208,9 @@ async function main() {
 
   // Create pending clubs for admin review
   const pendingClubData = [
-    { email: "padel.cancun@email.com", name: "Padel Arena Cancun", city: "Cancun", courts: 6 },
-    { email: "pro.tijuana@email.com", name: "Pro Padel Tijuana", city: "Tijuana", courts: 4 },
-    { email: "padel.leon@email.com", name: "Padel Zone Leon", city: "Leon", courts: 8 },
+    { email: "padel.cancun@email.com", name: "Padel Arena Cancun", city: "Cancun", address: "Av. Bonampak 123, Zona Hotelera", courts: 6, indoorCourts: 3, outdoorCourts: 3 },
+    { email: "pro.tijuana@email.com", name: "Pro Padel Tijuana", city: "Tijuana", address: "Blvd. Agua Caliente 456, Zona Rio", courts: 4, indoorCourts: 2, outdoorCourts: 2 },
+    { email: "padel.leon@email.com", name: "Padel Zone Leon", city: "Leon", address: "Blvd. Adolfo Lopez Mateos 789", courts: 8, indoorCourts: 4, outdoorCourts: 4 },
   ]
 
   for (const pc of pendingClubData) {
@@ -217,6 +226,9 @@ async function main() {
           create: {
             name: pc.name,
             city: pc.city,
+            address: pc.address,
+            indoorCourts: pc.indoorCourts,
+            outdoorCourts: pc.outdoorCourts,
             courts: pc.courts,
             status: "PENDING",
           },

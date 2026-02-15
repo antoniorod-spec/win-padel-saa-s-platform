@@ -29,7 +29,11 @@ export default function OnboardingPage() {
   // Club fields
   const [clubName, setClubName] = useState("")
   const [clubCity, setClubCity] = useState("")
-  const [courts, setCourts] = useState("")
+  const [clubAddress, setClubAddress] = useState("")
+  const [clubRfc, setClubRfc] = useState("")
+  const [indoorCourts, setIndoorCourts] = useState("")
+  const [outdoorCourts, setOutdoorCourts] = useState("")
+  const [courts, setCourts] = useState("") // Deprecated
 
   // Pre-llenar nombre si viene de Google
   useEffect(() => {
@@ -117,7 +121,10 @@ export default function OnboardingPage() {
           type: "club",
           clubName,
           city: clubCity,
-          courts: courts ? parseInt(courts) : undefined,
+          address: clubAddress,
+          rfc: clubRfc || undefined,
+          indoorCourts: indoorCourts ? parseInt(indoorCourts) : undefined,
+          outdoorCourts: outdoorCourts ? parseInt(outdoorCourts) : undefined,
         }),
       })
 
@@ -268,22 +275,50 @@ export default function OnboardingPage() {
                   <Label htmlFor="club-name">Nombre del Club</Label>
                   <Input id="club-name" placeholder="Padel Center CDMX" className="bg-background" value={clubName} onChange={(e) => setClubName(e.target.value)} required />
                 </div>
+                <div className="flex flex-col gap-2">
+                  <Label>Ciudad</Label>
+                  <Select value={clubCity} onValueChange={setClubCity} required>
+                    <SelectTrigger className="bg-background"><SelectValue placeholder="Ciudad" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="San Luis Potosi">San Luis Potosi</SelectItem>
+                      <SelectItem value="Ciudad de Mexico">Ciudad de Mexico</SelectItem>
+                      <SelectItem value="Guadalajara">Guadalajara</SelectItem>
+                      <SelectItem value="Monterrey">Monterrey</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="club-address">Direccion Completa</Label>
+                  <Input 
+                    id="club-address" 
+                    placeholder="Av. Insurgentes Sur 1234, Col. Centro" 
+                    className="bg-background" 
+                    value={clubAddress} 
+                    onChange={(e) => setClubAddress(e.target.value)} 
+                    required 
+                    minLength={10}
+                  />
+                  <span className="text-xs text-muted-foreground">Ingresa la direccion completa con calle, numero y colonia</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="club-rfc">RFC (opcional)</Label>
+                  <Input 
+                    id="club-rfc" 
+                    placeholder="ABC123456XYZ" 
+                    className="bg-background" 
+                    value={clubRfc} 
+                    onChange={(e) => setClubRfc(e.target.value.toUpperCase())} 
+                    maxLength={13}
+                  />
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex flex-col gap-2">
-                    <Label>Ciudad</Label>
-                    <Select value={clubCity} onValueChange={setClubCity} required>
-                      <SelectTrigger className="bg-background"><SelectValue placeholder="Ciudad" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="San Luis Potosi">San Luis Potosi</SelectItem>
-                        <SelectItem value="Ciudad de Mexico">Ciudad de Mexico</SelectItem>
-                        <SelectItem value="Guadalajara">Guadalajara</SelectItem>
-                        <SelectItem value="Monterrey">Monterrey</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="indoor">Canchas Interiores</Label>
+                    <Input id="indoor" type="number" placeholder="4" className="bg-background" value={indoorCourts} onChange={(e) => setIndoorCourts(e.target.value)} min="0" />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <Label htmlFor="canchas">Numero de Canchas</Label>
-                    <Input id="canchas" type="number" placeholder="8" className="bg-background" value={courts} onChange={(e) => setCourts(e.target.value)} />
+                    <Label htmlFor="outdoor">Canchas Exteriores</Label>
+                    <Input id="outdoor" type="number" placeholder="4" className="bg-background" value={outdoorCourts} onChange={(e) => setOutdoorCourts(e.target.value)} min="0" />
                   </div>
                 </div>
                 <Button type="submit" className="mt-2 w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>

@@ -23,8 +23,21 @@ export const registerClubSchema = z.object({
   password: z.string().min(8, "La contrasena debe tener al menos 8 caracteres"),
   clubName: z.string().min(3, "El nombre del club debe tener al menos 3 caracteres"),
   city: z.string().min(2, "La ciudad es requerida"),
-  courts: z.number().int().min(1).optional(),
-})
+  address: z.string().min(10, "La direccion debe tener al menos 10 caracteres"),
+  rfc: z.string().min(12).max(13).regex(/^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/, "RFC invalido").optional(),
+  indoorCourts: z.number().int().min(0).optional(),
+  outdoorCourts: z.number().int().min(0).optional(),
+}).refine(
+  (data) => {
+    const indoor = data.indoorCourts || 0
+    const outdoor = data.outdoorCourts || 0
+    return (indoor + outdoor) >= 1
+  },
+  {
+    message: "El club debe tener al menos 1 cancha (interior o exterior)",
+    path: ["indoorCourts"],
+  }
+)
 
 export type LoginInput = z.infer<typeof loginSchema>
 export type RegisterPlayerInput = z.infer<typeof registerPlayerSchema>
