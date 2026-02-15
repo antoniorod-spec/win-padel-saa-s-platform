@@ -98,6 +98,22 @@ export default function PlayerDashboard() {
 
   const player = playerData.data
   const stats = statsData.data
+
+  if (!player || !stats) {
+    return (
+      <DashboardShell
+        title="Mi Perfil"
+        subtitle="Error"
+        navItems={navItems}
+        activeItem="Dashboard"
+        role="jugador"
+      >
+        <div className="flex items-center justify-center h-64">
+          <div className="text-muted-foreground">Datos incompletos</div>
+        </div>
+      </DashboardShell>
+    )
+  }
   
   // Get primary ranking (first one or find VARONIL)
   const primaryRanking = player.rankings.find((r: any) => r.modality === "VARONIL") || player.rankings[0]
