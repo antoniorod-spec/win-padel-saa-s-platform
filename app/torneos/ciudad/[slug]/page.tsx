@@ -156,9 +156,6 @@ export default async function TorneosCiudadPage(
                         alt={`Cartel ${t.name}`}
                         className="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                         loading="lazy"
-                        onError={(e) => {
-                          ;(e.currentTarget as HTMLImageElement).src = "/demo/covers/default.svg"
-                        }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
                     </div>

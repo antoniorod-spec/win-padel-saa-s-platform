@@ -20,7 +20,9 @@ const DEMO_COVER_4 =
 
 // Use DIRECT_URL if available, otherwise DATABASE_URL without pgbouncer
 const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL
-const pool = new pg.Pool({ connectionString })
+// Keep this low to avoid saturating pooled DBs (pgbouncer / Neon / Supabase).
+const poolMax = Number.parseInt(process.env.PG_POOL_MAX || "1", 10) || 1
+const pool = new pg.Pool({ connectionString, max: poolMax })
 const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
 
@@ -272,6 +274,9 @@ async function main() {
         category: "A",
         format: "ROUND_ROBIN",
         prize: "$50,000 MXN",
+        // Demo assets (visual cards + 'Ver cartel' modal)
+        posterUrl: DEMO_COVER_1,
+        images: [DEMO_COVER_1, DEMO_COVER_2, DEMO_COVER_3],
         inscriptionPrice: 800,
         maxTeams: 64,
         status: "OPEN",
@@ -285,6 +290,24 @@ async function main() {
     })
     console.log("Tournament created:", tournament.name)
   }
+
+  // Ensure tournaments have demo posters even if they already existed (upserts above use update: {}).
+  await prisma.tournament.updateMany({
+    where: { id: "seed-tournament-1" },
+    data: {
+      posterUrl: DEMO_COVER_1,
+      images: [DEMO_COVER_1, DEMO_COVER_2, DEMO_COVER_3],
+    },
+  })
+
+  // Optional: give any tournament without poster a default one for demos.
+  await prisma.tournament.updateMany({
+    where: { posterUrl: null },
+    data: {
+      posterUrl: DEMO_COVER_2,
+      images: [DEMO_COVER_2, DEMO_COVER_3, DEMO_COVER_4],
+    },
+  })
 
   // Create pending clubs for admin review
   const pendingClubData = [

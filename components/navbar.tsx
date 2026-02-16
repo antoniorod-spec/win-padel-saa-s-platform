@@ -15,6 +15,7 @@ import {
   User,
   BarChart3,
   Calendar,
+  MapPin,
   Building2,
   LogOut,
   Shield,
@@ -24,13 +25,17 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
+import { useTournamentFiltersOptions } from "@/hooks/use-tournaments"
 
 const navLinks = [
-  { href: "/torneos", label: "Torneos", icon: Calendar },
   { href: "/ranking", label: "Ranking", icon: BarChart3 },
   { href: "/clubes", label: "Clubes", icon: Building2 },
   { href: "/como-funciona", label: "Como Funciona", icon: Zap },
@@ -40,9 +45,19 @@ export function Navbar() {
   const { theme, setTheme } = useTheme()
   const [open, setOpen] = useState(false)
   const { data: session, status } = useSession()
+  const { data: tournamentFiltersData } = useTournamentFiltersOptions()
 
   const isLoggedIn = status === "authenticated"
   const userRole = session?.user?.role
+
+  const filterPayload = tournamentFiltersData?.data
+  const citySlugLabels = filterPayload?.citySlugLabels ?? {}
+
+  const cityLinks = Object.entries(citySlugLabels)
+    .map(([slug, label]) => ({ slug, label: label || slug }))
+    .filter((c) => !!c.slug)
+    .sort((a, b) => a.label.localeCompare(b.label, "es"))
+    .slice(0, 16)
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
@@ -57,6 +72,43 @@ export function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
+                <Calendar className="h-4 w-4" />
+                Torneos
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-72">
+              <DropdownMenuItem asChild>
+                <Link href="/torneos" className="flex items-center gap-2">
+                  <Trophy className="h-4 w-4" />
+                  Ver todos los torneos
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="gap-2">
+                  <MapPin className="h-4 w-4" />
+                  Por Ciudad
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="w-72">
+                  <DropdownMenuLabel className="text-xs text-muted-foreground">Torneos de Pádel</DropdownMenuLabel>
+                  {cityLinks.length === 0 ? (
+                    <DropdownMenuItem disabled>No hay ciudades disponibles</DropdownMenuItem>
+                  ) : (
+                    cityLinks.map((c) => (
+                      <DropdownMenuItem key={c.slug} asChild>
+                        <Link href={`/torneos/ciudad/${c.slug}`}>{c.label}</Link>
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {navLinks.map((link) => (
             <Link key={link.href} href={link.href}>
               <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
@@ -153,6 +205,17 @@ export function Navbar() {
             <SheetContent side="right" className="w-72">
               <SheetTitle className="sr-only">Menu de navegacion</SheetTitle>
               <div className="mt-8 flex flex-col gap-4">
+                <Link href="/torneos" onClick={() => setOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start gap-3">
+                    <Calendar className="h-4 w-4" />
+                    Torneos
+                  </Button>
+                </Link>
+                <div className="grid grid-cols-1 gap-2">
+                  <Link href={cityLinks[0] ? `/torneos/ciudad/${cityLinks[0].slug}` : "/torneos"} onClick={() => setOpen(false)}>
+                    <Button variant="outline" className="w-full text-xs">Torneos por Ciudad</Button>
+                  </Link>
+                </div>
                 {navLinks.map((link) => (
                   <Link key={link.href} href={link.href} onClick={() => setOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start gap-3">
