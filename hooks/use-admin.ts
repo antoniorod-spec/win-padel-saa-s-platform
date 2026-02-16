@@ -83,6 +83,7 @@ export function useUpdateSiteBannerSettings() {
       homeSponsorBannerImageUrl?: string
       homeSponsorBannerLinkUrl?: string
       homeSponsorBannerTitle?: string
+      clubsDirectoryMapEnabled?: boolean
     }) => updateSiteBannerSettings(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "siteBannerSettings"] })

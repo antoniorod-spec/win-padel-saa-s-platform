@@ -158,6 +158,7 @@ model PlatformSetting {
   homeSponsorBannerImageUrl   String?
   homeSponsorBannerLinkUrl    String?
   homeSponsorBannerTitle      String?
+  clubsDirectoryMapEnabled    Boolean  @default(false)
   updatedByUserId             String?
   updatedAt                   DateTime @updatedAt
 

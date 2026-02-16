@@ -21,3 +21,6 @@ lib/generated/
 # Lock files - using npm
 pnpm-lock.yaml
 yarn.lock
+
+# Local scratch
+tmp/

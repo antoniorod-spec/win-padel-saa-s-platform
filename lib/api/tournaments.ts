@@ -4,8 +4,11 @@ import type { PaginatedResponse, BracketRound, GroupStanding } from "@/lib/types
 interface TournamentListItem {
   id: string
   name: string
+  clubId?: string
   clubName: string
   city: string
+  state?: string | null
+  country?: string | null
   startDate: string
   endDate: string
   category: string
@@ -110,9 +113,19 @@ interface TournamentResultSubmission {
 
 export async function fetchTournaments(params?: {
   status?: string
-  category?: string
+  category?: string // tournament.category (A/B/C)
   modality?: string
+  modalityCategories?: string
   city?: string
+  state?: string
+  cityKey?: string
+  stateKey?: string
+  clubId?: string
+  tournamentClass?: "MAJOR" | "REGULAR" | "EXPRESS" | string
+  type?: "FULL" | "BASIC" | string
+  format?: string
+  from?: string
+  to?: string
   search?: string
   mine?: boolean
   page?: number
@@ -160,6 +173,36 @@ export async function fetchGroups(tournamentId: string, modalityId?: string) {
 
 export async function fetchTeams(tournamentId: string, modalityId?: string) {
   return api.get<TeamInfo[]>(`/tournaments/${tournamentId}/teams`, { modalityId })
+}
+
+export interface TournamentFiltersOptions {
+  states: string[]
+  citiesByState: Record<string, string[]>
+  stateLabels: Record<string, string>
+  cityLabels: Record<string, string>
+  citySlugToCityKeys: Record<string, string[]>
+  citySlugLabels: Record<string, string>
+  tournamentStatuses: string[]
+  tournamentTypes: string[]
+  tournamentFormats: string[]
+  tournamentCategories: string[]
+  modalities: string[]
+  modalityCategories: string[]
+  clubs: Array<{
+    id: string
+    name: string
+    country: string
+    state: string
+    city: string
+    stateKey: string
+    cityKey: string
+  }>
+  dateMin: string | null
+  dateMax: string | null
+}
+
+export async function fetchTournamentFiltersOptions(params?: { status?: string }) {
+  return api.get<TournamentFiltersOptions>("/tournaments/filters", params)
 }
 
 export async function generateBracket(tournamentId: string, modalityId: string) {

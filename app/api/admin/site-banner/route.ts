@@ -30,6 +30,8 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json()
     const enabled = Boolean(body.homeSponsorBannerEnabled)
+    const clubsDirectoryMapEnabled =
+      typeof body.clubsDirectoryMapEnabled === "boolean" ? body.clubsDirectoryMapEnabled : undefined
     const imageUrl = typeof body.homeSponsorBannerImageUrl === "string" ? body.homeSponsorBannerImageUrl.trim() : ""
     const linkUrl = typeof body.homeSponsorBannerLinkUrl === "string" ? body.homeSponsorBannerLinkUrl.trim() : ""
     const title = typeof body.homeSponsorBannerTitle === "string" ? body.homeSponsorBannerTitle.trim() : ""
@@ -41,6 +43,7 @@ export async function PUT(request: NextRequest) {
         homeSponsorBannerImageUrl: imageUrl || null,
         homeSponsorBannerLinkUrl: linkUrl || null,
         homeSponsorBannerTitle: title || null,
+        ...(typeof clubsDirectoryMapEnabled === "boolean" ? { clubsDirectoryMapEnabled } : {}),
         updatedByUserId: session!.user.id,
       },
       create: {
@@ -49,6 +52,7 @@ export async function PUT(request: NextRequest) {
         homeSponsorBannerImageUrl: imageUrl || null,
         homeSponsorBannerLinkUrl: linkUrl || null,
         homeSponsorBannerTitle: title || null,
+        clubsDirectoryMapEnabled: typeof clubsDirectoryMapEnabled === "boolean" ? clubsDirectoryMapEnabled : false,
         updatedByUserId: session!.user.id,
       },
     })

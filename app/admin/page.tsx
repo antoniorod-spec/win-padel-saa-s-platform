@@ -72,6 +72,7 @@ export default function AdminDashboard() {
   const [bannerImageUrl, setBannerImageUrl] = useState("")
   const [bannerLinkUrl, setBannerLinkUrl] = useState("")
   const [bannerTitle, setBannerTitle] = useState("")
+  const [clubsDirectoryMapEnabled, setClubsDirectoryMapEnabled] = useState(false)
   const [associations, setAssociations] = useState<Array<{ id: string; name: string; city: string }>>([])
   const [pendingResultSubmissions, setPendingResultSubmissions] = useState<Array<any>>([])
   const [selectedAssociationBySubmission, setSelectedAssociationBySubmission] = useState<Record<string, string>>({})
@@ -83,6 +84,7 @@ export default function AdminDashboard() {
     setBannerImageUrl(siteBanner.homeSponsorBannerImageUrl ?? "")
     setBannerLinkUrl(siteBanner.homeSponsorBannerLinkUrl ?? "")
     setBannerTitle(siteBanner.homeSponsorBannerTitle ?? "")
+    setClubsDirectoryMapEnabled(Boolean(siteBanner.clubsDirectoryMapEnabled))
   }, [siteBanner])
 
   useEffect(() => {
@@ -139,6 +141,7 @@ export default function AdminDashboard() {
         homeSponsorBannerImageUrl: bannerImageUrl,
         homeSponsorBannerLinkUrl: bannerLinkUrl,
         homeSponsorBannerTitle: bannerTitle,
+        clubsDirectoryMapEnabled,
       })
       toast({
         title: "Configuración guardada",
@@ -538,6 +541,18 @@ export default function AdminDashboard() {
                   value={bannerLinkUrl}
                   onChange={(e) => setBannerLinkUrl(e.target.value)}
                 />
+              </div>
+
+              <div className="mt-6 rounded-lg border border-border/50 p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-card-foreground">Directorio de clubes: habilitar mapa</p>
+                    <p className="text-xs text-muted-foreground">
+                      Útil para desactivar mientras Google Maps no tenga facturación habilitada.
+                    </p>
+                  </div>
+                  <Switch checked={clubsDirectoryMapEnabled} onCheckedChange={setClubsDirectoryMapEnabled} />
+                </div>
               </div>
 
               <Button

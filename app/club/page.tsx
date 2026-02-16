@@ -21,7 +21,27 @@ import {
   WeeklyScheduleEditor,
 } from "@/components/club/weekly-schedule-editor"
 import { ImageUploadField } from "@/components/club/image-upload-field"
-import { LayoutDashboard, Trophy, Users, Newspaper, BarChart3, Plus, Check, CreditCard, Building2 } from "lucide-react"
+import { OnboardingSectionCard } from "@/components/onboarding/onboarding-section-card"
+import { cn } from "@/lib/utils"
+import { buildCityKey, buildStateKey } from "@/lib/location/keys"
+import {
+  LayoutDashboard,
+  Trophy,
+  Users,
+  Newspaper,
+  BarChart3,
+  Plus,
+  Check,
+  CreditCard,
+  Building2,
+  Car,
+  Lock,
+  ShowerHead,
+  Utensils,
+  Store,
+  Lightbulb,
+  Snowflake,
+} from "lucide-react"
 import {
   useCreateTournament,
   useTournaments,
@@ -108,6 +128,12 @@ function ClubDashboardContent() {
   const [country, setCountry] = useState("MX")
   const [state, setState] = useState("")
   const [city, setCity] = useState("")
+  const [selectedStateKey, setSelectedStateKey] = useState("")
+  const [selectedCityKey, setSelectedCityKey] = useState("")
+  const [locationStates, setLocationStates] = useState<string[]>([])
+  const [locationCitiesByState, setLocationCitiesByState] = useState<Record<string, string[]>>({})
+  const [locationStateLabels, setLocationStateLabels] = useState<Record<string, string>>({})
+  const [locationCityLabels, setLocationCityLabels] = useState<Record<string, string>>({})
   const [address, setAddress] = useState("")
   const [postalCode, setPostalCode] = useState("")
   const [neighborhood, setNeighborhood] = useState("")
@@ -154,6 +180,7 @@ function ClubDashboardContent() {
   const [savingNews, setSavingNews] = useState(false)
   const [editingNewsId, setEditingNewsId] = useState<string | null>(null)
   const [savingProfile, setSavingProfile] = useState(false)
+  const [profileSavedAt, setProfileSavedAt] = useState("Sin cambios recientes")
   const [resultTournamentId, setResultTournamentId] = useState("")
   const [resultModality, setResultModality] = useState<"VARONIL" | "FEMENIL" | "MIXTO">("VARONIL")
   const [resultCategory, setResultCategory] = useState("4ta")
@@ -206,6 +233,8 @@ function ClubDashboardContent() {
         setCountry(c.country || "MX")
         setState(c.state || "")
         setCity(c.city || "")
+        setSelectedStateKey(c.state ? buildStateKey(c.country || "MX", c.state) : "")
+        setSelectedCityKey(c.state && c.city ? buildCityKey(c.country || "MX", c.state, c.city) : "")
         setAddress(c.address || "")
         setPostalCode(c.postalCode || "")
         setNeighborhood(c.neighborhood || "")
@@ -252,6 +281,23 @@ function ClubDashboardContent() {
       active = false
     }
   }, [])
+
+  useEffect(() => {
+    let active = true
+    fetch(`/api/location/catalog?country=${encodeURIComponent(country || "MX")}`)
+      .then((r) => r.json())
+      .then((payload) => {
+        if (!active || !payload?.success) return
+        setLocationStates(Array.isArray(payload.data?.states) ? payload.data.states : [])
+        setLocationCitiesByState(payload.data?.citiesByState ?? {})
+        setLocationStateLabels(payload.data?.stateLabels ?? {})
+        setLocationCityLabels(payload.data?.cityLabels ?? {})
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [country])
 
   const tournaments = tournamentsData?.data?.items ?? []
   const myStats = useMemo(() => {
@@ -345,6 +391,7 @@ function ClubDashboardContent() {
       })
       const payload = await response.json()
       if (!response.ok) throw new Error(payload.error || "No se pudo guardar")
+      setProfileSavedAt(`Ultimo guardado: ${new Date().toLocaleTimeString()}`)
       toast({ title: "Perfil actualizado", description: "Los datos del club se guardaron correctamente." })
     } catch (error) {
       toast({
@@ -646,117 +693,279 @@ function ClubDashboardContent() {
       )}
 
       {section === "perfil" && (
-        <Card className="border-border/50">
-          <CardHeader>
-            <CardTitle>Perfil del Club</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2"><Label>Nombre del club</Label><Input value={clubName} onChange={(e) => setClubName(e.target.value)} /></div>
-            <div className="space-y-2 md:col-span-2">
-              <Label>Descripcion corta</Label>
-              <Textarea
-                value={clubDescription}
-                onChange={(e) => setClubDescription(e.target.value)}
-                placeholder="Describe en pocas lineas el club, su propuesta y ambiente."
-              />
-            </div>
-            <div className="space-y-2"><Label>Razon social</Label><Input value={legalName} onChange={(e) => setLegalName(e.target.value)} /></div>
-            <div className="space-y-2"><Label>RFC</Label><Input value={clubRfc} onChange={(e) => setClubRfc(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Telefono del club</Label><Input value={clubPhone} onChange={(e) => setClubPhone(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Email del club</Label><Input value={clubEmail} onChange={(e) => setClubEmail(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Sitio web</Label><Input value={clubWebsite} onChange={(e) => setClubWebsite(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Contacto responsable</Label><Input value={contactName} onChange={(e) => setContactName(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Telefono contacto</Label><Input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Email contacto</Label><Input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Puesto contacto</Label><Input value={contactPosition} onChange={(e) => setContactPosition(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Pais</Label><Input value={country} onChange={(e) => setCountry(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Estado</Label><Input value={state} onChange={(e) => setState(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Ciudad</Label><Input value={city} onChange={(e) => setCity(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Codigo postal</Label><Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Colonia</Label><Input value={neighborhood} onChange={(e) => setNeighborhood(e.target.value)} /></div>
-            <div className="md:col-span-2">
-              <AddressAutocomplete
-                label="Direccion"
-                value={address}
-                onChange={setAddress}
-                onCoordinatesChange={(lat, lng) => {
-                  setLatitude(lat)
-                  setLongitude(lng)
-                }}
-                placeholder="Busca por negocio o direccion"
-              />
-            </div>
-            <div className="space-y-2"><Label>Canchas interiores</Label><Input type="number" value={indoorCourts} onChange={(e) => setIndoorCourts(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Canchas exteriores</Label><Input type="number" value={outdoorCourts} onChange={(e) => setOutdoorCourts(e.target.value)} /></div>
-            <div className="space-y-2 md:col-span-2">
-              <Label>Superficies</Label>
-              <div className="grid gap-2 md:grid-cols-2">
-                {surfaceOptions.map((surface) => (
-                  <label key={surface} className="flex items-center gap-2 text-sm">
-                    <Checkbox
-                      checked={courtSurfaces.includes(surface)}
-                      onCheckedChange={(checked) => {
-                        setCourtSurfaces((prev) =>
-                          checked ? [...new Set([...prev, surface])] : prev.filter((item) => item !== surface)
+        <div className="grid gap-4 xl:grid-cols-12">
+          <div className="space-y-4 xl:col-span-8">
+            <Card className="border-border/50">
+              <CardHeader>
+                <CardTitle>Perfil del club</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <OnboardingSectionCard
+                  title="Información general"
+                  description="Datos principales que verán jugadores y asociaciones."
+                >
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2 md:col-span-2"><Label>Nombre del club</Label><Input value={clubName} onChange={(e) => setClubName(e.target.value)} /></div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Descripcion corta</Label>
+                      <Textarea
+                        value={clubDescription}
+                        onChange={(e) => setClubDescription(e.target.value)}
+                        placeholder="Describe en pocas lineas el club, su propuesta y ambiente."
+                      />
+                    </div>
+                    <div className="space-y-2"><Label>Razon social</Label><Input value={legalName} onChange={(e) => setLegalName(e.target.value)} /></div>
+                    <div className="space-y-2"><Label>RFC</Label><Input value={clubRfc} onChange={(e) => setClubRfc(e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Telefono del club</Label><Input value={clubPhone} onChange={(e) => setClubPhone(e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Email del club</Label><Input value={clubEmail} onChange={(e) => setClubEmail(e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Sitio web</Label><Input value={clubWebsite} onChange={(e) => setClubWebsite(e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Contacto responsable</Label><Input value={contactName} onChange={(e) => setContactName(e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Telefono contacto</Label><Input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Email contacto</Label><Input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Puesto contacto</Label><Input value={contactPosition} onChange={(e) => setContactPosition(e.target.value)} /></div>
+                  </div>
+                </OnboardingSectionCard>
+
+                <OnboardingSectionCard
+                  title="Ubicación"
+                  description="Asegura una dirección precisa para búsqueda y mapas."
+                >
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label>Pais</Label>
+                      <Select value={country} onValueChange={(value) => {
+                        setCountry(value)
+                        setSelectedStateKey("")
+                        setSelectedCityKey("")
+                        setState("")
+                        setCity("")
+                      }}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="MX">Mexico</SelectItem>
+                          <SelectItem value="ES">Espana</SelectItem>
+                          <SelectItem value="AR">Argentina</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Estado/Provincia</Label>
+                      <Select
+                        value={selectedStateKey || "all"}
+                        onValueChange={(value) => {
+                          if (value === "all") {
+                            setSelectedStateKey("")
+                            setSelectedCityKey("")
+                            setState("")
+                            setCity("")
+                            return
+                          }
+                          setSelectedStateKey(value)
+                          setSelectedCityKey("")
+                          setState(locationStateLabels[value] ?? "")
+                          setCity("")
+                        }}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Selecciona" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Selecciona</SelectItem>
+                          {locationStates.map((key) => (
+                            <SelectItem key={key} value={key}>
+                              {locationStateLabels[key] ?? key}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Ciudad</Label>
+                      <Select
+                        value={selectedCityKey || "all"}
+                        onValueChange={(value) => {
+                          if (value === "all") {
+                            setSelectedCityKey("")
+                            setCity("")
+                            return
+                          }
+                          setSelectedCityKey(value)
+                          setCity(locationCityLabels[value] ?? city)
+                        }}
+                        disabled={!selectedStateKey}
+                      >
+                        <SelectTrigger><SelectValue placeholder={selectedStateKey ? "Selecciona" : "Selecciona estado primero"} /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Selecciona</SelectItem>
+                          {(locationCitiesByState[selectedStateKey] ?? []).map((key) => (
+                            <SelectItem key={key} value={key}>
+                              {locationCityLabels[key] ?? key}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2"><Label>Codigo postal</Label><Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Colonia</Label><Input value={neighborhood} onChange={(e) => setNeighborhood(e.target.value)} /></div>
+                    <div className="md:col-span-2">
+                      <AddressAutocomplete
+                        label="Direccion"
+                        value={address}
+                        onChange={setAddress}
+                        onCoordinatesChange={(lat, lng) => {
+                          setLatitude(lat)
+                          setLongitude(lng)
+                        }}
+                        placeholder="Busca por negocio o direccion"
+                      />
+                    </div>
+                  </div>
+                </OnboardingSectionCard>
+
+                <OnboardingSectionCard
+                  title="Instalaciones"
+                  description="Gestiona canchas, superficies y horarios."
+                >
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2"><Label>Canchas interiores</Label><Input type="number" value={indoorCourts} onChange={(e) => setIndoorCourts(e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Canchas exteriores</Label><Input type="number" value={outdoorCourts} onChange={(e) => setOutdoorCourts(e.target.value)} /></div>
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm md:col-span-2">
+                      Total de canchas: <span className="font-semibold text-primary">{(parseInt(indoorCourts || "0", 10) || 0) + (parseInt(outdoorCourts || "0", 10) || 0)}</span>
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Superficies</Label>
+                      <div className="grid gap-2 md:grid-cols-2">
+                        {surfaceOptions.map((surface) => {
+                          const selected = courtSurfaces.includes(surface)
+                          return (
+                            <button
+                              key={surface}
+                              type="button"
+                              onClick={() =>
+                                setCourtSurfaces((prev) =>
+                                  selected ? prev.filter((item) => item !== surface) : [...prev, surface]
+                                )
+                              }
+                              className={cn(
+                                "rounded-lg border px-3 py-2 text-left text-sm transition-colors",
+                                selected
+                                  ? "border-primary bg-primary/10 text-primary"
+                                  : "border-border/60 bg-background text-foreground hover:border-primary/40"
+                              )}
+                            >
+                              {surface}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Horario base (legacy)</Label>
+                      <Input value={operatingHours} onChange={(e) => setOperatingHours(e.target.value)} />
+                    </div>
+                    <div className="space-y-2"><Label>Rango de precio</Label><Input value={priceRange} onChange={(e) => setPriceRange(e.target.value)} /></div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Horario semanal por dia</Label>
+                      <WeeklyScheduleEditor value={weeklySchedule} onChange={setWeeklySchedule} />
+                    </div>
+                  </div>
+                </OnboardingSectionCard>
+
+                <OnboardingSectionCard
+                  title="Servicios y visibilidad"
+                  description="Destaca comodidades y canales para atraer jugadores."
+                >
+                  <div className="space-y-4">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {[
+                        { label: "Estacionamiento", icon: Car, active: hasParking, setter: setHasParking },
+                        { label: "Vestidores", icon: Lock, active: hasLockers, setter: setHasLockers },
+                        { label: "Regaderas", icon: ShowerHead, active: hasShowers, setter: setHasShowers },
+                        { label: "Cafeteria", icon: Utensils, active: hasCafeteria, setter: setHasCafeteria },
+                        { label: "Pro shop", icon: Store, active: hasProShop, setter: setHasProShop },
+                        { label: "Iluminacion", icon: Lightbulb, active: hasLighting, setter: setHasLighting },
+                        { label: "Aire acondicionado", icon: Snowflake, active: hasAirConditioning, setter: setHasAirConditioning },
+                      ].map((item) => {
+                        const Icon = item.icon
+                        return (
+                          <button
+                            key={item.label}
+                            type="button"
+                            onClick={() => item.setter(!item.active)}
+                            className={cn(
+                              "flex items-center gap-3 rounded-lg border px-3 py-3 text-left text-sm transition-colors",
+                              item.active
+                                ? "border-primary bg-primary/10 text-primary"
+                                : "border-border/60 bg-background text-foreground hover:border-primary/40"
+                            )}
+                          >
+                            <Icon className="h-4 w-4" />
+                            <span className="font-medium">{item.label}</span>
+                          </button>
                         )
-                      }}
+                      })}
+                      <label className="flex items-center gap-2 rounded-lg border border-border/60 px-3 py-3 text-sm">
+                        <Checkbox checked={acceptsOnlineBooking} onCheckedChange={(v) => setAcceptsOnlineBooking(Boolean(v))} />
+                        Reserva online
+                      </label>
+                    </div>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2"><Label>Facebook</Label><Input value={facebook} onChange={(e) => setFacebook(e.target.value)} /></div>
+                      <div className="space-y-2"><Label>Instagram</Label><Input value={instagram} onChange={(e) => setInstagram(e.target.value)} /></div>
+                      <div className="space-y-2"><Label>TikTok</Label><Input value={tiktok} onChange={(e) => setTiktok(e.target.value)} /></div>
+                      <div className="space-y-2"><Label>YouTube</Label><Input value={youtube} onChange={(e) => setYoutube(e.target.value)} /></div>
+                      <div className="space-y-2"><Label>LinkedIn</Label><Input value={linkedin} onChange={(e) => setLinkedin(e.target.value)} /></div>
+                      <div className="space-y-2"><Label>X</Label><Input value={x} onChange={(e) => setX(e.target.value)} /></div>
+                      <div className="space-y-2"><Label>WhatsApp</Label><Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} /></div>
+                      <div className="space-y-2 md:col-span-2"><Label>Servicios (separados por coma)</Label><Textarea value={servicesText} onChange={(e) => setServicesText(e.target.value)} /></div>
+                    </div>
+                  </div>
+                </OnboardingSectionCard>
+
+                <OnboardingSectionCard
+                  title="Identidad visual"
+                  description="Sube y actualiza logo y galería pública."
+                >
+                  <div className="space-y-4">
+                    <ImageUploadField
+                      label="Logo del club"
+                      endpoint="/api/uploads/club/logo"
+                      value={clubLogoUrls}
+                      onChange={setClubLogoUrls}
                     />
-                    {surface}
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Horario base (legacy)</Label>
-              <Input value={operatingHours} onChange={(e) => setOperatingHours(e.target.value)} />
-            </div>
-            <div className="space-y-2"><Label>Rango de precio</Label><Input value={priceRange} onChange={(e) => setPriceRange(e.target.value)} /></div>
-            <div className="space-y-2 md:col-span-2">
-              <Label>Horario semanal por dia</Label>
-              <WeeklyScheduleEditor value={weeklySchedule} onChange={setWeeklySchedule} />
-            </div>
-            <div className="space-y-2 md:col-span-2">
-              <ImageUploadField
-                label="Logo del club"
-                endpoint="/api/uploads/club/logo"
-                value={clubLogoUrls}
-                onChange={setClubLogoUrls}
-              />
-            </div>
-            <div className="space-y-2 md:col-span-2"><Label>Servicios (separados por coma)</Label><Textarea value={servicesText} onChange={(e) => setServicesText(e.target.value)} /></div>
-            <div className="space-y-2 md:col-span-2">
-              <ImageUploadField
-                label="Galeria del club"
-                endpoint="/api/uploads/club/gallery"
-                multiple
-                value={galleryUrls}
-                onChange={setGalleryUrls}
-              />
-            </div>
-            <div className="space-y-2"><Label>Facebook</Label><Input value={facebook} onChange={(e) => setFacebook(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Instagram</Label><Input value={instagram} onChange={(e) => setInstagram(e.target.value)} /></div>
-            <div className="space-y-2"><Label>TikTok</Label><Input value={tiktok} onChange={(e) => setTiktok(e.target.value)} /></div>
-            <div className="space-y-2"><Label>YouTube</Label><Input value={youtube} onChange={(e) => setYoutube(e.target.value)} /></div>
-            <div className="space-y-2"><Label>LinkedIn</Label><Input value={linkedin} onChange={(e) => setLinkedin(e.target.value)} /></div>
-            <div className="space-y-2"><Label>X</Label><Input value={x} onChange={(e) => setX(e.target.value)} /></div>
-            <div className="space-y-2"><Label>WhatsApp</Label><Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} /></div>
-            <div className="md:col-span-2 grid gap-3 md:grid-cols-2 rounded-lg border border-border/50 p-4">
-              <label className="flex items-center gap-2 text-sm"><Checkbox checked={hasParking} onCheckedChange={(v) => setHasParking(Boolean(v))} /> Estacionamiento</label>
-              <label className="flex items-center gap-2 text-sm"><Checkbox checked={hasLockers} onCheckedChange={(v) => setHasLockers(Boolean(v))} /> Vestidores</label>
-              <label className="flex items-center gap-2 text-sm"><Checkbox checked={hasShowers} onCheckedChange={(v) => setHasShowers(Boolean(v))} /> Regaderas</label>
-              <label className="flex items-center gap-2 text-sm"><Checkbox checked={hasCafeteria} onCheckedChange={(v) => setHasCafeteria(Boolean(v))} /> Cafeteria</label>
-              <label className="flex items-center gap-2 text-sm"><Checkbox checked={hasProShop} onCheckedChange={(v) => setHasProShop(Boolean(v))} /> Pro shop</label>
-              <label className="flex items-center gap-2 text-sm"><Checkbox checked={hasLighting} onCheckedChange={(v) => setHasLighting(Boolean(v))} /> Iluminacion</label>
-              <label className="flex items-center gap-2 text-sm"><Checkbox checked={hasAirConditioning} onCheckedChange={(v) => setHasAirConditioning(Boolean(v))} /> Aire acondicionado</label>
-              <label className="flex items-center gap-2 text-sm"><Checkbox checked={acceptsOnlineBooking} onCheckedChange={(v) => setAcceptsOnlineBooking(Boolean(v))} /> Reserva online</label>
-            </div>
-            <div className="md:col-span-2">
-              <Button onClick={saveProfile} disabled={savingProfile} className="bg-primary text-primary-foreground">
-                {savingProfile ? "Guardando..." : "Guardar perfil"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+                    <ImageUploadField
+                      label="Galeria del club"
+                      endpoint="/api/uploads/club/gallery"
+                      multiple
+                      value={galleryUrls}
+                      onChange={setGalleryUrls}
+                    />
+                  </div>
+                </OnboardingSectionCard>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="space-y-4 xl:col-span-4">
+            <Card className="border-primary/20 bg-primary/5">
+              <CardHeader>
+                <CardTitle className="text-base">Estado del perfil</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm text-muted-foreground">
+                <p>Completa y actualiza los bloques para mejorar visibilidad del club y conversión de reservas.</p>
+                <p>{profileSavedAt}</p>
+              </CardContent>
+            </Card>
+            <Card className="border-border/50">
+              <CardHeader>
+                <CardTitle className="text-base">Acciones</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Button onClick={saveProfile} disabled={savingProfile} className="w-full bg-primary text-primary-foreground">
+                  {savingProfile ? "Guardando..." : "Guardar perfil"}
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       )}
 
       {section === "noticias" && (

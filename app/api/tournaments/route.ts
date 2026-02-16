@@ -2,14 +2,25 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { requireAuth } from "@/lib/auth-helpers"
 import { createTournamentSchema } from "@/lib/validations/tournament"
+import { buildCityKey, buildStateKey } from "@/lib/location/keys"
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get("status")
-    const category = searchParams.get("category")
+    const category = searchParams.get("category") // tournament.category (A/B/C)
     const modality = searchParams.get("modality")
     const city = searchParams.get("city")
+    const state = searchParams.get("state")
+    const cityKey = searchParams.get("cityKey")
+    const stateKey = searchParams.get("stateKey")
+    const clubId = searchParams.get("clubId")
+    const format = searchParams.get("format")
+    const type = searchParams.get("type")
+    const tournamentClass = searchParams.get("tournamentClass") // MAJOR | REGULAR | EXPRESS
+    const modalityCategoriesRaw = searchParams.get("modalityCategories")
+    const from = searchParams.get("from")
+    const to = searchParams.get("to")
     const search = searchParams.get("search")
     const mine = searchParams.get("mine") === "true"
     const page = parseInt(searchParams.get("page") ?? "1")
@@ -29,10 +40,65 @@ export async function GET(request: NextRequest) {
           : requestedStatuses[0]
     }
     if (category) where.category = category
-    if (city) where.club = { is: { city } }
+    if (clubId) where.clubId = clubId
+    if (type) where.type = type
+    if (format) where.format = format
+    if (tournamentClass) {
+      const tc = tournamentClass.trim().toUpperCase()
+      if (tc === "EXPRESS") {
+        where.format = "EXPRESS"
+      } else if (tc === "MAJOR") {
+        // Pragmatic mapping without DB change:
+        // Major = category A
+        where.category = "A"
+      } else if (tc === "REGULAR") {
+        // Regular = category B/C (exclude A); keep it simple.
+        where.category = { in: ["B", "C"] }
+      }
+    }
+    if (city || state) {
+      where.club = {
+        is: {
+          ...(city ? { city } : {}),
+          ...(state ? { state } : {}),
+        },
+      }
+    }
     if (search) where.name = { contains: search, mode: "insensitive" }
     if (modality) {
       where.modalities = { some: { modality } }
+    }
+    if (modalityCategoriesRaw) {
+      const categoriesList = modalityCategoriesRaw
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean)
+      if (categoriesList.length > 0) {
+        where.modalities = {
+          some: {
+            ...(modality ? { modality } : {}),
+            category: categoriesList.length > 1 ? { in: categoriesList } : categoriesList[0],
+          },
+        }
+      }
+    }
+    if (from || to) {
+      const fromDate = from ? new Date(from) : null
+      const toDate = to ? new Date(to) : null
+      if (fromDate && Number.isNaN(fromDate.getTime())) {
+        return NextResponse.json({ success: false, error: "Parametro 'from' invalido" }, { status: 400 })
+      }
+      if (toDate && Number.isNaN(toDate.getTime())) {
+        return NextResponse.json({ success: false, error: "Parametro 'to' invalido" }, { status: 400 })
+      }
+      // Overlap logic: tournament intersects [from,to]
+      if (fromDate && toDate) {
+        where.AND = [{ startDate: { lte: toDate } }, { endDate: { gte: fromDate } }]
+      } else if (fromDate) {
+        where.endDate = { gte: fromDate }
+      } else if (toDate) {
+        where.startDate = { lte: toDate }
+      }
     }
 
     if (mine) {
@@ -43,15 +109,110 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    const shouldFilterByKeys = Boolean(cityKey || stateKey)
+
+    const desiredCityKey = cityKey?.trim() || null
+    const desiredStateKey = stateKey?.trim() || null
+
+    const selectQuery = {
+      id: true,
+      name: true,
+      startDate: true,
+      endDate: true,
+      category: true,
+      format: true,
+      prize: true,
+      sponsorName: true,
+      sponsorLogoUrl: true,
+      logoUrl: true,
+      inscriptionPrice: true,
+      type: true,
+      externalRegistrationType: true,
+      externalRegistrationLink: true,
+      registrationDeadline: true,
+      posterUrl: true,
+      resultsValidationStatus: true,
+      maxTeams: true,
+      status: true,
+      clubId: true,
+      club: { select: { name: true, city: true, state: true, country: true } },
+      modalities: {
+        select: {
+          modality: true,
+          category: true,
+          _count: { select: { registrations: true } },
+        },
+      },
+    } as const
+
+    if (shouldFilterByKeys) {
+      // Key filtering cannot be expressed in Prisma without storing the keys in DB,
+      // so we fetch the filtered set and apply normalized key matching in-memory.
+      const all = await prisma.tournament.findMany({
+        where,
+        select: selectQuery,
+        orderBy: { startDate: "asc" },
+        take: 2000,
+      })
+
+      const filtered = all.filter((t) => {
+        const country = t.club.country || "MX"
+        const st = t.club.state || ""
+        const ct = t.club.city || ""
+        const stKey = buildStateKey(country, st)
+        const ctKey = buildCityKey(country, st, ct)
+        if (desiredStateKey && stKey !== desiredStateKey) return false
+        if (desiredCityKey && ctKey !== desiredCityKey) return false
+        return true
+      })
+
+      const total = filtered.length
+      const start = (page - 1) * pageSize
+      const pageItems = filtered.slice(start, start + pageSize)
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          items: pageItems.map((t) => ({
+            id: t.id,
+            name: t.name,
+            clubId: t.clubId,
+            clubName: t.club.name,
+            city: t.club.city,
+            state: t.club.state,
+            country: t.club.country,
+            startDate: t.startDate,
+            endDate: t.endDate,
+            category: t.category,
+            format: t.format,
+            prize: t.prize,
+            sponsorName: t.sponsorName,
+            sponsorLogoUrl: t.sponsorLogoUrl,
+            logoUrl: t.logoUrl,
+            inscriptionPrice: Number(t.inscriptionPrice),
+            type: t.type,
+            externalRegistrationType: t.externalRegistrationType,
+            externalRegistrationLink: t.externalRegistrationLink,
+            registrationDeadline: t.registrationDeadline,
+            posterUrl: t.posterUrl,
+            resultsValidationStatus: t.resultsValidationStatus,
+            maxTeams: t.maxTeams,
+            status: t.status,
+            modalities: t.modalities.map((m) => `${m.modality} ${m.category}`),
+            registeredTeams: t.modalities.reduce((sum, m) => sum + m._count.registrations, 0),
+          })),
+          total,
+          page,
+          pageSize,
+          totalPages: Math.ceil(total / pageSize),
+        },
+      })
+    }
+
     const [tournaments, total] = await Promise.all([
       prisma.tournament.findMany({
         where,
-        include: {
-          club: { select: { name: true, city: true } },
-          modalities: {
-            include: { _count: { select: { registrations: true } } },
-          },
-        },
+        select: selectQuery,
         skip: (page - 1) * pageSize,
         take: pageSize,
         orderBy: { startDate: "asc" },
@@ -65,8 +226,11 @@ export async function GET(request: NextRequest) {
         items: tournaments.map((t) => ({
           id: t.id,
           name: t.name,
+          clubId: t.clubId,
           clubName: t.club.name,
           city: t.club.city,
+          state: t.club.state,
+          country: t.club.country,
           startDate: t.startDate,
           endDate: t.endDate,
           category: t.category,

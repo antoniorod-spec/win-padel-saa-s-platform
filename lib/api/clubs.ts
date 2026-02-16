@@ -1,17 +1,77 @@
 import { api } from "./client"
+import type { PaginatedResponse } from "@/lib/types"
 
 export interface ClubListItem {
   id: string
   name: string
   city: string
+  state: string
   country: string
+  address: string | null
+  latitude: number | null
+  longitude: number | null
   courts: number
+  indoorCourts: number
+  outdoorCourts: number
+  courtSurface: string | null
+  courtSurfaces: string[] | null
   rating: number
   description: string | null
   phone: string | null
+  website: string | null
+  whatsapp: string | null
+  facebook: string | null
+  instagram: string | null
+  hasParking: boolean
+  hasLockers: boolean
+  hasShowers: boolean
+  hasCafeteria: boolean
+  hasProShop: boolean
+  hasLighting: boolean
+  hasAirConditioning: boolean
+  acceptsOnlineBooking: boolean
   logoUrl: string | null
+  coverImageUrl: string | null
   tournaments: number
   status: string
+}
+
+export interface ClubDirectoryQueryParams {
+  // Prefer stateKey/cityKey (normalized, accent-insensitive).
+  // city/state remain for backwards compatibility.
+  city?: string
+  state?: string
+  cityKey?: string
+  stateKey?: string
+  status?: string
+  search?: string
+  surfaces?: string[]
+  amenities?: string[]
+  sort?: "rating_desc" | "rating_asc" | "name_asc" | "name_desc" | "courts_desc"
+  page?: number
+  pageSize?: number
+}
+
+export interface ClubFilterOptions {
+  states: string[]
+  citiesByState: Record<string, string[]>
+  surfaces: string[]
+  clubsDirectoryMapEnabled: boolean
+  stateLabels: Record<string, string>
+  cityLabels: Record<string, string>
+  amenities: Array<{
+    key:
+      | "hasParking"
+      | "hasLockers"
+      | "hasShowers"
+      | "hasCafeteria"
+      | "hasProShop"
+      | "hasLighting"
+      | "hasAirConditioning"
+      | "acceptsOnlineBooking"
+    label: string
+    count: number
+  }>
 }
 
 export interface ClubDetail extends ClubListItem {
@@ -153,14 +213,39 @@ interface ClubStats {
 
 export async function fetchClubs(params?: {
   city?: string
+  state?: string
+  cityKey?: string
+  stateKey?: string
   status?: string
   search?: string
+  surfaces?: string[]
+  amenities?: string[]
+  sort?: "rating_desc" | "rating_asc" | "name_asc" | "name_desc" | "courts_desc"
+  page?: number
+  pageSize?: number
 }) {
-  return api.get<ClubListItem[]>("/clubs", params)
+  const queryParams: Record<string, string | number | boolean | undefined> = {
+    city: params?.city,
+    state: params?.state,
+    cityKey: params?.cityKey,
+    stateKey: params?.stateKey,
+    status: params?.status,
+    search: params?.search,
+    surfaces: params?.surfaces && params.surfaces.length > 0 ? params.surfaces.join(",") : undefined,
+    amenities: params?.amenities && params.amenities.length > 0 ? params.amenities.join(",") : undefined,
+    sort: params?.sort,
+    page: params?.page,
+    pageSize: params?.pageSize,
+  }
+  return api.get<PaginatedResponse<ClubListItem>>("/clubs", queryParams)
 }
 
 export async function fetchClub(id: string) {
   return api.get<ClubDetail>(`/clubs/${id}`)
+}
+
+export async function fetchClubFiltersOptions(params?: { status?: string }) {
+  return api.get<ClubFilterOptions>("/clubs/filters", params)
 }
 
 export async function updateClub(id: string, data: Record<string, unknown>) {

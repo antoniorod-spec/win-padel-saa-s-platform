@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useParams } from "next/navigation"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/landing/footer"
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -20,22 +21,116 @@ import {
   DollarSign,
   Award,
   BarChart3,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react"
-import { useTournament, useTournamentBracket, useTournamentTeams } from "@/hooks/use-tournaments"
+import { useTournament, useTournamentBracket, useTournamentGroups, useTournamentTeams } from "@/hooks/use-tournaments"
 import { useGenerateBracket } from "@/hooks/use-tournaments"
 import { RegisterTeamModal } from "@/components/modals/register-team-modal"
 import { ImportTeamsModal } from "@/components/modals/import-teams-modal"
+import { cn } from "@/lib/utils"
+
+function startOfMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1)
+}
+
+function endOfMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0)
+}
+
+function addMonths(date: Date, delta: number) {
+  return new Date(date.getFullYear(), date.getMonth() + delta, 1)
+}
+
+function monthKey(date: Date) {
+  return date.getFullYear() * 12 + date.getMonth()
+}
+
+function isSameDay(a: Date, b: Date) {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
+}
+
+function isBetweenInclusive(day: Date, start: Date, end: Date) {
+  const d = new Date(day.getFullYear(), day.getMonth(), day.getDate()).getTime()
+  const s = new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime()
+  const e = new Date(end.getFullYear(), end.getMonth(), end.getDate()).getTime()
+  return d >= s && d <= e
+}
+
+function formatMonthTitle(date: Date) {
+  try {
+    return date.toLocaleDateString("es-MX", { month: "long", year: "numeric" })
+  } catch {
+    return `${date.getMonth() + 1}/${date.getFullYear()}`
+  }
+}
 
 export default function TournamentPage() {
   const params = useParams()
   const tournamentId = params.id as string
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
   const [isImportModalOpen, setIsImportModalOpen] = useState(false)
+  const [selectedModalityId, setSelectedModalityId] = useState<string>("")
+  const [calendarMonth, setCalendarMonth] = useState<Date | null>(null)
 
   const { data: tournamentData, isLoading } = useTournament(tournamentId)
   const { data: bracketData } = useTournamentBracket(tournamentId)
+  const { data: groupsData, isLoading: isGroupsLoading } = useTournamentGroups(
+    tournamentId,
+    selectedModalityId || undefined
+  )
   const { data: teamsData } = useTournamentTeams(tournamentId)
   const generateBracket = useGenerateBracket()
+
+  // IMPORTANT: all hooks (useMemo/useEffect) must run BEFORE any early returns.
+  const tournament = tournamentData?.data
+  const bracket = bracketData?.data
+  const teams = teamsData?.data || []
+  const groups = groupsData?.data?.groups ?? []
+
+  const tournamentStart = useMemo(() => {
+    if (!tournament?.startDate) return null
+    return new Date(tournament.startDate)
+  }, [tournament?.startDate])
+
+  const tournamentEnd = useMemo(() => {
+    if (!tournament?.endDate) return null
+    return new Date(tournament.endDate)
+  }, [tournament?.endDate])
+
+  useEffect(() => {
+    if (!tournament) return
+    if (selectedModalityId) return
+    const first = Array.isArray(tournament.modalities) ? tournament.modalities[0]?.id : null
+    if (first) setSelectedModalityId(first)
+  }, [tournament, selectedModalityId])
+
+  useEffect(() => {
+    if (calendarMonth) return
+    if (!tournamentStart) return
+    setCalendarMonth(startOfMonth(tournamentStart))
+  }, [calendarMonth, tournamentStart])
+
+  const effectiveMonth = useMemo(() => {
+    // Keep this ALWAYS a Date to avoid hook-order workarounds and TS null checks.
+    if (calendarMonth) return calendarMonth
+    if (tournamentStart) return startOfMonth(tournamentStart)
+    return startOfMonth(new Date())
+  }, [calendarMonth, tournamentStart])
+
+  const calendarCells = useMemo(() => {
+    const monthStart = startOfMonth(effectiveMonth)
+    const startWeekday = monthStart.getDay() // 0=Sun
+    const gridStart = new Date(monthStart)
+    gridStart.setDate(monthStart.getDate() - startWeekday)
+    const cells: Array<{ date: Date; inCurrentMonth: boolean }> = []
+    for (let i = 0; i < 42; i += 1) {
+      const d = new Date(gridStart)
+      d.setDate(gridStart.getDate() + i)
+      cells.push({ date: d, inCurrentMonth: d.getMonth() === monthStart.getMonth() })
+    }
+    return cells
+  }, [effectiveMonth])
 
   if (isLoading) {
     return (
@@ -49,7 +144,7 @@ export default function TournamentPage() {
     )
   }
 
-  if (!tournamentData?.data) {
+  if (!tournament) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
@@ -61,12 +156,10 @@ export default function TournamentPage() {
     )
   }
 
-  const tournament = tournamentData.data
-  const bracket = bracketData?.data
-  const teams = teamsData?.data || []
-
   const isRegistrationOpen = tournament.status === "OPEN"
   const isAlmostFull = tournament.registeredTeams >= tournament.maxTeams * 0.9
+  const tournamentStartDate = tournamentStart ?? new Date(tournament.startDate)
+  const tournamentEndDate = tournamentEnd ?? new Date(tournament.endDate)
 
   return (
     <div className="min-h-screen bg-background">
@@ -186,9 +279,11 @@ export default function TournamentPage() {
         {/* Content */}
         <section className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
           <Tabs defaultValue="teams">
-            <TabsList className="mb-6">
+            <TabsList className="mb-6 flex w-full justify-start gap-6 overflow-x-auto rounded-none bg-transparent p-0 border-b border-border/60">
               {bracket && tournament.type !== "BASIC" ? <TabsTrigger value="bracket">Cuadro / Bracket</TabsTrigger> : null}
               <TabsTrigger value="teams">Parejas Inscritas</TabsTrigger>
+              <TabsTrigger value="calendar">Calendario</TabsTrigger>
+              <TabsTrigger value="groups">Grupos</TabsTrigger>
               <TabsTrigger value="info">Info del Torneo</TabsTrigger>
             </TabsList>
 
@@ -273,6 +368,238 @@ export default function TournamentPage() {
                   )}
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="calendar">
+              <Card className="border-border/50">
+                <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <CardTitle className="font-display text-lg text-card-foreground">Calendario del torneo</CardTitle>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {new Date(tournament.startDate).toLocaleDateString()} - {new Date(tournament.endDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="outline"
+                      onClick={() => setCalendarMonth(addMonths(effectiveMonth, -1))}
+                      disabled={monthKey(effectiveMonth) <= monthKey(startOfMonth(tournamentStartDate))}
+                      title="Mes anterior"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setCalendarMonth(startOfMonth(tournamentStartDate))}
+                      className="px-4 text-xs font-bold uppercase tracking-wider"
+                      title="Ir al inicio del torneo"
+                    >
+                      Inicio
+                    </Button>
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="outline"
+                      onClick={() => setCalendarMonth(addMonths(effectiveMonth, 1))}
+                      disabled={monthKey(effectiveMonth) >= monthKey(startOfMonth(tournamentEndDate))}
+                      title="Mes siguiente"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <h3 className="font-display text-2xl font-black uppercase tracking-wide text-card-foreground">
+                      {formatMonthTitle(effectiveMonth)}
+                    </h3>
+                    <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded bg-primary" />
+                        Días de torneo
+                      </div>
+                      {tournament.registrationDeadline ? (
+                        <div className="flex items-center gap-2">
+                          <span className="h-3 w-3 rounded bg-slate-900" />
+                          Cierre inscripciones
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <div className="overflow-hidden rounded-2xl border border-border/60 bg-background">
+                    <div className="grid grid-cols-7 border-b border-border/60 bg-muted/40">
+                      {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((d) => (
+                        <div
+                          key={d}
+                          className="py-3 text-center text-[10px] font-black uppercase tracking-widest text-muted-foreground"
+                        >
+                          {d}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-7">
+                      {calendarCells.map((cell) => {
+                        const inTournamentRange = isBetweenInclusive(cell.date, tournamentStartDate, tournamentEndDate)
+                        const isRegistrationDeadline =
+                          tournament.registrationDeadline &&
+                          isSameDay(cell.date, new Date(tournament.registrationDeadline))
+                        return (
+                          <div
+                            key={cell.date.toISOString()}
+                            className={cn(
+                              "min-h-[110px] border-b border-r border-border/40 p-2 text-xs",
+                              // last column
+                              cell.date.getDay() === 6 ? "border-r-0" : "",
+                              !cell.inCurrentMonth ? "text-muted-foreground/40" : "text-card-foreground",
+                              inTournamentRange ? "bg-primary/5" : "",
+                              isRegistrationDeadline ? "bg-slate-900/5" : ""
+                            )}
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <span className={cn("text-sm font-semibold", !cell.inCurrentMonth ? "opacity-50" : "")}>
+                                {cell.date.getDate()}
+                              </span>
+                              {inTournamentRange ? (
+                                <span className="mt-1 h-2 w-2 rounded bg-primary" title="Día de torneo" />
+                              ) : isRegistrationDeadline ? (
+                                <span className="mt-1 h-2 w-2 rounded bg-slate-900" title="Cierre de inscripciones" />
+                              ) : null}
+                            </div>
+                            {inTournamentRange ? (
+                              <div className="mt-2 rounded bg-primary px-2 py-1 text-[10px] font-black uppercase text-primary-foreground">
+                                {tournament.name}
+                              </div>
+                            ) : isRegistrationDeadline ? (
+                              <div className="mt-2 rounded bg-slate-900 px-2 py-1 text-[10px] font-black uppercase text-white">
+                                Cierre inscripciones
+                              </div>
+                            ) : null}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="groups">
+              <div className="space-y-4">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <h2 className="font-display text-xl font-black uppercase tracking-wide text-card-foreground">
+                      Fase de grupos
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      Tabla calculada con partidos de fase de grupos (roundOrder=1).
+                    </p>
+                  </div>
+
+                  {Array.isArray(tournament.modalities) && tournament.modalities.length > 1 ? (
+                    <div className="w-full md:w-[320px]">
+                      <Select value={selectedModalityId || tournament.modalities[0]?.id} onValueChange={setSelectedModalityId}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona modalidad" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {tournament.modalities.map((m: any) => (
+                            <SelectItem key={m.id} value={m.id}>
+                              {m.category} {m.modality}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ) : null}
+                </div>
+
+                <Card className="border-border/50">
+                  <CardContent className="p-0">
+                    {isGroupsLoading ? (
+                      <div className="p-6">
+                        <p className="text-sm text-muted-foreground">Cargando grupos...</p>
+                      </div>
+                    ) : groups.length === 0 ? (
+                      <div className="p-6">
+                        <p className="text-sm text-muted-foreground">
+                          No hay grupos disponibles aún. Se muestran cuando existan partidos de fase de grupos para esta modalidad.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="grid gap-4 p-4 md:grid-cols-2">
+                        {groups.map((g) => (
+                          <Card key={g.group} className="border-border/60">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="font-display text-base font-black uppercase tracking-wide">
+                                {g.group}
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                              <div className="overflow-x-auto">
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow>
+                                      <TableHead className="w-12">#</TableHead>
+                                      <TableHead>Pareja</TableHead>
+                                      <TableHead className="text-center">PJ</TableHead>
+                                      <TableHead className="text-center">W</TableHead>
+                                      <TableHead className="text-center">L</TableHead>
+                                      <TableHead className="text-center">Sets</TableHead>
+                                      <TableHead className="text-right">Pts</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    {g.teams.map((t, idx) => {
+                                      const pos = idx + 1
+                                      const played = (t.wins ?? 0) + (t.losses ?? 0)
+                                      const diff = (t.setsFor ?? 0) - (t.setsAgainst ?? 0)
+                                      return (
+                                        <TableRow key={t.registrationId}>
+                                          <TableCell>
+                                            <span
+                                              className={cn(
+                                                "flex h-7 w-7 items-center justify-center rounded-full text-xs font-black",
+                                                pos === 1
+                                                  ? "bg-yellow-400 text-slate-900"
+                                                  : pos === 2
+                                                    ? "bg-slate-300 text-slate-900"
+                                                    : pos === 3
+                                                      ? "bg-orange-400 text-slate-900"
+                                                      : "bg-muted text-muted-foreground"
+                                              )}
+                                            >
+                                              {pos}
+                                            </span>
+                                          </TableCell>
+                                          <TableCell className="font-medium text-foreground">{t.teamName}</TableCell>
+                                          <TableCell className="text-center">{played}</TableCell>
+                                          <TableCell className="text-center">{t.wins}</TableCell>
+                                          <TableCell className="text-center">{t.losses}</TableCell>
+                                          <TableCell className="text-center text-muted-foreground">
+                                            {t.setsFor}-{t.setsAgainst} ({diff >= 0 ? `+${diff}` : diff})
+                                          </TableCell>
+                                          <TableCell className="text-right font-display font-bold text-primary">
+                                            {t.points}
+                                          </TableCell>
+                                        </TableRow>
+                                      )
+                                    })}
+                                  </TableBody>
+                                </Table>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
 
             <TabsContent value="info">

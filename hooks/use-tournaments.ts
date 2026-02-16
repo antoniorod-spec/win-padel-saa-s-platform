@@ -10,6 +10,7 @@ import {
   fetchGroups,
   fetchTeams,
   generateBracket,
+  fetchTournamentFiltersOptions,
   importTournamentFile,
   submitTournamentResultsManual,
   importTournamentResultsFile,
@@ -20,7 +21,17 @@ export function useTournaments(params?: {
   status?: string
   category?: string
   modality?: string
+  modalityCategories?: string
   city?: string
+  state?: string
+  cityKey?: string
+  stateKey?: string
+  clubId?: string
+  tournamentClass?: string
+  type?: string
+  format?: string
+  from?: string
+  to?: string
   search?: string
   mine?: boolean
   page?: number
@@ -30,6 +41,14 @@ export function useTournaments(params?: {
     queryKey: ["tournaments", params],
     queryFn: () => fetchTournaments(params),
     staleTime: 30 * 1000, // 30 seconds
+  })
+}
+
+export function useTournamentFiltersOptions(params?: { status?: string }) {
+  return useQuery({
+    queryKey: ["tournaments", "filters", params],
+    queryFn: () => fetchTournamentFiltersOptions(params),
+    staleTime: 60 * 1000,
   })
 }
 

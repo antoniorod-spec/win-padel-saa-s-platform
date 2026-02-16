@@ -46,6 +46,7 @@ interface SiteBannerSettings {
   homeSponsorBannerImageUrl: string | null
   homeSponsorBannerLinkUrl: string | null
   homeSponsorBannerTitle: string | null
+  clubsDirectoryMapEnabled: boolean
 }
 
 export async function fetchAdminStats() {
@@ -81,6 +82,7 @@ export async function updateSiteBannerSettings(data: {
   homeSponsorBannerImageUrl?: string
   homeSponsorBannerLinkUrl?: string
   homeSponsorBannerTitle?: string
+  clubsDirectoryMapEnabled?: boolean
 }) {
   return api.put<SiteBannerSettings>("/admin/site-banner", data)
 }

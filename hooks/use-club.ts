@@ -11,14 +11,35 @@ import {
   createMyClubNews,
   updateMyClubNews,
   deleteMyClubNews,
+  fetchClubFiltersOptions,
 } from "@/lib/api/clubs"
 import { createTournament } from "@/lib/api/tournaments"
 
-export function useClubs(params?: { city?: string; status?: string; search?: string }) {
+export function useClubs(params?: {
+  city?: string
+  state?: string
+  cityKey?: string
+  stateKey?: string
+  status?: string
+  search?: string
+  surfaces?: string[]
+  amenities?: string[]
+  sort?: "rating_desc" | "rating_asc" | "name_asc" | "name_desc" | "courts_desc"
+  page?: number
+  pageSize?: number
+}) {
   return useQuery({
     queryKey: ["clubs", params],
     queryFn: () => fetchClubs(params),
     staleTime: 60 * 1000, // 1 minute
+  })
+}
+
+export function useClubFiltersOptions(params?: { status?: string }) {
+  return useQuery({
+    queryKey: ["clubs", "filters", params],
+    queryFn: () => fetchClubFiltersOptions(params),
+    staleTime: 5 * 60 * 1000,
   })
 }
 
