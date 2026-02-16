@@ -10,7 +10,16 @@ const globalForPrisma = globalThis as unknown as {
 function createPrismaClient() {
   if (!globalForPrisma.pool) {
     const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL
-    globalForPrisma.pool = new pg.Pool({ connectionString })
+    // Keep pool intentionally small: with Next dev/build workers + PgBouncer (session mode),
+    // it's easy to hit "MaxClientsInSessionMode" and get 500s across the app.
+    // You can override via PG_POOL_MAX if needed.
+    const max = Math.max(1, parseInt(process.env.PG_POOL_MAX || "1", 10) || 1)
+    globalForPrisma.pool = new pg.Pool({
+      connectionString,
+      max,
+      idleTimeoutMillis: 10_000,
+      connectionTimeoutMillis: 10_000,
+    })
   }
   const adapter = new PrismaPg(globalForPrisma.pool)
   return new PrismaClient({ adapter })

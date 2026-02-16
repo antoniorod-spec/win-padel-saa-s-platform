@@ -613,8 +613,24 @@ function TorneosPageContent() {
                   <div className="grid gap-4 md:grid-cols-2">
                     {tournaments.map((t: any) => {
                       const isAlmostFull = t.registeredTeams >= t.maxTeams * 0.9
+                      const posterUrl =
+                        (typeof t.posterUrl === "string" && t.posterUrl.trim() ? t.posterUrl.trim() : null) ||
+                        (typeof t.logoUrl === "string" && t.logoUrl.trim() ? t.logoUrl.trim() : null) ||
+                        "/demo/covers/default.svg"
                       return (
                         <Card key={t.id} className="group border-border/50 bg-card transition-all hover:border-primary/30 hover:shadow-lg">
+                          <div className="relative overflow-hidden rounded-t-lg border-b border-border/50">
+                            <img
+                              src={posterUrl}
+                              alt={`Cartel ${t.name}`}
+                              className="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                              loading="lazy"
+                              onError={(e) => {
+                                ;(e.currentTarget as HTMLImageElement).src = "/demo/covers/default.svg"
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
+                          </div>
                           <CardContent className="p-5">
                             <div className="flex items-start justify-between">
                               <div className="flex-1">

@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -70,6 +71,7 @@ export default function TournamentPage() {
   const tournamentId = params.id as string
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
   const [isImportModalOpen, setIsImportModalOpen] = useState(false)
+  const [isPosterOpen, setIsPosterOpen] = useState(false)
   const [selectedModalityId, setSelectedModalityId] = useState<string>("")
   const [calendarMonth, setCalendarMonth] = useState<Date | null>(null)
 
@@ -160,6 +162,14 @@ export default function TournamentPage() {
   const isAlmostFull = tournament.registeredTeams >= tournament.maxTeams * 0.9
   const tournamentStartDate = tournamentStart ?? new Date(tournament.startDate)
   const tournamentEndDate = tournamentEnd ?? new Date(tournament.endDate)
+  const posterUrl =
+    (typeof (tournament as any)?.posterUrl === "string" && (tournament as any).posterUrl.trim()
+      ? (tournament as any).posterUrl.trim()
+      : null) ||
+    (Array.isArray((tournament as any)?.images) && typeof (tournament as any).images[0] === "string"
+      ? (tournament as any).images[0]
+      : null) ||
+    null
 
   return (
     <div className="min-h-screen bg-background">
@@ -229,6 +239,32 @@ export default function TournamentPage() {
                     </p>
                   </CardContent>
                 </Card>
+
+                {posterUrl ? (
+                  <Dialog open={isPosterOpen} onOpenChange={setIsPosterOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full">
+                        Ver cartel
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-5xl p-0">
+                      <div className="bg-black">
+                        <DialogHeader className="sr-only">
+                          <DialogTitle>Cartel del torneo</DialogTitle>
+                        </DialogHeader>
+                        <img
+                          src={posterUrl}
+                          alt={`Cartel ${tournament.name}`}
+                          className="max-h-[80vh] w-full object-contain"
+                          onError={(e) => {
+                            ;(e.currentTarget as HTMLImageElement).src = "/demo/covers/default.svg"
+                          }}
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                ) : null}
+
                 {isRegistrationOpen && tournament.type !== "BASIC" && (
                   <Button
                     size="lg" 
