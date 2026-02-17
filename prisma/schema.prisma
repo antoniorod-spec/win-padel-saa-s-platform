@@ -218,6 +218,7 @@ model Player {
   lastName  String
   city      String
   state     String?
+  postalCode String?
   country   String   @default("MX")
   sex       Sex
   age       Int?
@@ -236,6 +237,7 @@ model Player {
   bio       String?
   avatarUrl String?
   homeClubId String?
+  preferredPartnerId String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -253,8 +255,34 @@ model Player {
   resultRowsAsPlayer1 TournamentResultRow[] @relation("ResultRowPlayer1")
   resultRowsAsPlayer2 TournamentResultRow[] @relation("ResultRowPlayer2")
   homeClub Club? @relation("HomeClubPlayers", fields: [homeClubId], references: [id], onDelete: SetNull)
+  preferredPartner Player? @relation("PreferredPartner", fields: [preferredPartnerId], references: [id], onDelete: SetNull)
+  preferredByPlayers Player[] @relation("PreferredPartner")
+  partnerInvitesSent PlayerPartnerInvite[] @relation("PartnerInvitesSent")
+  partnerInvitesAccepted PlayerPartnerInvite[] @relation("PartnerInvitesAccepted")
 
   @@map("players")
+}
+
+model PlayerPartnerInvite {
+  id String @id @default(cuid())
+  token String @unique
+
+  inviterPlayerId String
+  acceptedPlayerId String?
+
+  inviteeEmail String?
+  inviteePhone String?
+
+  acceptedAt DateTime?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  inviterPlayer Player @relation("PartnerInvitesSent", fields: [inviterPlayerId], references: [id], onDelete: Cascade)
+  acceptedPlayer Player? @relation("PartnerInvitesAccepted", fields: [acceptedPlayerId], references: [id], onDelete: SetNull)
+
+  @@index([inviterPlayerId])
+  @@index([acceptedPlayerId])
+  @@map("player_partner_invites")
 }
 
 // ============================================================
@@ -263,20 +291,24 @@ model Player {
 
 model Club {
   id            String     @id @default(cuid())
-  userId        String     @unique
+  // Clubs can exist without an owner (created from Google Places).
+  userId        String?    @unique
+  placeId       String?    @unique
+  createdFromPlaces Boolean @default(false)
+  googleMapsUrl String?
   
   // Datos del Club (Paso 2)
   name          String                    // Nombre comercial
   legalName     String?                   // Razón social
-  rfc           String                    // RFC obligatorio
-  phone         String                    // Teléfono del club
+  rfc           String?                   // RFC obligatorio (al reclamar)
+  phone         String?                   // Teléfono del club
   email         String?                   // Email del club (puede ser diferente al de registro)
   website       String?                   // Sitio web
   description   String?                   // Descripcion corta del club
   
   // Datos del Responsable/Contacto (Paso 1)
-  contactName     String                  // Nombre completo del responsable
-  contactPhone    String                  // Teléfono del responsable
+  contactName     String?                 // Nombre completo del responsable (al reclamar)
+  contactPhone    String?                 // Teléfono del responsable (al reclamar)
   contactEmail    String?                 // Email del responsable (opcional)
   contactPosition String?                 // Cargo (Gerente, Dueño, Administrador, etc.)
   
@@ -328,7 +360,7 @@ model Club {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
   tournaments Tournament[]
   news        ClubNews[]
   importBatches TournamentImportBatch[]

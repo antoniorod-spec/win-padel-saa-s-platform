@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { signIn, useSession } from "next-auth/react"
-import { useTranslations } from "next-intl"
-import { useRouter, Link } from "@/i18n/navigation"
+import { useLocale, useTranslations } from "next-intl"
+import { getPathname, useRouter, Link } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -13,12 +13,15 @@ import { Trophy, Loader2, ArrowLeft } from "lucide-react"
 
 export default function LoginPage() {
   const t = useTranslations("AuthLogin")
+  const locale = useLocale() as "es" | "en"
   const router = useRouter()
   const { data: session, status } = useSession()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+
+  const defaultCallbackUrl = getPathname({ locale, href: "/onboarding" })
 
   // Redirigir según el rol si ya está logueado
   useEffect(() => {
@@ -76,13 +79,24 @@ export default function LoginPage() {
         email,
         password,
         redirect: false,
+        callbackUrl: defaultCallbackUrl,
       })
 
-      if (result?.error) {
+      if (!result) {
+        setError(t("genericError"))
+        setLoading(false)
+        return
+      }
+
+      if (result.error) {
         setError(t("invalidCredentials"))
         setLoading(false)
+        return
       }
-      // La redirección se maneja en el useEffect
+
+      // Sometimes `useSession()` doesn't update immediately; force a navigation.
+      // This also guarantees we land on a locale-aware URL.
+      window.location.assign(result.url || defaultCallbackUrl)
     } catch {
       setError(t("genericError"))
       setLoading(false)

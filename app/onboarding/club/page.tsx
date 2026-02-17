@@ -68,6 +68,7 @@ export default function ClubOnboardingPage() {
   const [neighborhood, setNeighborhood] = useState("")
   const [latitude, setLatitude] = useState<number | undefined>(undefined)
   const [longitude, setLongitude] = useState<number | undefined>(undefined)
+  const [placeId, setPlaceId] = useState("")
 
   // Paso 4: Instalaciones
   const [indoorCourts, setIndoorCourts] = useState("")
@@ -388,6 +389,7 @@ export default function ClubOnboardingPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: "club",
+          placeId: placeId || undefined,
           contactName,
           contactPhone,
           contactEmail: contactEmail || undefined,
@@ -746,6 +748,7 @@ export default function ClubOnboardingPage() {
                   }}
                   onPlaceSelected={(place) => {
                     if (place.name && !clubName) setClubName(place.name)
+                    if ((place as any).place_id) setPlaceId(String((place as any).place_id))
                   }}
                   helperText="Si seleccionas una sugerencia, guardaremos coordenadas automáticamente."
                   required

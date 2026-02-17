@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
+    const userId = searchParams.get("userId")
     const city = searchParams.get("city")
     const modality = searchParams.get("modality")
     const category = searchParams.get("category")
@@ -14,6 +15,7 @@ export async function GET(request: NextRequest) {
 
     const where: Record<string, unknown> = {}
 
+    if (userId) where.userId = userId
     if (city) where.city = city
     if (search) {
       where.OR = [

@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { getPathname, Link, useRouter } from "@/i18n/navigation"
+import { Link, useRouter } from "@/i18n/navigation"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/landing/footer"
 import { Button } from "@/components/ui/button"
@@ -84,7 +84,9 @@ function ClubesPageContent() {
   const searchParams = useSearchParams()
   const locale = useLocale() as "es" | "en"
   const t = useTranslations("ClubesPage")
-  const basePath = getPathname({ locale, href: "/clubes" })
+  // IMPORTANT: when using `next-intl` router, navigate with the route key (no locale prefix)
+  // to avoid generating double prefixes like `/en/en/...`.
+  const pathnameKey = "/clubes"
   const copy = useMemo(
     () => ({
       heading: t("heading"),
@@ -160,8 +162,17 @@ function ClubesPageContent() {
       if (!value) next.delete(key)
       else next.set(key, value)
     }
-    const query = next.toString()
-    router.replace((query ? `${basePath}?${query}` : basePath) as any, { scroll: false })
+    const queryObj: Record<string, string> = {}
+    next.forEach((value, key) => {
+      if (value) queryObj[key] = value
+    })
+
+    if (Object.keys(queryObj).length === 0) {
+      router.replace(pathnameKey as any, { scroll: false })
+      return
+    }
+
+    router.replace({ pathname: pathnameKey, query: queryObj } as any, { scroll: false })
   }
 
   function toggleCsvParam(key: "surfaces" | "amenities", value: string) {
@@ -216,7 +227,7 @@ function ClubesPageContent() {
             className="text-xs font-semibold text-primary hover:underline"
             onClick={() => {
               setSearchInput("")
-              router.replace(basePath as any, { scroll: false })
+              router.replace(pathnameKey as any, { scroll: false })
             }}
           >
             {t("filters.clear")}

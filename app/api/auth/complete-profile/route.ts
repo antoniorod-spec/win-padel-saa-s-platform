@@ -47,10 +47,79 @@ export async function POST(request: NextRequest) {
       }
 
       const {
-        firstName, lastName, sex, city, state, country, age, phone, birthDate,
-        documentType, documentNumber, courtPosition, dominantHand, starShot,
-        playStyle, preferredMatchType, playsMixed, preferredSchedule, preferredAgeRange, homeClubId,
+        firstName,
+        lastName,
+        sex,
+        city,
+        state,
+        postalCode,
+        country,
+        age,
+        phone,
+        birthDate,
+        documentType,
+        documentNumber,
+        courtPosition,
+        dominantHand,
+        starShot,
+        playStyle,
+        preferredMatchType,
+        playsMixed,
+        preferredSchedule,
+        preferredAgeRange,
+        homeClubId,
+        preferredPartnerId,
       } = parsed.data
+
+      const clean = (value?: string | null) => {
+        const v = (value ?? "").trim()
+        return v ? v : undefined
+      }
+
+      const optionalDate = (value?: string | null) => {
+        const v = clean(value)
+        if (!v) return undefined
+        const d = new Date(v)
+        return Number.isNaN(d.getTime()) ? undefined : d
+      }
+
+      const playerCreate: Record<string, unknown> = {
+        firstName,
+        lastName,
+        city,
+      }
+      const playerUpdate: Record<string, unknown> = {
+        firstName,
+        lastName,
+        city,
+      }
+
+      // Optional fields: only persist when provided to avoid wiping previously saved data.
+      const maybeSet = (key: string, value: unknown) => {
+        if (value === undefined) return
+        playerCreate[key] = value
+        playerUpdate[key] = value
+      }
+
+      maybeSet("sex", sex)
+      maybeSet("state", clean(state))
+      maybeSet("postalCode", clean(postalCode))
+      maybeSet("country", clean(country))
+      maybeSet("age", typeof age === "number" ? age : undefined)
+      maybeSet("phone", clean(phone))
+      maybeSet("birthDate", optionalDate(birthDate))
+      maybeSet("documentType", clean(documentType))
+      maybeSet("documentNumber", clean(documentNumber))
+      maybeSet("courtPosition", clean(courtPosition))
+      maybeSet("dominantHand", clean(dominantHand))
+      maybeSet("starShot", clean(starShot))
+      maybeSet("playStyle", clean(playStyle))
+      maybeSet("preferredMatchType", clean(preferredMatchType))
+      maybeSet("playsMixed", typeof playsMixed === "boolean" ? playsMixed : undefined)
+      maybeSet("preferredSchedule", clean(preferredSchedule))
+      maybeSet("preferredAgeRange", clean(preferredAgeRange))
+      maybeSet("homeClubId", clean(homeClubId))
+      maybeSet("preferredPartnerId", clean(preferredPartnerId))
 
       // Actualizar usuario y crear/actualizar perfil de jugador
       const updatedUser = await prisma.user.update({
@@ -60,50 +129,8 @@ export async function POST(request: NextRequest) {
           role: "PLAYER",
           player: {
             upsert: {
-              create: {
-                firstName,
-                lastName,
-                sex,
-                city,
-                state,
-                country,
-                age: age ?? null,
-                phone,
-                birthDate: new Date(birthDate),
-                documentType,
-                documentNumber,
-                courtPosition,
-                dominantHand,
-                starShot,
-                playStyle,
-                preferredMatchType,
-                playsMixed,
-                preferredSchedule,
-                preferredAgeRange,
-                homeClubId: homeClubId || null,
-              },
-              update: {
-              firstName,
-              lastName,
-              sex,
-              city,
-              state,
-              country,
-              age: age ?? null,
-              phone,
-              birthDate: new Date(birthDate),
-              documentType,
-              documentNumber,
-              courtPosition,
-              dominantHand,
-              starShot,
-              playStyle,
-              preferredMatchType,
-              playsMixed,
-              preferredSchedule,
-              preferredAgeRange,
-              homeClubId: homeClubId || null,
-              },
+              create: playerCreate as any,
+              update: playerUpdate as any,
             },
           },
         },
@@ -162,6 +189,7 @@ export async function POST(request: NextRequest) {
         clubPhone,
         clubEmail,
         website,
+        placeId,
         // Paso 3: Ubicación
         country,
         state,
@@ -201,6 +229,103 @@ export async function POST(request: NextRequest) {
       } = parsed.data
 
       const totalCourts = (indoorCourts || 0) + (outdoorCourts || 0)
+
+      const cleanPlaceId = typeof placeId === "string" && placeId.trim() ? placeId.trim() : undefined
+
+      if (cleanPlaceId) {
+        const existing = await prisma.club.findUnique({ where: { placeId: cleanPlaceId } })
+        if (existing?.userId) {
+          return NextResponse.json(
+            { success: false, error: "Este club ya fue reclamado" },
+            { status: 409 }
+          )
+        }
+
+        if (existing) {
+          await prisma.$transaction(async (tx) => {
+            await tx.user.update({
+              where: { id: session.user.id },
+              data: {
+                name: clubName,
+                role: "CLUB",
+                club: { connect: { id: existing.id } },
+              },
+            })
+
+            await tx.club.update({
+              where: { id: existing.id },
+              data: {
+                // Responsable
+                contactName,
+                contactPhone,
+                contactEmail,
+                contactPosition,
+                // Club
+                name: clubName,
+                legalName,
+                rfc,
+                phone: clubPhone,
+                email: clubEmail,
+                website,
+                // Ubicación
+                country,
+                state,
+                city,
+                address,
+                postalCode,
+                neighborhood,
+                latitude,
+                longitude,
+                // Instalaciones
+                indoorCourts,
+                outdoorCourts,
+                courts: totalCourts,
+                courtSurface,
+                courtSurfaces: courtSurfaces ?? undefined,
+                // Servicios
+                hasParking: !!hasParking,
+                hasLockers: !!hasLockers,
+                hasShowers: !!hasShowers,
+                hasCafeteria: !!hasCafeteria,
+                hasProShop: !!hasProShop,
+                hasLighting: !!hasLighting,
+                hasAirConditioning: !!hasAirConditioning,
+                operatingHours: operatingHours as string | undefined,
+                weeklySchedule: weeklySchedule ?? undefined,
+                priceRange: priceRange as string | undefined,
+                acceptsOnlineBooking: !!acceptsOnlineBooking,
+                services: services ?? undefined,
+                photos: photos ?? undefined,
+                logoUrl: logoUrl as string | undefined,
+                facebook: facebook as string | undefined,
+                instagram: instagram as string | undefined,
+                tiktok: tiktok as string | undefined,
+                youtube: youtube as string | undefined,
+                linkedin: linkedin as string | undefined,
+                x: x as string | undefined,
+                whatsapp: whatsapp as string | undefined,
+                // Sistema: al reclamar requiere revisión.
+                status: "PENDING",
+              },
+            })
+          })
+
+          return NextResponse.json(
+            {
+              success: true,
+              data: {
+                id: session.user.id,
+                email: session.user.email,
+                name: clubName,
+                role: "CLUB",
+                clubStatus: "PENDING",
+              },
+              message: "Club reclamado. Pendiente de aprobacion por un administrador.",
+            },
+            { status: 200 }
+          )
+        }
+      }
 
       // Actualizar usuario y crear perfil de club
       const updatedUser = await prisma.user.update({
@@ -259,6 +384,7 @@ export async function POST(request: NextRequest) {
               linkedin: linkedin as string | undefined,
               x: x as string | undefined,
               whatsapp: whatsapp as string | undefined,
+              placeId: cleanPlaceId,
               // Sistema
               status: "PENDING",
             },

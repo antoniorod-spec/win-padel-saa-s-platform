@@ -22,7 +22,7 @@ export async function GET() {
         name: club.name,
         city: club.city,
         courts: club.courts,
-        email: club.user.email,
+        email: club.user?.email ?? null,
         requestDate: club.createdAt,
         status: club.status,
       })),

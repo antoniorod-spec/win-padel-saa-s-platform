@@ -247,6 +247,7 @@
     "incompleteData": "Incomplete data",
     "nav": {
       "dashboard": "Dashboard",
+      "profile": "Profile",
       "myTournaments": "My tournaments",
       "exploreTournaments": "Explore tournaments",
       "myRanking": "My ranking",
@@ -509,6 +510,55 @@
       "roundOf16": "Round of 16",
       "groupStage": "Group stage"
     }
+  },
+  "PlayerOnboarding": {
+    "title": "Complete your player profile",
+    "stepOf": "Step {step} of {totalSteps}",
+    "basicData": "Basic info",
+    "personalInfo": "Personal info",
+    "preferences": "Preferences",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "cityRequired": "City *",
+    "cityPlaceholder": "e.g. San Luis Potosi",
+    "stateOptional": "State (optional)",
+    "statePlaceholder": "e.g. San Luis Potosi",
+    "postalCodeOptional": "Postal code (optional)",
+    "postalCodePlaceholder": "e.g. 78210",
+    "homeClubOptional": "Club where you train/play (optional)",
+    "homeClubSearchPlaceholder": "Search club on Google...",
+    "homeClubNone": "None",
+    "partnerTitle": "Preferred partner (optional)",
+    "partnerSearchLabel": "Search registered player",
+    "partnerSearchPlaceholder": "Type first/last name...",
+    "partnerNone": "None",
+    "inviteEmailOptional": "If not registered, invite by email (optional)",
+    "invitePhoneOptional": "Or invite by phone (optional)",
+    "inviteGenerate": "Generate invite",
+    "inviteGenerating": "Generating...",
+    "inviteLinkTitle": "Invite link",
+    "copyLink": "Copy link",
+    "sendWhatsapp": "Send via WhatsApp",
+    "requiredName": "First and last name are required",
+    "requiredCity": "City is required",
+    "successTitle": "Thanks for completing your profile",
+    "successDesc": "You can now use the system as a player. Redirecting...",
+    "successGo": "Go to my profile"
+    ,
+    "skipButton": "Fill later"
+  },
+  "PartnerInvite": {
+    "title": "Partner invite",
+    "processing": "Processing invite...",
+    "retry": "Retry",
+    "acceptedRedirecting": "Invite accepted. Redirecting...",
+    "invalid": "Invalid invite",
+    "acceptFailed": "Couldn't accept the invite"
+  },
+  "ClubPlaces": {
+    "loading": "Loading Google Places...",
+    "missingKey": "Configure a Google Maps API key to search.",
+    "clearAria": "Clear club"
   }
 }
 

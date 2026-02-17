@@ -136,8 +136,26 @@ export async function POST(request: NextRequest) {
     )
   } catch (error) {
     console.error("Registration error:", error)
+    const debug = process.env.NODE_ENV !== "production" || process.env.DEBUG_API_ERRORS === "true"
     return NextResponse.json(
-      { success: false, error: "Error interno del servidor" },
+      {
+        success: false,
+        error: "Error interno del servidor",
+        ...(debug
+          ? {
+              // Expose only minimal safe fields for local debugging.
+              details:
+                error && typeof error === "object"
+                  ? {
+                      name: (error as any).name,
+                      code: (error as any).code,
+                      message: (error as any).message,
+                      cause: (error as any).cause,
+                    }
+                  : { message: String(error) },
+            }
+          : null),
+      },
       { status: 500 }
     )
   }

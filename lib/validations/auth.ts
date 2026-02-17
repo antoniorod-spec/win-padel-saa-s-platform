@@ -35,23 +35,27 @@ export const registerPlayerCompleteSchema = z.object({
   firstName: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   lastName: z.string().min(2, "El apellido debe tener al menos 2 caracteres"),
   city: z.string().min(2, "La ciudad es requerida"),
-  state: z.string().min(2, "La provincia es requerida"),
-  country: z.string().min(2, "El pais es requerido"),
-  phone: z.string().min(10, "El telefono debe tener al menos 10 digitos"),
-  birthDate: z.string().min(8, "La fecha de nacimiento es requerida"),
-  sex: z.enum(["M", "F"]),
+  // Mexico-first: Estado y Codigo Postal son opcionales.
+  state: z.string().transform((val) => (val || "").trim()).optional(),
+  postalCode: z.string().transform((val) => (val || "").trim()).optional(),
+  // El resto es opcional (si no lo rellenan, se guarda null).
+  country: z.string().transform((val) => (val || "").trim()).optional(),
+  phone: z.string().transform((val) => (val || "").trim()).optional(),
+  birthDate: z.string().transform((val) => (val || "").trim()).optional(),
+  sex: z.enum(["M", "F"]).optional(),
   age: z.number().int().min(10).max(99).optional(),
-  documentType: z.string().min(2, "Selecciona tipo de documento"),
-  documentNumber: z.string().min(6, "Documento invalido"),
-  courtPosition: z.string().min(2, "Selecciona posicion en pista"),
-  dominantHand: z.string().min(2, "Selecciona mano dominante"),
-  starShot: z.string().min(2, "Selecciona golpe estrella"),
-  playStyle: z.string().min(2, "Selecciona estilo de juego"),
-  preferredMatchType: z.string().min(2, "Selecciona tipo de partido"),
-  playsMixed: z.boolean(),
-  preferredSchedule: z.string().min(2, "Selecciona horario preferido"),
-  preferredAgeRange: z.string().min(2, "Selecciona rango de edad"),
-  homeClubId: z.string().optional(),
+  documentType: z.string().transform((val) => (val || "").trim()).optional(),
+  documentNumber: z.string().transform((val) => (val || "").trim()).optional(),
+  courtPosition: z.string().transform((val) => (val || "").trim()).optional(),
+  dominantHand: z.string().transform((val) => (val || "").trim()).optional(),
+  starShot: z.string().transform((val) => (val || "").trim()).optional(),
+  playStyle: z.string().transform((val) => (val || "").trim()).optional(),
+  preferredMatchType: z.string().transform((val) => (val || "").trim()).optional(),
+  playsMixed: z.boolean().optional(),
+  preferredSchedule: z.string().transform((val) => (val || "").trim()).optional(),
+  preferredAgeRange: z.string().transform((val) => (val || "").trim()).optional(),
+  homeClubId: z.string().transform((val) => (val || "").trim()).optional(),
+  preferredPartnerId: z.string().transform((val) => (val || "").trim()).optional(),
 })
 
 // Registro inicial simplificado de jugador (email + password)
@@ -147,6 +151,7 @@ export const registerClubCompleteSchema = clubResponsibleSchema
   .merge(clubServicesSchema)
   .extend({
     type: z.literal("club"),
+    placeId: z.string().transform((val) => (val || "").trim() || undefined).optional(),
   })
   .refine(
     (data) => (data.indoorCourts + data.outdoorCourts) >= 1,

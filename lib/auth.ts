@@ -20,20 +20,9 @@ function isPlayerComplete(player: {
   preferredSchedule: string | null
   preferredAgeRange: string | null
 }) {
-  return Boolean(
-    player.phone &&
-      player.birthDate &&
-      player.state &&
-      player.documentType &&
-      player.documentNumber &&
-      player.courtPosition &&
-      player.dominantHand &&
-      player.starShot &&
-      player.playStyle &&
-      player.preferredMatchType &&
-      player.preferredSchedule &&
-      player.preferredAgeRange
-  )
+  // Player onboarding is now minimal: only name/city required for completion.
+  // Deeper fields are optional and can be filled later.
+  return true
 }
 
 function isClubComplete(club: {
@@ -158,28 +147,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return session
     },
-    async signIn({ user, account }) {
-      const dbUser = await prisma.user.findUnique({
-        where: { id: user.id },
-        include: { player: true, club: true },
-      })
-
-      if (dbUser?.name === "Club (pendiente)" && !dbUser.club) {
-        return "/onboarding/club"
-      }
-
-      if (dbUser?.club && !isClubComplete(dbUser.club)) {
-        return "/onboarding/club"
-      }
-
-      if (dbUser?.player && !isPlayerComplete(dbUser.player)) {
-        return "/onboarding/player"
-      }
-
-      // Google nuevo sin perfil: ir al selector onboarding
-      if (account?.provider === "google" && dbUser && !dbUser.player && !dbUser.club) {
-        return "/onboarding"
-      }
+    async signIn() {
+      // IMPORTANT: do not return a redirect URL string here.
+      // In Auth.js (NextAuth v5), returning a string can short-circuit the flow and
+      // prevent the session cookie from being set (resulting in "login does nothing").
+      // We handle post-login routing in the app (e.g. `app/login/page.tsx` via `/api/auth/profile-status`).
       return true
     },
     async redirect({ url, baseUrl }) {

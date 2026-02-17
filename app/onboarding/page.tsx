@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/i18n/navigation"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -14,7 +14,7 @@ import { AddressAutocomplete } from "@/components/address-autocomplete"
 
 export default function OnboardingPage() {
   const router = useRouter()
-  const { data: session, status, update } = useSession()
+  const { data: session, status } = useSession()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -87,32 +87,10 @@ export default function OnboardingPage() {
     setLoading(true)
 
     try {
-      const res = await fetch("/api/auth/complete-profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "player",
-          firstName,
-          lastName,
-          sex,
-          city,
-          country,
-          age: age ? parseInt(age) : undefined,
-        }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data.error ?? "Error al completar perfil")
-        return
-      }
-
-      // Actualizar sesión
-      await update()
-      
-      // Redirigir al dashboard
-      router.push("/jugador")
+      // This "initial onboarding" page is just a role selector.
+      // The complete profile requires additional fields (phone, state, documents, etc.),
+      // so we must redirect to the full onboarding wizard.
+      router.push("/onboarding/player")
     } catch {
       setError("Error de conexion. Intenta de nuevo.")
     } finally {
@@ -126,34 +104,8 @@ export default function OnboardingPage() {
     setLoading(true)
 
     try {
-      const res = await fetch("/api/auth/complete-profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "club",
-          clubName,
-          city: clubCity,
-          address: clubAddress,
-          latitude: clubLatitude,
-          longitude: clubLongitude,
-          rfc: clubRfc || undefined,
-          indoorCourts: indoorCourts ? parseInt(indoorCourts) : undefined,
-          outdoorCourts: outdoorCourts ? parseInt(outdoorCourts) : undefined,
-        }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data.error ?? "Error al completar perfil")
-        return
-      }
-
-      // Actualizar sesión
-      await update()
-      
-      // Redirigir al dashboard
-      router.push("/club")
+      // Redirect to the full club onboarding wizard (multi-step).
+      router.push("/onboarding/club")
     } catch {
       setError("Error de conexion. Intenta de nuevo.")
     } finally {

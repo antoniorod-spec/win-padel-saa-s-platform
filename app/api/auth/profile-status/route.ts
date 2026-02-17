@@ -6,46 +6,20 @@ function isPlayerProfileComplete(player: {
   firstName: string
   lastName: string
   city: string
-  state: string | null
-  country: string
-  phone: string | null
-  birthDate: Date | null
-  documentType: string | null
-  documentNumber: string | null
-  courtPosition: string | null
-  dominantHand: string | null
-  starShot: string | null
-  playStyle: string | null
-  preferredMatchType: string | null
-  preferredSchedule: string | null
-  preferredAgeRange: string | null
 }) {
   return Boolean(
     player.firstName &&
       player.lastName &&
-      player.city &&
-      player.state &&
-      player.country &&
-      player.phone &&
-      player.birthDate &&
-      player.documentType &&
-      player.documentNumber &&
-      player.courtPosition &&
-      player.dominantHand &&
-      player.starShot &&
-      player.playStyle &&
-      player.preferredMatchType &&
-      player.preferredSchedule &&
-      player.preferredAgeRange
+      player.city
   )
 }
 
 function isClubProfileComplete(club: {
   name: string
-  rfc: string
-  phone: string
-  contactName: string
-  contactPhone: string
+  rfc: string | null
+  phone: string | null
+  contactName: string | null
+  contactPhone: string | null
   country: string
   state: string
   city: string

@@ -33,9 +33,12 @@ export default function PlayerDashboard() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [playerId, setPlayerId] = useState<string | undefined>(undefined)
+  const [playerIdLoading, setPlayerIdLoading] = useState(false)
+  const [profileChecked, setProfileChecked] = useState(false)
 
   const navItems = [
     { id: "dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, href: "/jugador" },
+    { id: "profile", label: t("nav.profile"), icon: User, href: "/jugador/perfil" },
     { id: "myTournaments", label: t("nav.myTournaments"), icon: Trophy, href: "/jugador" },
     { id: "exploreTournaments", label: t("nav.exploreTournaments"), icon: Search, href: "/torneos" },
     { id: "myRanking", label: t("nav.myRanking"), icon: BarChart3, href: "/jugador" },
@@ -48,14 +51,21 @@ export default function PlayerDashboard() {
   useEffect(() => {
     const fetchPlayerId = async () => {
       if (session?.user?.id) {
+        setPlayerIdLoading(true)
         try {
-          const response = await fetch(`/api/players?userId=${session.user.id}`)
+          const response = await fetch(`/api/players?userId=${encodeURIComponent(session.user.id)}&pageSize=1`)
           const data = await response.json()
-          if (data.success && data.data.data && data.data.data.length > 0) {
-            setPlayerId(data.data.data[0].id)
+          const items = data?.success ? data?.data?.items : null
+          if (Array.isArray(items) && items.length > 0) {
+            setPlayerId(items[0].id)
+            return
           }
+          setPlayerId(undefined)
         } catch (error) {
           console.error("Error fetching playerId:", error)
+          setPlayerId(undefined)
+        } finally {
+          setPlayerIdLoading(false)
         }
       }
     }
@@ -69,9 +79,12 @@ export default function PlayerDashboard() {
       .then((r) => r.json())
       .then((payload) => {
         if (!active || !payload?.success) return
-        if (!payload.data.isPlayerProfileComplete) {
+        // Avoid redirect loops: only redirect based on authoritative profile-status,
+        // not on transient playerId loading issues.
+        if (!payload.data.hasPlayer || !payload.data.isPlayerProfileComplete) {
           router.push("/onboarding/player")
         }
+        setProfileChecked(true)
       })
       .catch(() => {})
     return () => {
@@ -84,7 +97,7 @@ export default function PlayerDashboard() {
   const { data: matchesData, isLoading: matchesLoading } = usePlayerMatches(playerId, 1, 5)
   const { data: tournamentsData } = useTournaments({ status: "UPCOMING", pageSize: 5 })
 
-  if (status === "loading" || playerLoading) {
+  if (status === "loading" || playerIdLoading || playerLoading || statsLoading || (status === "authenticated" && !profileChecked)) {
     return (
       <DashboardShell
         title={t("title")}
