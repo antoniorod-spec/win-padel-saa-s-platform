@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
       maxTeams: true,
       status: true,
       clubId: true,
-      club: { select: { name: true, city: true, state: true, country: true } },
+      club: { select: { name: true, city: true, state: true, country: true, logoUrl: true } },
       modalities: {
         select: {
           modality: true,
@@ -195,6 +195,7 @@ export async function GET(request: NextRequest) {
             externalRegistrationLink: t.externalRegistrationLink,
             registrationDeadline: t.registrationDeadline,
             posterUrl: t.posterUrl,
+            clubLogoUrl: t.club.logoUrl,
             resultsValidationStatus: t.resultsValidationStatus,
             maxTeams: t.maxTeams,
             status: t.status,
@@ -245,6 +246,7 @@ export async function GET(request: NextRequest) {
           externalRegistrationLink: t.externalRegistrationLink,
           registrationDeadline: t.registrationDeadline,
           posterUrl: t.posterUrl,
+          clubLogoUrl: t.club.logoUrl,
           resultsValidationStatus: t.resultsValidationStatus,
           maxTeams: t.maxTeams,
           status: t.status,
@@ -314,32 +316,47 @@ export async function POST(request: NextRequest) {
         format: tournamentData.format,
         type: tournamentData.type,
         registrationDeadline: tournamentData.registrationDeadline ? new Date(tournamentData.registrationDeadline) : undefined,
+        registrationOpensAt: tournamentData.registrationOpensAt ? new Date(tournamentData.registrationOpensAt) : undefined,
+        officialBall: tournamentData.officialBall ?? undefined,
+        supportWhatsApp: tournamentData.supportWhatsApp ?? undefined,
         prize: tournamentData.prize,
         sponsorName: tournamentData.sponsorName || undefined,
         sponsorLogoUrl: tournamentData.sponsorLogoUrl || undefined,
         logoUrl: tournamentData.logoUrl || undefined,
         posterUrl: tournamentData.posterUrl || undefined,
+        rulesPdfUrl: tournamentData.rulesPdfUrl || undefined,
         externalRegistrationType: tournamentData.externalRegistrationType || undefined,
         externalRegistrationLink: tournamentData.externalRegistrationLink || undefined,
         affectsRanking:
           typeof tournamentData.affectsRanking === "boolean"
             ? tournamentData.affectsRanking
-            : tournamentData.type === "BASIC"
+            : tournamentData.category === "D"
               ? false
-              : true,
+              : tournamentData.type === "BASIC"
+                ? false
+                : true,
         resultsValidationStatus: tournamentData.type === "BASIC" ? "PENDING_REVIEW" : "NOT_REQUIRED",
         venue: tournamentData.venue || undefined,
         images: tournamentData.images ?? undefined,
         news: tournamentData.news ?? undefined,
         inscriptionPrice: tournamentData.inscriptionPrice ?? 0,
         maxTeams: tournamentData.maxTeams ?? 64,
+        matchDurationMinutes: tournamentData.matchDurationMinutes ?? 70,
+        minPairsPerModality: tournamentData.minPairsPerModality ?? 6,
         rules: tournamentData.rules ?? undefined,
-        status: "OPEN",
+        // Wizard flow: FULL tournaments start as DRAFT, then transition to OPEN when ready.
+        // BASIC tournaments are simple announcements and keep legacy behavior (OPEN immediately).
+        status: tournamentData.type === "BASIC" ? "OPEN" : "DRAFT",
         modalities: modalities && modalities.length > 0
           ? {
               create: modalities.map((m) => ({
                 modality: m.modality,
                 category: m.category,
+                prizeType: m.prizeType ?? undefined,
+                prizeAmount: m.prizeAmount ?? undefined,
+                prizeDescription: m.prizeDescription ?? undefined,
+                minPairs: m.minPairs ?? undefined,
+                maxPairs: m.maxPairs ?? undefined,
               })),
             }
           : undefined,

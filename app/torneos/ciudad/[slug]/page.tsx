@@ -90,7 +90,7 @@ export default async function TorneosCiudadPage(
       status: { in: ["OPEN", "IN_PROGRESS", "COMPLETED"] },
     },
     include: {
-      club: { select: { id: true, name: true, city: true, state: true } },
+      club: { select: { id: true, name: true, city: true, state: true, logoUrl: true } },
       modalities: { include: { _count: { select: { registrations: true } } } },
     },
     orderBy: [{ startDate: "asc" }],
@@ -111,6 +111,7 @@ export default async function TorneosCiudadPage(
     prize: t.prize,
     posterUrl: t.posterUrl,
     logoUrl: t.logoUrl,
+    clubLogoUrl: t.club.logoUrl,
     inscriptionPrice: Number(t.inscriptionPrice),
     type: t.type,
     maxTeams: t.maxTeams,
@@ -159,6 +160,7 @@ export default async function TorneosCiudadPage(
                 const posterUrl =
                   (typeof item.posterUrl === "string" && item.posterUrl.trim() ? item.posterUrl.trim() : null) ||
                   (typeof item.logoUrl === "string" && item.logoUrl.trim() ? item.logoUrl.trim() : null) ||
+                  (typeof item.clubLogoUrl === "string" && item.clubLogoUrl.trim() ? item.clubLogoUrl.trim() : null) ||
                   "/demo/covers/default.svg"
                 return (
                   <Card key={item.id} className="group border-border/50 bg-card transition-all hover:border-primary/30 hover:shadow-lg">

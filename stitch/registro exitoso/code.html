@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Registro Exitoso | Ranking Padel MX</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Oswald:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --primary: #00C853;
+            --navy: #0f172a;
+            --navy-light: #1e293b;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --ticket-bg: #ffffff;
+        }
+        body { 
+            font-family: 'Inter', sans-serif;
+            color: var(--navy);
+        }
+        h1, h2, h3, .heading-oswald {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+        }
+        .bg-club-overlay {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuCknuPHwhfVWy4zej1LoanWbNXq0KbMBM-SIjnikXkKcBcqTzDCsgamWlsOyukR3uQ5ZMmWSnMWwQVZBqE7rLiBYFtWGY6Jz4E_xRBR3vk2gRAcKyYQy5qsef-cihMLMtWUd5byxrNRXMN3O8beqFe_zC1gvgs48oRnX6HrJ63xsaFojDuveKuH0ICbtOm6SuNkSp00_bpIjuQ5Pl6qL-zNZUs8y878ZFomXj-Ro3-aTY1WJg5VjkDU4U5ICmM8eEMJaNkAZm5xSLc');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .success-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .ticket-shape {
+            position: relative;
+            background: var(--white);
+            filter: drop-shadow(0 10px 25px rgba(0,0,0,0.08));
+        }
+        .ticket-shape::before,
+        .ticket-shape::after {
+            content: "";
+            position: absolute;
+            left: -12px;
+            width: 24px;
+            height: 24px;
+            background: #f8fafc;border-radius: 50%;
+            z-index: 10;
+        }
+        .ticket-shape::before { top: 68%; transform: translateY(-50%); }
+        .ticket-shape::after { right: -12px; left: auto; top: 68%; transform: translateY(-50%); }
+        .dashed-line {
+            border-top: 2px dashed #e2e8f0;
+            width: 100%;
+        }
+        .confetti-icon {
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="bg-club-overlay min-h-screen flex flex-col">
+<nav class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100">
+<div class="container mx-auto px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-[var(--primary)] rounded flex items-center justify-center">
+<span class="material-icons text-white text-xl font-bold">sports_tennis</span>
+</div>
+<span class="text-xl font-extrabold tracking-tighter uppercase italic text-[var(--navy)]">Ranking <span class="text-[var(--primary)]">Padel</span> MX</span>
+</div>
+<div class="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-tight text-[var(--navy)]">
+<a class="hover:text-[var(--primary)] transition-colors" href="#">Torneos</a>
+<a class="hover:text-[var(--primary)] transition-colors" href="#">Ranking</a>
+<a class="hover:text-[var(--primary)] transition-colors" href="#">Clubes</a>
+<button class="bg-[var(--navy)] text-white px-4 py-2 rounded-lg text-xs">MI PERFIL</button>
+</div>
+</div>
+</nav>
+<main class="flex-1 flex items-center justify-center p-6">
+<div class="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div class="space-y-8 text-center lg:text-left">
+<div class="relative inline-block lg:block">
+<div class="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto lg:mx-0 mb-6">
+<span class="material-icons text-6xl text-[var(--primary)]">check_circle</span>
+</div>
+<span class="material-icons absolute -top-2 -right-4 text-yellow-400 opacity-60 text-2xl confetti-icon">celebration</span>
+<span class="material-icons absolute top-10 -left-6 text-blue-400 opacity-60 text-xl confetti-icon" style="animation-delay: 0.5s">auto_awesome</span>
+</div>
+<div class="space-y-3">
+<h1 class="text-5xl md:text-6xl font-black text-[var(--navy)] leading-none">¡Registro<br/><span class="text-[var(--primary)]">Exitoso!</span></h1>
+<p class="text-lg text-slate-500 font-medium max-w-md mx-auto lg:mx-0">
+                    Gracias por registrarte al <span class="text-[var(--navy)] font-bold">Open San Luis Potosí</span>. Tu lugar está reservado en el cuadro oficial.
+                </p>
+</div>
+<div class="flex flex-col gap-3 max-w-sm mx-auto lg:mx-0 pt-4">
+<button class="flex items-center justify-center gap-3 w-full py-4 bg-[#25D366] text-white rounded-2xl font-bold hover:shadow-lg transition-all hover:scale-[1.02]">
+<span class="material-icons">share</span>
+                    Compartir con mi pareja
+                </button>
+<button class="flex items-center justify-center gap-3 w-full py-4 bg-[var(--navy)] text-white rounded-2xl font-bold hover:shadow-lg transition-all hover:scale-[1.02]">
+<span class="material-icons">calendar_today</span>
+                    Ver mis próximos partidos
+                </button>
+<div class="flex gap-3 mt-2">
+<button class="flex-1 flex items-center justify-center gap-2 py-3 border-2 border-slate-200 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors">
+<span class="material-icons text-base">wallet</span>
+                        Apple Wallet
+                    </button>
+<button class="flex-1 flex items-center justify-center gap-2 py-3 border-2 border-slate-200 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors">
+<span class="material-icons text-base">account_balance_wallet</span>
+                        Google Wallet
+                    </button>
+</div>
+</div>
+</div>
+<div class="flex justify-center">
+<div class="ticket-shape w-full max-w-[360px] rounded-3xl overflow-hidden shadow-2xl">
+<div class="bg-[var(--navy)] p-6 text-white text-center">
+<div class="flex justify-center mb-3">
+<span class="material-icons text-[var(--primary)] text-3xl">emoji_events</span>
+</div>
+<p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 mb-1">Official Tournament Entry</p>
+<h3 class="heading-oswald text-2xl">Open San Luis Potosí</h3>
+</div>
+<div class="p-8 space-y-6">
+<div class="grid grid-cols-2 gap-6">
+<div>
+<p class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Categoría</p>
+<p class="font-bold text-[var(--navy)]">2da Fuerza</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Fecha</p>
+<p class="font-bold text-[var(--navy)]">15-18 Mayo</p>
+</div>
+</div>
+<div class="space-y-4 pt-2">
+<div>
+<p class="text-[10px] font-bold uppercase text-slate-400 tracking-wider mb-1">Pareja Registrada</p>
+<div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
+<div class="flex items-center gap-2">
+<img alt="Player 1" class="w-8 h-8 rounded-full border border-white shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyzzfGUOuOViETn6MulJFoz19oKziySzsaLDT6SyZjZQK1b7cDyj3Xem9l0V3PaGhem2AnBnPGl5NLqdsUHjGuqDG_x4-lD51CU0W8MTiz9GrQZCzNkEVbEH6Riyk-VwZK0L4NXusLklCiZrgwjrq1H67TTgDwIXSAdeEw2rrJ7kDVHbyuubWeOHiZ4C4K4kJRhMI69GLLtS7DU3fdNTqW14sjINBbeV4LffcCS-9hs1fGk1B3Mk0tbQkjgHdC0rKo5ewSEfoaiZU"/>
+<span class="text-xs font-bold">S. Méndez</span>
+</div>
+<span class="text-[10px] font-black bg-white px-2 py-0.5 rounded shadow-sm text-slate-500">RPM-8291</span>
+</div>
+</div>
+<div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
+<span class="material-icons text-slate-400 text-sm">person</span>
+</div>
+<span class="text-xs font-bold">Tu (Host)</span>
+</div>
+<span class="text-[10px] font-black bg-white px-2 py-0.5 rounded shadow-sm text-slate-500">RPM-4412</span>
+</div>
+</div>
+<div class="pt-6 pb-2">
+<div class="dashed-line"></div>
+</div>
+<div class="text-center space-y-4">
+<p class="text-[10px] font-bold uppercase text-slate-400 tracking-widest">Digital Check-in QR</p>
+<div class="bg-white p-4 inline-block rounded-2xl border-2 border-slate-50 shadow-sm">
+<img alt="QR Code" class="w-32 h-32 opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiE8zxqLf3g4NAcXSI7kTf_2_1rBy70jJYZvSDUVwBC6nsu46_avKj1PPwW9W-pjwmApIIv_e-laozorYRcAiPzfu1cYdalqJyFXFlafrhNPg02fqg6xG4aPBV29HhCR1Vv5aXoK3_5kevBkIqI0JaqmIWlInK8dJvuDUouzsYs25Ya73pbSQQiIuTkkBxwpcO5FPPKJ9ahMCC15M8RqtLx9wj9BRoLzlbNxwR_nZ5hF3qUTPQd-r8yWaJe1t9KhjLnY4eo5TPveA"/>
+</div>
+<p class="text-[9px] font-medium text-slate-400 uppercase">Muestra este código al llegar al club</p>
+</div>
+</div>
+<div class="bg-slate-50 py-3 px-6 text-center border-t border-slate-100">
+<p class="text-[10px] font-bold text-slate-400">#RANKINGPADELMX • 2024</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="bg-[var(--navy)] text-white py-12 border-t-8 border-[var(--primary)]">
+<div class="container mx-auto px-4">
+<div class="flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 bg-[var(--primary)] rounded flex items-center justify-center">
+<span class="material-icons text-white text-sm">sports_tennis</span>
+</div>
+<span class="text-lg font-extrabold tracking-tighter uppercase italic">Ranking Padel MX</span>
+</div>
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">© 2024 Ranking Padel México. Todos los derechos reservados.</p>
+<div class="flex gap-4">
+<a class="text-slate-400 hover:text-white transition-colors" href="#"><span class="material-icons text-xl">facebook</span></a>
+<a class="text-slate-400 hover:text-white transition-colors" href="#"><span class="material-icons text-xl">camera_alt</span></a>
+</div>
+</div>
+</div>
+</footer>
+
+</body></html>

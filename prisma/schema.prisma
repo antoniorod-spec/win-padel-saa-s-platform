@@ -35,6 +35,7 @@ enum TournamentCategory {
   A
   B
   C
+  D
 }
 
 enum TournamentFormat {
@@ -47,15 +48,40 @@ enum TournamentFormat {
 enum TournamentStatus {
   DRAFT
   OPEN
+  CLOSED
+  GENERATED
   IN_PROGRESS
+  ELIMINATIONS
   COMPLETED
   CANCELLED
+}
+
+enum SlotStatus {
+  AVAILABLE
+  ASSIGNED
+  RESERVED
+  BLOCKED
+}
+
+enum TournamentPhase {
+  GROUP_STAGE
+  PRELIMINARY_ROUND
+  ROUND_OF_32
+  ROUND_OF_16
+  QUARTERFINAL
+  SEMIFINAL
+  FINAL
 }
 
 enum Modality {
   VARONIL
   FEMENIL
   MIXTO
+}
+
+enum PrizeType {
+  CASH
+  GIFT
 }
 
 enum PaymentStatus {
@@ -422,12 +448,19 @@ model Tournament {
   validatedAt       DateTime?
   validationNotes   String?
   status           TournamentStatus @default(DRAFT)
+  matchDurationMinutes Int          @default(70)
+  minPairsPerModality  Int          @default(6)
+  officialBall         String?
+  supportWhatsApp      String?
+  registrationOpensAt  DateTime?
+  rulesPdfUrl         String?
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
 
   club       Club                  @relation(fields: [clubId], references: [id], onDelete: Cascade)
   validatedByAssociation Association? @relation("AssociationValidatedTournaments", fields: [validatedByAssociationId], references: [id], onDelete: SetNull)
   modalities TournamentModality[]
+  courts     Court[]
   importBatches TournamentImportBatch[]
   importedEntries ImportedTournamentEntry[]
   resultSubmissions TournamentResultSubmission[]
@@ -507,14 +540,22 @@ model ImportedTournamentEntry {
 // ============================================================
 
 model TournamentModality {
-  id           String   @id @default(cuid())
-  tournamentId String
-  modality     Modality
-  category     String   // e.g. "1ra", "2da", "3ra", "4ta", "5ta", "6ta", "A", "B", "C", "D"
+  id               String    @id @default(cuid())
+  tournamentId     String
+  modality         Modality
+  category         String    // e.g. "1ra", "2da", "3ra", "4ta", "5ta", "6ta", "A", "B", "C", "D"
+  rankingMin       Int?
+  rankingMax       Int?
+  maxPairs         Int?
+  minPairs         Int?
+  prizeType        PrizeType?
+  prizeAmount      Decimal?  @db.Decimal(10, 2)
+  prizeDescription String?
 
   tournament    Tournament               @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   registrations TournamentRegistration[]
   matches       Match[]
+  groups        TournamentGroup[]
   importedEntries ImportedTournamentEntry[]
   resultSubmissions TournamentResultSubmission[]
 
@@ -532,6 +573,7 @@ model TournamentRegistration {
   player1Id             String
   player2Id             String
   seed                  Int?
+  rankingScore          Int?
   paymentStatus         PaymentStatus @default(PENDING)
   paymentAmount         Decimal       @default(0) @db.Decimal(10, 2)
   paymentReference      String?
@@ -541,6 +583,8 @@ model TournamentRegistration {
   player1            Player             @relation("Player1Registrations", fields: [player1Id], references: [id])
   player2            Player             @relation("Player2Registrations", fields: [player2Id], references: [id])
 
+  groupPlacements  GroupPlacement[]
+  availabilities   PairAvailability[]
   matchesAsTeamA Match[] @relation("TeamAMatches")
   matchesAsTeamB Match[] @relation("TeamBMatches")
   importedEntry  ImportedTournamentEntry?
@@ -561,6 +605,9 @@ model Match {
   matchOrder             Int         // order within the round
   teamARegistrationId    String?
   teamBRegistrationId    String?
+  phase                  TournamentPhase?
+  groupId                String?
+  slotId                 String?     @unique
   winner                 MatchWinner @default(NONE)
   scores                 Json?       // e.g. [{ setA: 6, setB: 3 }, { setA: 6, setB: 4 }]
   playedAt               DateTime?
@@ -572,8 +619,115 @@ model Match {
   tournamentModality TournamentModality  @relation(fields: [tournamentModalityId], references: [id], onDelete: Cascade)
   teamARegistration  TournamentRegistration? @relation("TeamAMatches", fields: [teamARegistrationId], references: [id])
   teamBRegistration  TournamentRegistration? @relation("TeamBMatches", fields: [teamBRegistrationId], references: [id])
+  group              TournamentGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  slot               MatchSlot?       @relation("MatchToSlot", fields: [slotId], references: [id], onDelete: SetNull)
 
   @@map("matches")
+}
+
+// ============================================================
+// TOURNAMENT AUTOMATION (courts, slots, groups, availabilities)
+// ============================================================
+
+model Court {
+  id           String   @id @default(cuid())
+  tournamentId String
+  name         String   // 'Marietta 1', 'Catalá 2'
+  venue        String   // Sede: 'Marietta', 'Catalá'
+  isIndoor     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tournament     Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  availabilities CourtAvailability[]
+  slots          MatchSlot[]
+
+  @@index([tournamentId])
+  @@map("tournament_courts")
+}
+
+model CourtAvailability {
+  id           String    @id @default(cuid())
+  courtId      String
+  dayOfWeek    Int       // 0=Dom, 1=Lun ... 6=Sáb
+  startTime    String    // '16:30'
+  endTime      String    // '22:00'
+  specificDate DateTime? // Opcional: aplica solo a un día específico
+
+  court Court @relation(fields: [courtId], references: [id], onDelete: Cascade)
+
+  @@index([courtId, dayOfWeek])
+  @@map("court_availabilities")
+}
+
+model MatchSlot {
+  id        String     @id @default(cuid())
+  courtId   String
+  date      DateTime   // Fecha del slot (solo día)
+  startTime String     // '16:30'
+  endTime   String     // '17:40'
+  status    SlotStatus @default(AVAILABLE)
+
+  court Court @relation(fields: [courtId], references: [id], onDelete: Cascade)
+  match Match? @relation("MatchToSlot")
+
+  @@unique([courtId, date, startTime])
+  @@index([date])
+  @@map("match_slots")
+}
+
+model TournamentGroup {
+  id                   String @id @default(cuid())
+  tournamentModalityId String
+  name                 String // 'A', 'B', 'C'...
+  groupSize            Int    // 3 o 4
+  order                Int    // Orden del grupo
+
+  modality   TournamentModality @relation(fields: [tournamentModalityId], references: [id], onDelete: Cascade)
+  placements GroupPlacement[]
+  matches    Match[]
+
+  @@unique([tournamentModalityId, name])
+  @@index([tournamentModalityId])
+  @@map("tournament_groups")
+}
+
+model GroupPlacement {
+  id             String @id @default(cuid())
+  groupId        String
+  registrationId String
+  seed           Int?   // 1 = cabeza de serie
+  position       Int?   // Posición final en grupo
+  matchesPlayed  Int    @default(0)
+  matchesWon     Int    @default(0)
+  matchesLost    Int    @default(0)
+  setsWon        Int    @default(0)
+  setsLost       Int    @default(0)
+  gamesWon       Int    @default(0)
+  gamesLost      Int    @default(0)
+  points         Int    @default(0)
+
+  group        TournamentGroup        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  registration TournamentRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, registrationId])
+  @@index([registrationId])
+  @@map("group_placements")
+}
+
+model PairAvailability {
+  id             String    @id @default(cuid())
+  registrationId String
+  dayOfWeek      Int       // 0-6
+  startTime      String    // '16:00'
+  endTime        String    // '22:00'
+  specificDate   DateTime?
+  available      Boolean   @default(true)
+
+  registration TournamentRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@index([registrationId, dayOfWeek])
+  @@map("pair_availabilities")
 }
 
 // ============================================================

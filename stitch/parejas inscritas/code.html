@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Registered Pairs | Ranking Padel MX</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#0df26c",
+              "primary-dark": "#0bc95a",
+              "background-light": "#f8fafc",
+              "navy-dark": "#0f172a",
+              "navy-muted": "#1e293b",
+              "border-light": "#e2e8f0",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style type="text/tailwindcss">body {
+    font-family: "Inter", sans-serif;
+    background-image: linear-gradient(rgba(248, 250, 252, 0.92), rgba(248, 250, 252, 0.92)), url(https://lh3.googleusercontent.com/aida-public/AB6AXuBfZHF9nDTrbTRUI1e7jQQsS54f1rE92OYlbt4OT5kw1fG-qSjsL6_pgNbIBc-LMgomRvN4DkSzQ_LZlcH2iwg5k7QWDkX_IOZHU2YTv5F9mrHWLmOJk4FLHNxiIFO_y2HDiE-Hrwy9e-xPhrIzAO0vs-JYFAuAMFh3wOQLMnIzRU3LRrY4TiFkD2Q4xeRi-w_agBo0zCeh8bPqvS4IBumsoIsZ6IbQhfnVACDQCMjlk7pcKmA-ZNJtm-IsUbVeqR7ToDEUDz2oAVg);
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center
+    }
+.heading-bold {
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    text-transform: uppercase
+    }
+.glass-nav {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px)
+    }
+.pair-card-hover:hover {
+    border-color: #0df26c;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1)
+    }
+.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }</style>
+</head>
+<body class="text-navy-muted min-h-screen font-display">
+<nav class="sticky top-0 z-50 border-b border-slate-200 glass-nav">
+<div class="container mx-auto px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-navy-dark rounded flex items-center justify-center">
+<span class="material-icons text-primary text-xl font-bold">sports_tennis</span>
+</div>
+<span class="text-xl font-extrabold tracking-tighter uppercase italic text-navy-dark">Ranking <span class="text-primary-dark">Padel</span> MX</span>
+</div>
+<div class="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-tight text-navy-muted">
+<a class="hover:text-primary-dark transition-colors" href="#">Torneos</a>
+<a class="hover:text-primary-dark transition-colors" href="#">Ranking</a>
+<a class="hover:text-primary-dark transition-colors" href="#">Clubes</a>
+<a class="text-primary-dark border-b-2 border-primary-dark pb-1" href="#">Mi Perfil</a>
+</div>
+</div>
+</nav>
+<main class="container mx-auto px-4 py-8">
+<header class="mb-8">
+<nav class="flex items-center gap-2 text-slate-500 text-xs mb-4 uppercase font-bold tracking-widest">
+<span>Torneos</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span>Master Final SLP</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-navy-dark">Parejas</span>
+</nav>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="text-4xl md:text-5xl heading-bold text-navy-dark">
+                    Parejas <span class="text-primary-dark">Inscritas</span>
+</h1>
+<p class="text-slate-500 mt-2 font-medium">48 Parejas confirmadas en todas las categorías</p>
+</div>
+<div class="relative w-full md:w-80">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full bg-white border-slate-200 rounded-xl pl-10 py-3 text-sm focus:ring-primary-dark focus:border-primary-dark placeholder-slate-400 shadow-sm" placeholder="Buscar jugador..." type="text"/>
+</div>
+</div>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<div class="lg:col-span-8">
+<div class="flex border-b border-slate-200 mb-8 overflow-x-auto scrollbar-hide">
+<button class="px-6 py-4 text-sm font-bold uppercase tracking-wider text-slate-400 hover:text-navy-dark whitespace-nowrap">Información</button>
+<button class="px-6 py-4 text-sm font-bold uppercase tracking-wider border-b-2 border-primary-dark text-navy-dark whitespace-nowrap">Parejas (48)</button>
+<button class="px-6 py-4 text-sm font-bold uppercase tracking-wider text-slate-400 hover:text-navy-dark whitespace-nowrap">Cuadros</button>
+<button class="px-6 py-4 text-sm font-bold uppercase tracking-wider text-slate-400 hover:text-navy-dark whitespace-nowrap">Resultados</button>
+</div>
+<div class="space-y-12">
+<section>
+<div class="flex items-center justify-between mb-6 bg-white p-4 rounded-xl border-l-4 border-primary-dark shadow-sm">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-dark text-3xl">military_tech</span>
+<h2 class="text-xl font-extrabold uppercase tracking-tight text-navy-dark">1ra Fuerza <span class="text-primary-dark">Varonil</span></h2>
+</div>
+<span class="text-xs font-bold text-navy-dark bg-slate-100 px-3 py-1 rounded-full uppercase">12 Parejas</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-white border border-slate-200 rounded-xl p-5 pair-card-hover transition-all group shadow-sm">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-1 text-[10px] font-bold text-primary-dark uppercase bg-primary/10 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px] fill-1">verified</span>
+                                    Inscripción Confirmada
+                                </div>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Seed #1</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden border border-slate-100 bg-slate-50">
+<img alt="Player" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDR9BZ3GcHoDLDrHVLj-efMO-6OnsSxRTNmjhhk96Sej6xXMHwU8_pppafVR0Rp6ZNLFAkEv6QeYUekfT3_VCEWDQvbqxTwgT-UW8PGaeWh0IVPOhy8IPqEL00DgBU0Y1laAiTblIoZfzJ-Rdf7vjhBYBqXYiX8BmbbmYn6zMZOTFZyeFIh-LY98f2tWAXYXZJHuuv4yTpP8J_i3F3reydFN8psM5PAzv301fRE3NQf6NYfFtYCUmZ35V7unANPRoBT0B4nsOqBR5U"/>
+</div>
+<div>
+<p class="font-bold text-sm leading-none text-navy-dark">Alejandro Galán</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter mt-1">S.L.P, México</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-navy-dark font-extrabold text-sm">2,450</p>
+<p class="text-[9px] text-slate-400 uppercase font-bold">Pts Whin</p>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden border border-slate-100 bg-slate-50">
+<img alt="Player" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKxoLSYUhqnlvf5EWZPyS_QDR5MFceUFuM6AbnYIuX2G3CAik6NkK0cke9_PH_2R7VglE5jYmbW_wgNd8buonQuGMHlNUCwDBcwRMmjnQUzI0Y5tGITXtVyUHwNdF_fb_7BVQzwMaZGba7sMnEckpDcpNzNyVcL2EGM4XfcOP4gKFO466f2LxAh01E1uNWGs6sM0meEFkPXUzJamy7UI28MgkxUUzhq6EpWLiCwsjNpnWzQZuO1HyInBOf5vGC6wwePpgdP54QJl8"/>
+</div>
+<div>
+<p class="font-bold text-sm leading-none text-navy-dark">Juan Lebrón</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter mt-1">Querétaro, México</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-navy-dark font-extrabold text-sm">2,380</p>
+<p class="text-[9px] text-slate-400 uppercase font-bold">Pts Whin</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white border border-slate-200 rounded-xl p-5 pair-card-hover transition-all group shadow-sm">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-1 text-[10px] font-bold text-primary-dark uppercase bg-primary/10 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px] fill-1">verified</span>
+                                    Inscripción Confirmada
+                                </div>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Seed #2</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden border border-slate-100 bg-slate-50">
+<img alt="Player" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxRbeyBc8D94mOJp7uxq3VqXD_Vg7AUS1SGQgRRR9cAVJUsaODJeg2f1yvA5lGFqrF5I6hoHZyiUiP02HCaA6YbCJAWLq8NADHtXp5YwyyKS6EyA0DILNXl_cDIa9mCaxcIjC0YKiaR92WAB5n8IjAYWZqysQ0Yt6O0CQXlWX1aQwKtA5X128rawMdkFNkeqAvWXBtJn0X7nAthhMRYip6lO6g36Gti-KkgbkiF947WUN7H5EzrRaswen8JdlpTAas4Oh0tyU8avU"/>
+</div>
+<div>
+<p class="font-bold text-sm leading-none text-navy-dark">Arturo Coello</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter mt-1">Monterrey, México</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-navy-dark font-extrabold text-sm">2,100</p>
+<p class="text-[9px] text-slate-400 uppercase font-bold">Pts Whin</p>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden border border-slate-100 bg-slate-50">
+<img alt="Player" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA32Z3JuTaL47OjlTEqDfG32O0h9xwmnzCHa6i7RhXnNNFMwu0T8zFdnjrH051dMfuFxcpeI3F5RelzUdf1RwRYlptBqunVj4NrMhecGr0QLczDRR3LbxfX17NM14D4IIXWvujW4eTuJ3vl2TnsLqHdAgFPsb0HBaWr68SpTXCEuQrDSzXtAga1KFXeosJPjMpyfRnguDo_HyoMhKrYkMqjvYetLqg7QFiOyM4NkCO_xjd-XkLp60-cUJWMJCl7bT2oS2wZtsgmabw"/>
+</div>
+<div>
+<p class="font-bold text-sm leading-none text-navy-dark">Agustín Tapia</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter mt-1">S.L.P, México</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-navy-dark font-extrabold text-sm">2,050</p>
+<p class="text-[9px] text-slate-400 uppercase font-bold">Pts Whin</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section>
+<div class="flex items-center justify-between mb-6 bg-white p-4 rounded-xl border-l-4 border-slate-300 shadow-sm">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 text-3xl">looks_two</span>
+<h2 class="text-xl font-extrabold uppercase tracking-tight text-navy-dark">2da Fuerza <span class="text-primary-dark">Varonil</span></h2>
+</div>
+<span class="text-xs font-bold text-navy-dark bg-slate-100 px-3 py-1 rounded-full uppercase">16 Parejas</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-white border border-slate-200 rounded-xl p-5 pair-card-hover transition-all shadow-sm">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-1 text-[10px] font-bold text-primary-dark uppercase bg-primary/10 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px] fill-1">verified</span>
+                                    Inscripción Confirmada
+                                </div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden border border-slate-100 bg-slate-50">
+<img alt="Player" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyiy3niYAmnzdo79UVciOdRvhxwnQhMuZUEEGpy6JR6amep-vlupiRfYYz7qsBBenVt9QeXaCtZIYjy__VmdvnGproKFgsM7pxq6A_UrtyymltPiCMjzCmo273PymP_vL8BsjpJCyA91CJdGnLrSnwvmR1neG42a8pLibmxmSL4D4d3DW1ty4wjxNiqd_WQa5GXJmIjLTIVxfPZ0UdL6NL4o37vhonjnf5oT8fpoge-HO2gA4a5mvfxili_pxrOcb3GSlNJ0ebpLw"/>
+</div>
+<div>
+<p class="font-bold text-sm leading-none text-navy-dark">Carlos Rivera</p>
+<p class="text-[10px] text-slate-500 uppercase mt-1">Puebla, México</p>
+</div>
+</div>
+<div class="text-right text-navy-dark font-extrabold text-sm">1,200</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden border border-slate-100 bg-slate-50">
+<img alt="Player" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAC_b7RiQfkrzowT3cvDSURFOpYOlINyTWTrnvGrmCrYpDuqSORqyfbZwARkWeAbO2-JUFWTOTrw2XFpnDDsW0YyNSZG0kjjRkHhFZatTxAG6rVgpgGHk_LByy7YhjfGZq7N3YFznKKFRp4ipOm8E0uKJm9ASDsk3fE8FbCg8VUpipgvrb7flIyNnSg3yC8kmrADqvN2wTGYzlQBgLvbMfS_O-_CKP6YNq97_gR4da4Fx2THQqs6dYGrXA3raLc-n7cduuWpu42bnY"/>
+</div>
+<div>
+<p class="font-bold text-sm leading-none text-navy-dark">Mauricio González</p>
+<p class="text-[10px] text-slate-500 uppercase mt-1">Querétaro, México</p>
+</div>
+</div>
+<div class="text-right text-navy-dark font-extrabold text-sm">1,150</div>
+</div>
+</div>
+</div>
+<div class="bg-white border border-slate-200 rounded-xl p-5 pair-card-hover transition-all shadow-sm">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-1 text-[10px] font-bold text-primary-dark uppercase bg-primary/10 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px] fill-1">verified</span>
+                                    Inscripción Confirmada
+                                </div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden border border-slate-100 bg-slate-50">
+<img alt="Player" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIW0ROoO-UiniKh0yDBBxaSrLFuHVXamu7fcAPeZgFxShIoi_27VC1Uq-qLn7E1MZlFe8AAJlnQWBuudo4kPvur3JQN5QJDF4ZTQ4CTw3k-F97OP-eLfOOOEk0TfyOnvLMm_Z_WFxQzuxZtOnzntImazfASLTWtMjKotTstSvjqLD7eDXOSbiMdVYphPrwwNJ00n6xSzwww_pPFd4JxYcbNwvs1kJKJUoCGr6rNCZxZXv4JkGsniDXUpv9OZPSiUw6eVkSGzfyCUQ"/>
+</div>
+<div>
+<p class="font-bold text-sm leading-none text-navy-dark">Humberto López</p>
+<p class="text-[10px] text-slate-500 uppercase mt-1">S.L.P, México</p>
+</div>
+</div>
+<div class="text-right text-navy-dark font-extrabold text-sm">980</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden border border-slate-100 bg-slate-50">
+<img alt="Player" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAr_CePEOLhbOAFBmVfj6c1Y05FBtJbfKCyvWVpf9MtQQUonGBHRhqL__kcPBvG1Bl4FnDZZjp_KZOxW_8r5I-iKVVh0Y-tgJqogf1pr18LH4BexSebglkpYDHtzmcIOZfn4433LvNfI8wsVNxnV92gJPj3NfQJi81Oz63NYskA5pgjv8o7NO28nuqf8gDkLaWJS3GTs-cXif1_NbUs6FhfIK7b8ytXa2AE7-ib3GTtBuZavGp0m33snGwl9ygQqUxgfLEpoXXfw8"/>
+</div>
+<div>
+<p class="font-bold text-sm leading-none text-navy-dark">Andrés Martínez</p>
+<p class="text-[10px] text-slate-500 uppercase mt-1">S.L.P, México</p>
+</div>
+</div>
+<div class="text-right text-navy-dark font-extrabold text-sm">1,020</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<aside class="lg:col-span-4">
+<div class="sticky top-24 space-y-6">
+<div class="bg-white rounded-xl border border-slate-200 p-8 shadow-lg relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl"></div>
+<h3 class="text-xl font-extrabold mb-4 uppercase italic text-navy-dark">¿Faltas tú?</h3>
+<p class="text-slate-500 text-sm mb-6 leading-relaxed">Aún quedan algunos lugares disponibles en 3ra y 4ta categoría.</p>
+<button class="w-full bg-primary-dark text-white py-4 rounded-xl font-extrabold text-lg uppercase tracking-tight hover:bg-navy-dark transition-all mb-4 shadow-md">
+                        Inscribirme
+                    </button>
+<div class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400">
+<span class="material-symbols-outlined text-sm">timer</span>
+<span>Cierre: 12 Octubre</span>
+</div>
+</div>
+<div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+<h4 class="text-xs text-slate-400 uppercase font-bold tracking-[0.2em] mb-4">Resumen de Registro</h4>
+<div class="space-y-4">
+<div class="flex justify-between items-center text-sm">
+<span class="text-slate-500 font-medium">Total de Jugadores</span>
+<span class="font-bold text-navy-dark">96</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-slate-500 font-medium">Categorías</span>
+<span class="font-bold text-navy-dark">6</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-slate-500 font-medium">Clubes Representados</span>
+<span class="font-bold text-navy-dark">14</span>
+</div>
+<div class="pt-4 border-t border-slate-100 mt-4">
+<p class="text-[10px] text-slate-400 uppercase font-bold text-center italic">Ranking Padel MX - Sistema Oficial</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<footer class="bg-white border-t border-slate-200 py-12 mt-20">
+<div class="container mx-auto px-4">
+<div class="flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 bg-navy-dark rounded flex items-center justify-center">
+<span class="material-icons text-primary text-sm font-bold">sports_tennis</span>
+</div>
+<span class="text-sm font-extrabold tracking-tighter uppercase italic text-navy-dark">Ranking <span class="text-primary-dark">Padel</span> MX</span>
+</div>
+<div class="flex gap-8 text-xs text-slate-400 font-bold uppercase tracking-widest">
+<a class="hover:text-primary-dark transition-colors" href="#">Privacidad</a>
+<a class="hover:text-primary-dark transition-colors" href="#">Términos</a>
+<a class="hover:text-primary-dark transition-colors" href="#">Contacto</a>
+</div>
+<p class="text-xs text-slate-400 font-medium">© 2024 Ranking Padel México.</p>
+</div>
+</div>
+</footer>
+
+</body></html>

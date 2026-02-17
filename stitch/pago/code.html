@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pago de Inscripción | Ranking Padel MX</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Oswald:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --primary: #00C853;
+            --navy: #0f172a;
+            --navy-light: #1e293b;
+            --white: #ffffff;
+            --border: #e2e8f0;
+        }
+        body { 
+            font-family: 'Inter', sans-serif;
+            color: var(--navy);
+        }
+        h1, h2, h3, .heading-oswald {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+        }
+        .bg-club-overlay {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuCknuPHwhfVWy4zej1LoanWbNXq0KbMBM-SIjnikXkKcBcqTzDCsgamWlsOyukR3uQ5ZMmWSnMWwQVZBqE7rLiBYFtWGY6Jz4E_xRBR3vk2gRAcKyYQy5qsef-cihMLMtWUd5byxrNRXMN3O8beqFe_zC1gvgs48oRnX6HrJ63xsaFojDuveKuH0ICbtOm6SuNkSp00_bpIjuQ5Pl6qL-zNZUs8y878ZFomXj-Ro3-aTY1WJg5VjkDU4U5ICmM8eEMJaNkAZm5xSLc');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .modal-glass {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(15, 23, 42, 0.1);
+        }
+        .payment-method-card {
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        .payment-method-card.active {
+            border-color: var(--primary);
+            background: rgba(0, 200, 83, 0.03);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-club-overlay min-h-screen">
+<nav class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100">
+<div class="container mx-auto px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-[var(--primary)] rounded flex items-center justify-center">
+<span class="material-icons text-white text-xl font-bold">sports_tennis</span>
+</div>
+<span class="text-xl font-extrabold tracking-tighter uppercase italic text-[var(--navy)]">Ranking <span class="text-[var(--primary)]">Padel</span> MX</span>
+</div>
+<div class="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-tight text-[var(--navy)]">
+<a class="hover:text-[var(--primary)] transition-colors" href="#">Torneos</a>
+<a class="hover:text-[var(--primary)] transition-colors" href="#">Ranking</a>
+<a class="hover:text-[var(--primary)] transition-colors" href="#">Clubes</a>
+<button class="bg-[var(--navy)] text-white px-4 py-2 rounded-lg text-xs">MI PERFIL</button>
+</div>
+</div>
+</nav>
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+<div class="modal-glass w-full max-w-5xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+<div class="p-6 border-b border-slate-100 flex items-center justify-between bg-white">
+<div>
+<p class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--primary)] mb-1">Paso 3 de 3 - Pago</p>
+<h2 class="text-3xl font-bold text-[var(--navy)]">Finalizar Inscripción</h2>
+</div>
+<button class="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center transition-colors">
+<span class="material-icons text-slate-400">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto flex flex-col lg:flex-row">
+<div class="lg:w-2/5 p-8 bg-slate-50/50 border-r border-slate-100">
+<h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6">Resumen del pedido</h3>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="w-20 h-24 bg-white rounded-lg overflow-hidden shadow-sm flex-shrink-0 border border-slate-200">
+<img alt="Tournament" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLTpPprTGTxL9XInMhIDLN0wO7HWm9B5YWOLYks-ZeLHCjpAYioKd0kYBW6qLsHL236R_UZyNfAQhlSNDecz_UuT9xqD_hHbespPGgtTkJKJaFvbDvJweHouqcG8JpTrH6ZCx9p5tutblL9530sk74VTI-6eGDshH08-OrKwXekhMLON_okncrIT-ofrVvAxRHBCLVrfPIsUEwlCrNDoDaK05hlZUly_SHedhDhAHMKxu4fRcKPHPG0G_PheSlucia2zUmOANh0Qo"/>
+</div>
+<div>
+<p class="text-xs font-bold text-[var(--primary)] uppercase mb-1">Inscripción a Torneo</p>
+<h4 class="font-bold text-lg text-[var(--navy)] leading-tight">Master Final San Luis Potosí</h4>
+<p class="text-sm text-slate-500 mt-1">Club Padel One</p>
+</div>
+</div>
+<div class="space-y-4 py-6 border-y border-slate-200 border-dashed">
+<div class="flex justify-between items-center">
+<span class="text-sm text-slate-500">Categoría</span>
+<span class="text-sm font-bold text-[var(--navy)]">3ra Fuerza Varonil</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm text-slate-500">Pareja</span>
+<div class="flex items-center gap-2">
+<img alt="Partner" class="w-6 h-6 rounded-full border border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyzzfGUOuOViETn6MulJFoz19oKziySzsaLDT6SyZjZQK1b7cDyj3Xem9l0V3PaGhem2AnBnPGl5NLqdsUHjGuqDG_x4-lD51CU0W8MTiz9GrQZCzNkEVbEH6Riyk-VwZK0L4NXusLklCiZrgwjrq1H67TTgDwIXSAdeEw2rrJ7kDVHbyuubWeOHiZ4C4K4kJRhMI69GLLtS7DU3fdNTqW14sjINBbeV4LffcCS-9hs1fGk1B3Mk0tbQkjgHdC0rKo5ewSEfoaiZU"/>
+<span class="text-sm font-bold text-[var(--navy)]">Santiago Méndez</span>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm text-slate-500">Inscripción</span>
+<span class="text-sm font-bold text-[var(--navy)]">$1,250.00 MXN</span>
+</div>
+</div>
+<div class="pt-2">
+<div class="flex justify-between items-center mb-1">
+<span class="text-lg font-bold text-[var(--navy)]">Total a pagar</span>
+<span class="text-2xl font-black text-[var(--navy)]">$1,250.00 <span class="text-xs font-normal text-slate-400">MXN</span></span>
+</div>
+<p class="text-[10px] text-slate-400 text-right">Impuestos incluidos</p>
+</div>
+<div class="bg-blue-50 rounded-xl p-4 flex gap-3 mt-4">
+<span class="material-icons text-blue-500 text-lg">verified_user</span>
+<p class="text-[11px] text-blue-800 leading-relaxed">
+                            Tu pago está protegido. Al completar esta transacción, recibirás un correo de confirmación y tu lugar quedará asegurado en el cuadro del torneo.
+                        </p>
+</div>
+</div>
+</div>
+<div class="lg:w-3/5 p-8 bg-white">
+<h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6">Selecciona un método de pago</h3>
+<div class="space-y-4">
+<div class="payment-method-card active p-5 rounded-2xl border-2 cursor-pointer">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center">
+<span class="material-icons text-indigo-600">credit_card</span>
+</div>
+<div>
+<p class="font-bold text-[var(--navy)]">Tarjeta de Crédito/Débito</p>
+<p class="text-xs text-slate-500">Procesado de forma segura por Stripe</p>
+</div>
+</div>
+<div class="flex gap-1 opacity-60">
+<img alt="Visa" class="h-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuTyAyLt5vy19kEGsebOt2itV9e96B9_yI9s546csEl3aRNudRzYH0fACGD8W0q9zuEsyyFRoDRJjcihLK_eVOnKYvsWpihQVCOIVBnSHliM7XBotAxQNnao9zg9ZDEXlmtYfYFW-pyOaP5zrbWJPjkw4DRGcxHiCFrHZ8K3qjl05tgE8-REloHnAixkifMRAN2awUDgNGK72j3zoH4N4R2SmmH7X4nPTWIZUnxE_bELbOxfPvbypJRmjF46wvf9qGUIqjBbUv7nY"/>
+<img alt="Mastercard" class="h-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuYum7QuSf6F8w20m4W1qwZWkirmRgPfIh9X62febRoJrZGA40YMZQfL6k-C9y77oMe4qCcrQh6c8wv1qSsP4s750yIbl9ekue0pkDecYLr-3kMsAUab9LPwIg-FVcjguN9ijUnK8XbaIyg2toeEUEyTaG1RuANN8lXa2XC2wSo2kdSJxDyoWeLw6gcA-t99Hdi2y-J2qhhn_F5VzJOm-hHZkW8mGJklBQbmTi9-8Fdw72qawnS7eKwBNH-9cnC82woOzkJC7Ob60"/>
+</div>
+</div>
+<div class="space-y-4">
+<div>
+<label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5 ml-1">Número de tarjeta</label>
+<div class="relative">
+<span class="material-icons absolute right-4 top-1/2 -translate-y-1/2 text-slate-300">lock</span>
+<input class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-[var(--primary)] focus:ring-0 outline-none transition-all text-sm font-medium" placeholder="0000 0000 0000 0000" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5 ml-1">Expiración (MM/AA)</label>
+<input class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-[var(--primary)] focus:ring-0 outline-none transition-all text-sm font-medium" placeholder="MM / AA" type="text"/>
+</div>
+<div>
+<label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5 ml-1">CVV / CVC</label>
+<input class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-[var(--primary)] focus:ring-0 outline-none transition-all text-sm font-medium" placeholder="***" type="password"/>
+</div>
+</div>
+</div>
+</div>
+<div class="payment-method-card p-5 rounded-2xl border-2 border-slate-100 hover:border-slate-200 cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
+<span class="material-symbols-outlined text-emerald-600">account_balance</span>
+</div>
+<div>
+<p class="font-bold text-[var(--navy)]">Transferencia SPEI</p>
+<p class="text-xs text-slate-500">Carga tu comprobante después de transferir</p>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-slate-100 space-y-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 mb-1">CLABE Interbancaria</p>
+<p class="text-sm font-mono font-bold text-[var(--navy)]">012 345 6789 0123 4567</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 mb-1">Banco / Concepto</p>
+<p class="text-sm font-bold text-[var(--navy)]">BBVA / MASTER-SLP-72</p>
+</div>
+</div>
+<div class="relative">
+<label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5 ml-1">Subir comprobante (PDF, JPG, PNG)</label>
+<div class="border-2 border-dashed border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center hover:border-[var(--primary)] transition-colors">
+<span class="material-icons text-slate-300 text-3xl mb-1">cloud_upload</span>
+<p class="text-xs text-slate-500">Haz clic o arrastra el archivo aquí</p>
+</div>
+</div>
+</div>
+</div>
+<div class="payment-method-card p-5 rounded-2xl border-2 border-slate-100 hover:border-slate-200 cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center">
+<span class="material-icons text-amber-600">payments</span>
+</div>
+<div>
+<p class="font-bold text-[var(--navy)]">Pago en Efectivo (Club)</p>
+<p class="text-xs text-slate-500">Paga directamente en la recepción del club</p>
+</div>
+</div>
+<div class="mt-4 bg-amber-50/50 rounded-xl p-3 border border-amber-100">
+<p class="text-[11px] text-amber-800 leading-relaxed italic">
+                                * Tienes 24 horas para realizar el pago en el club, de lo contrario tu lugar se liberará.
+                             </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+<button class="text-sm font-bold text-slate-400 hover:text-[var(--navy)] flex items-center gap-2 transition-colors">
+<span class="material-icons text-sm">arrow_back</span>
+                Regresar
+            </button>
+<div class="flex items-center gap-4">
+<div class="text-right hidden sm:block">
+<p class="text-[10px] font-bold text-slate-400 uppercase leading-none mb-1">Total a confirmar</p>
+<p class="text-lg font-black text-[var(--navy)] leading-none">$1,250.00 MXN</p>
+</div>
+<button class="px-10 py-4 bg-[var(--primary)] text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-emerald-500/30 hover:scale-[1.02] transition-transform flex items-center gap-2">
+                    Confirmar Pago
+                    <span class="material-icons text-sm">check_circle</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<main class="container mx-auto px-4 py-8 blur-sm">
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+<div class="lg:col-span-5">
+<div class="aspect-[3/4] rounded-xl overflow-hidden shadow-2xl border-4 border-white">
+<img alt="Poster de Torneo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLTpPprTGTxL9XInMhIDLN0wO7HWm9B5YWOLYks-ZeLHCjpAYioKd0kYBW6qLsHL236R_UZyNfAQhlSNDecz_UuT9xqD_hHbespPGgtTkJKJaFvbDvJweHouqcG8JpTrH6ZCx9p5tutblL9530sk74VTI-6eGDshH08-OrKwXekhMLON_okncrIT-ofrVvAxRHBCLVrfPIsUEwlCrNDoDaK05hlZUly_SHedhDhAHMKxu4fRcKPHPG0G_PheSlucia2zUmOANh0Qo"/>
+</div>
+</div>
+<div class="lg:col-span-7 flex flex-col justify-center">
+<h1 class="text-5xl md:text-7xl mb-4 leading-none text-[var(--navy)] font-bold italic">
+                Master Final <br/> <span class="text-[var(--primary)]">San Luis Potosí</span>
+</h1>
+</div>
+</section>
+</main>
+<footer class="bg-[var(--navy)] text-white py-12 mt-12 border-t-8 border-[var(--primary)] opacity-50">
+<div class="container mx-auto px-4 text-center">
+<p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">© 2024 Ranking Padel México.</p>
+</div>
+</footer>
+
+</body></html>

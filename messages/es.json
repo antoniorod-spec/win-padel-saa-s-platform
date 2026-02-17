@@ -271,7 +271,7 @@
   "TournamentDetail": {
     "loading": "Cargando torneo...",
     "notFound": "Torneo no encontrado",
-    "basicTournament": "Torneo basico",
+    "basicTournament": "Sólo Difusión",
     "registrationOpen": "Inscripciones abiertas",
     "almostFull": "Casi lleno",
     "inProgress": "En curso",
@@ -286,12 +286,14 @@
     "registerNow": "Inscribirme ahora",
     "goToExternalRegistration": "Ir a inscripcion externa",
     "importTeams": "Importar parejas (club)",
+    "manageRegistrations": "Gestionar inscripciones",
     "generateBrackets": "Generar cuadros automaticos",
     "pointsShort": "pts",
     "tabs": {
       "bracket": "Cuadro / bracket",
       "teams": "Parejas inscritas",
       "calendar": "Calendario",
+      "schedule": "Rol de juegos",
       "groups": "Grupos",
       "info": "Info del torneo"
     },
@@ -319,6 +321,19 @@
       "tooltipTournamentDay": "Dia de torneo",
       "tooltipRegistrationDeadline": "Cierre de inscripciones",
       "registrationDeadline": "Cierre inscripciones"
+    },
+    "schedule": {
+      "title": "Rol de juegos",
+      "loading": "Cargando rol de juegos...",
+      "empty": "Aun no hay horarios publicados.",
+      "unknownDate": "Fecha por definir",
+      "matches": "partidos"
+    },
+    "scheduleTable": {
+      "time": "Hora",
+      "court": "Cancha",
+      "match": "Partido",
+      "modality": "Categoria"
     }
   },
   "TorneosCityPage": {

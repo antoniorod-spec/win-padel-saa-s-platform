@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WhinPadel Club Admin - Crear Torneo</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec6d",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#102218",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Lexend', sans-serif; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 min-h-screen">
+<!-- Top Navigation / Header -->
+<header class="bg-white dark:bg-background-dark/50 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-icons">sports_tennis</span>
+</div>
+<div>
+<h1 class="font-bold text-lg leading-tight">WhinPadel Club</h1>
+<p class="text-xs text-slate-500 font-medium">Tournament Wizard</p>
+</div>
+</div>
+<button class="text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors">
+<span class="material-icons">close</span>
+</button>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-8">
+<!-- Stepper -->
+<div class="mb-10">
+<div class="flex items-center justify-between max-w-2xl mx-auto">
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">1</div>
+<span class="text-sm font-medium text-slate-500">General</span>
+</div>
+<div class="h-1 flex-1 bg-primary mx-4 rounded-full"></div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold ring-4 ring-primary/20">2</div>
+<span class="text-sm font-bold text-slate-900 dark:text-white">Categorías</span>
+</div>
+<div class="h-1 flex-1 bg-slate-200 dark:bg-slate-700 mx-4 rounded-full"></div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-500 flex items-center justify-center font-bold">3</div>
+<span class="text-sm font-medium text-slate-500">Horarios</span>
+</div>
+<div class="h-1 flex-1 bg-slate-200 dark:bg-slate-700 mx-4 rounded-full"></div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-500 flex items-center justify-center font-bold">4</div>
+<span class="text-sm font-medium text-slate-500">Revisión</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+<!-- Left Column: Categories List -->
+<div class="lg:col-span-2 space-y-6">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="text-2xl font-bold">Categorías y Formato</h2>
+<p class="text-slate-500 mt-1">Define la capacidad y estructura competitiva de cada nivel.</p>
+</div>
+<button class="bg-primary/10 hover:bg-primary/20 text-emerald-700 dark:text-primary font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all border border-primary/20">
+<span class="material-icons text-sm">add</span>
+                        Añadir Categoría
+                    </button>
+</div>
+<!-- Category Card 1 -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
+<div class="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-icons text-lg">workspace_premium</span>
+</div>
+<input class="bg-transparent border-none font-bold text-lg focus:ring-0 p-0 w-40" type="text" value="Varonil 1ra"/>
+</div>
+<button class="text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-icons">delete_outline</span>
+</button>
+</div>
+<div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-4">
+<div>
+<label class="block text-sm font-semibold mb-2 text-slate-600 dark:text-slate-400">Máximo de Parejas</label>
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800">-</button>
+<input class="w-20 text-center border-slate-200 dark:border-slate-700 rounded-lg dark:bg-slate-800" type="number" value="24"/>
+<button class="w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800">+</button>
+</div>
+</div>
+<div>
+<label class="block text-sm font-semibold mb-2 text-slate-600 dark:text-slate-400">Tamaño de Grupos</label>
+<select class="w-full border-slate-200 dark:border-slate-700 rounded-lg dark:bg-slate-800 focus:ring-primary focus:border-primary">
+<option>3 parejas por grupo</option>
+<option selected="">4 parejas por grupo</option>
+</select>
+</div>
+</div>
+<div class="space-y-6">
+<div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-800">
+<div>
+<span class="block font-semibold">Cuadro de Consolación</span>
+<span class="text-xs text-slate-500">Torneo secundario para eliminados</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-icons text-sm">info</span>
+<span class="text-xs font-medium">Formato estándar de grupos y eliminatorias.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Category Card 2 -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm opacity-80">
+<div class="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-icons text-lg">workspace_premium</span>
+</div>
+<input class="bg-transparent border-none font-bold text-lg focus:ring-0 p-0 w-40" type="text" value="Femenil 2da"/>
+</div>
+<button class="text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-icons">delete_outline</span>
+</button>
+</div>
+<div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-4">
+<div>
+<label class="block text-sm font-semibold mb-2 text-slate-600 dark:text-slate-400">Máximo de Parejas</label>
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800">-</button>
+<input class="w-20 text-center border-slate-200 dark:border-slate-700 rounded-lg dark:bg-slate-800" type="number" value="12"/>
+<button class="w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800">+</button>
+</div>
+</div>
+<div>
+<label class="block text-sm font-semibold mb-2 text-slate-600 dark:text-slate-400">Tamaño de Grupos</label>
+<select class="w-full border-slate-200 dark:border-slate-700 rounded-lg dark:bg-slate-800 focus:ring-primary focus:border-primary">
+<option selected="">3 parejas por grupo</option>
+<option>4 parejas por grupo</option>
+</select>
+</div>
+</div>
+<div class="space-y-6">
+<div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-800">
+<div>
+<span class="block font-semibold">Cuadro de Consolación</span>
+<span class="text-xs text-slate-500">Torneo secundario para eliminados</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Live Logic Summary -->
+<div class="lg:sticky lg:top-24">
+<div class="bg-background-dark text-white rounded-xl shadow-xl overflow-hidden border-t-4 border-primary">
+<div class="p-6">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-icons text-primary">auto_graph</span>
+<h3 class="font-bold text-lg">Resumen de Estructura</h3>
+</div>
+<div class="space-y-6">
+<div class="relative pl-6 border-l-2 border-primary/30">
+<div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-primary border-4 border-background-dark"></div>
+<p class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Fase de Grupos</p>
+<p class="text-sm">Con <span class="text-primary font-bold">24 parejas</span> en grupos de <span class="text-primary font-bold">3</span></p>
+<p class="text-xl font-bold mt-1">8 Grupos Totales</p>
+</div>
+<div class="relative pl-6 border-l-2 border-primary/30">
+<div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-primary border-4 border-background-dark"></div>
+<p class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Clasificación</p>
+<p class="text-sm">Pasan los 2 mejores de cada grupo</p>
+<p class="text-xl font-bold mt-1">16 Clasificados</p>
+</div>
+<div class="relative pl-6">
+<div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-primary border-4 border-background-dark"></div>
+<p class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Fase Final</p>
+<div class="bg-primary/10 p-3 rounded-lg border border-primary/20 mt-2">
+<p class="text-sm leading-relaxed">Inicia desde <span class="text-primary font-bold">Octavos de Final</span>.</p>
+<p class="text-xs text-slate-400 mt-1">Total de 15 partidos eliminatorios.</p>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-slate-800">
+<div class="flex justify-between items-center mb-2">
+<span class="text-sm text-slate-400">Total Pistas Requeridas</span>
+<span class="font-bold">4 Pistas</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm text-slate-400">Estimado de Partidos</span>
+<span class="font-bold">39 Partidos</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Tips/Info Card -->
+<div class="mt-6 p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border border-emerald-100 dark:border-emerald-900/50 flex gap-3">
+<span class="material-icons text-emerald-600 dark:text-emerald-400">tips_and_updates</span>
+<div>
+<h4 class="text-sm font-bold text-emerald-800 dark:text-emerald-300">Pro Tip</h4>
+<p class="text-xs text-emerald-700 dark:text-emerald-400 mt-1 leading-relaxed">
+                            Los grupos de 3 garantizan al menos 2 partidos por pareja. Considera grupos de 4 si tienes disponibilidad amplia de pistas.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Footer Actions -->
+<div class="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-4 z-40">
+<div class="max-w-7xl mx-auto flex justify-between items-center">
+<button class="px-6 py-2.5 font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-2">
+<span class="material-icons text-sm">arrow_back</span>
+                    Atrás
+                </button>
+<button class="px-10 py-2.5 bg-primary text-background-dark font-bold rounded-lg hover:shadow-lg hover:shadow-primary/20 transition-all flex items-center gap-2">
+                    Siguiente: Horarios
+                    <span class="material-icons text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Spacing for sticky footer -->
+<div class="h-24"></div>
+</main>
+</body></html>

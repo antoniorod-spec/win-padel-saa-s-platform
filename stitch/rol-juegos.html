@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tournament Schedule - WhinPadel Club Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#13ec6d",
+                "background-light": "#f6f8f7",
+                "background-dark": "#102218",
+              },
+              fontFamily: {
+                "display": ["Inter", "sans-serif"],
+                "oswald": ["Oswald", "sans-serif"]
+              },
+              borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-oswald { font-family: 'Oswald', sans-serif; }
+        .grid-schedule {
+            display: grid;
+            grid-template-columns: 80px repeat(5, minmax(200px, 1fr));
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-200 min-h-screen">
+<!-- Header -->
+<header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50">
+<div class="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="bg-primary/10 p-2 rounded-lg">
+<span class="material-icons text-primary text-3xl">sports_tennis</span>
+</div>
+<div>
+<h1 class="font-oswald text-2xl uppercase tracking-tight leading-none text-slate-900 dark:text-white">Rol de Juegos</h1>
+<p class="text-xs text-slate-500 font-medium">WhinPadel Open Summer 2024</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2 text-slate-600 dark:text-slate-400 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all">
+<span class="material-icons text-xl">download</span>
+<span>Download PDF</span>
+</button>
+<button class="flex items-center gap-2 px-6 py-2 bg-primary text-background-dark font-bold rounded-lg hover:brightness-110 transition-all shadow-sm shadow-primary/20">
+<span class="material-icons text-xl">publish</span>
+<span>PUBLISH SCHEDULE</span>
+</button>
+</div>
+</div>
+</header>
+<main class="max-w-[1600px] mx-auto p-6 flex gap-6">
+<!-- Sidebar -->
+<aside class="w-80 flex-shrink-0 space-y-6">
+<div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
+<h3 class="font-oswald text-lg uppercase mb-4 flex items-center gap-2">
+<span class="material-icons text-primary text-sm">filter_list</span>
+                    Filters
+                </h3>
+<div class="space-y-4">
+<div>
+<label class="text-[10px] uppercase font-bold text-slate-400 mb-1 block">Category</label>
+<select class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:ring-primary focus:border-primary">
+<option>All Categories</option>
+<option>Men's Open</option>
+<option>Women's B</option>
+<option>Mixed C</option>
+</select>
+</div>
+<div>
+<label class="text-[10px] uppercase font-bold text-slate-400 mb-1 block">Quick Search</label>
+<div class="relative">
+<span class="material-icons absolute left-3 top-2.5 text-slate-400 text-sm">search</span>
+<input class="w-full pl-9 rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:ring-primary focus:border-primary" placeholder="Search player..." type="text"/>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-oswald text-lg uppercase flex items-center gap-2">
+<span class="material-icons text-amber-500 text-sm">pending_actions</span>
+                        Pending Matches
+                    </h3>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-0.5 rounded text-[10px] font-bold">12</span>
+</div>
+<div class="space-y-3">
+<!-- Pending Item -->
+<div class="p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg cursor-move hover:border-primary transition-colors group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] px-2 py-0.5 bg-primary/20 text-emerald-700 dark:text-primary rounded-full font-bold">Men's Open</span>
+<span class="material-icons text-slate-300 text-sm group-hover:text-primary">drag_indicator</span>
+</div>
+<p class="text-xs font-semibold leading-tight">Garcia / Rodriguez vs Lopez / Martinez</p>
+</div>
+<!-- Pending Item -->
+<div class="p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg cursor-move hover:border-primary transition-colors group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-bold uppercase">Women's B</span>
+<span class="material-icons text-slate-300 text-sm group-hover:text-primary">drag_indicator</span>
+</div>
+<p class="text-xs font-semibold leading-tight">Sosa / Mendez vs Ruiz / Valdes</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Schedule Area -->
+<div class="flex-grow space-y-6">
+<!-- Date Tabs -->
+<div class="flex gap-2 overflow-x-auto scrollbar-hide">
+<button class="px-8 py-3 bg-white dark:bg-slate-900 rounded-lg border-2 border-primary shadow-sm flex flex-col items-center min-w-[100px]">
+<span class="text-[10px] font-bold text-slate-400 uppercase">Fri</span>
+<span class="text-xl font-bold text-slate-900 dark:text-white">12</span>
+</button>
+<button class="px-8 py-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center min-w-[100px] hover:border-primary/50">
+<span class="text-[10px] font-bold text-slate-400 uppercase">Sat</span>
+<span class="text-xl font-bold text-slate-900 dark:text-white">13</span>
+</button>
+<button class="px-8 py-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center min-w-[100px] hover:border-primary/50">
+<span class="text-[10px] font-bold text-slate-400 uppercase">Sun</span>
+<span class="text-xl font-bold text-slate-900 dark:text-white">14</span>
+</button>
+<button class="px-8 py-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center min-w-[100px] hover:border-primary/50">
+<span class="text-[10px] font-bold text-slate-400 uppercase">Mon</span>
+<span class="text-xl font-bold text-slate-900 dark:text-white">15</span>
+</button>
+</div>
+<!-- Schedule Grid -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+<!-- Grid Header -->
+<div class="grid-schedule border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+<div class="p-4 border-r border-slate-200 dark:border-slate-800"></div>
+<div class="p-4 border-r border-slate-200 dark:border-slate-800 text-center">
+<span class="font-oswald uppercase text-sm tracking-wider">Cancha 1</span>
+</div>
+<div class="p-4 border-r border-slate-200 dark:border-slate-800 text-center">
+<span class="font-oswald uppercase text-sm tracking-wider">Cancha 2</span>
+</div>
+<div class="p-4 border-r border-slate-200 dark:border-slate-800 text-center">
+<span class="font-oswald uppercase text-sm tracking-wider">Cancha 3</span>
+</div>
+<div class="p-4 border-r border-slate-200 dark:border-slate-800 text-center">
+<span class="font-oswald uppercase text-sm tracking-wider">Cancha 4</span>
+</div>
+<div class="p-4 text-center">
+<span class="font-oswald uppercase text-sm tracking-wider">Cancha 5</span>
+</div>
+</div>
+<!-- Grid Rows -->
+<div class="relative">
+<!-- 08:00 Row -->
+<div class="grid-schedule border-b border-slate-200 dark:border-slate-800 min-h-[140px]">
+<div class="p-4 border-r border-slate-200 dark:border-slate-800 flex items-start justify-center">
+<span class="font-bold text-slate-400 text-sm">08:00</span>
+</div>
+<!-- Match Block -->
+<div class="p-3 border-r border-slate-200 dark:border-slate-800">
+<div class="h-full bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-lg p-3 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<div class="flex justify-between items-start mb-2">
+<span class="text-[9px] font-bold px-1.5 py-0.5 bg-primary/20 text-emerald-700 rounded">OPEN</span>
+<span class="material-icons text-slate-300 text-xs">edit</span>
+</div>
+<p class="text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">Hernandez / Silva</p>
+<p class="text-xs font-bold text-slate-700 dark:text-slate-200">Torres / Blanco</p>
+<div class="mt-2 pt-2 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+<span class="text-[10px] text-slate-400">Scheduled</span>
+<span class="text-[10px] font-mono text-primary font-bold">R16-01</span>
+</div>
+</div>
+</div>
+<!-- Conflict Block -->
+<div class="p-3 border-r border-slate-200 dark:border-slate-800">
+<div class="h-full bg-rose-50 dark:bg-rose-950/20 border-2 border-rose-200 dark:border-rose-900/50 rounded-lg p-3 shadow-sm relative group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[9px] font-bold px-1.5 py-0.5 bg-rose-100 dark:bg-rose-900 text-rose-600 dark:text-rose-400 rounded uppercase">Cat B</span>
+<span class="material-icons text-rose-500 text-sm">warning</span>
+</div>
+<p class="text-xs font-bold text-slate-700 dark:text-slate-200">Mendez / Luna</p>
+<p class="text-xs font-bold text-slate-700 dark:text-slate-200">Vega / Ortiz</p>
+<div class="mt-2 text-[9px] text-rose-600 dark:text-rose-400 font-medium">
+                                    Player "Luna" double booked
+                                </div>
+</div>
+</div>
+<div class="p-3 border-r border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20 flex items-center justify-center group cursor-pointer">
+<span class="material-icons text-slate-300 group-hover:text-primary transition-colors">add_circle_outline</span>
+</div>
+<div class="p-3 border-r border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20"></div>
+<div class="p-3">
+<div class="h-full bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-lg p-3 shadow-sm relative">
+<div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+<div class="flex justify-between items-start mb-2">
+<span class="text-[9px] font-bold px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded uppercase">Cat C</span>
+</div>
+<p class="text-xs font-bold text-slate-700 dark:text-slate-200">Paez / Diaz</p>
+<p class="text-xs font-bold text-slate-700 dark:text-slate-200">Gomez / Leon</p>
+</div>
+</div>
+</div>
+<!-- 09:30 Row -->
+<div class="grid-schedule border-b border-slate-200 dark:border-slate-800 min-h-[140px]">
+<div class="p-4 border-r border-slate-200 dark:border-slate-800 flex items-start justify-center">
+<span class="font-bold text-slate-400 text-sm">09:30</span>
+</div>
+<div class="p-3 border-r border-slate-200 dark:border-slate-800">
+<div class="h-full bg-slate-100 dark:bg-slate-800/50 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg p-3 flex items-center justify-center">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Available</span>
+</div>
+</div>
+<div class="p-3 border-r border-slate-200 dark:border-slate-800">
+<div class="h-full bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-lg p-3 shadow-sm relative">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<span class="text-[9px] font-bold px-1.5 py-0.5 bg-primary/20 text-emerald-700 rounded mb-2 inline-block">OPEN</span>
+<p class="text-xs font-bold text-slate-700 dark:text-slate-200">Winner M1</p>
+<p class="text-xs font-bold text-slate-700 dark:text-slate-200">Winner M2</p>
+</div>
+</div>
+<div class="p-3 border-r border-slate-200 dark:border-slate-800">
+<div class="h-full bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-lg p-3 shadow-sm relative opacity-60 grayscale">
+<div class="absolute top-0 left-0 w-1 h-full bg-slate-400"></div>
+<span class="text-[9px] font-bold px-1.5 py-0.5 bg-slate-200 text-slate-600 rounded mb-2 inline-block">MAINTENANCE</span>
+<p class="text-xs font-bold text-slate-700 dark:text-slate-200">Court Cleaning</p>
+</div>
+</div>
+<div class="p-3 border-r border-slate-200 dark:border-slate-800">
+<div class="h-full bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-lg p-3 shadow-sm relative">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<span class="text-[9px] font-bold px-1.5 py-0.5 bg-primary/20 text-emerald-700 rounded mb-2 inline-block">OPEN</span>
+<p class="text-xs font-bold text-slate-700 dark:text-slate-200">Perez / Cruz</p>
+<p class="text-xs font-bold text-slate-700 dark:text-slate-200">Solis / Rios</p>
+</div>
+</div>
+<div class="p-3">
+<div class="h-full bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-lg p-3 shadow-sm relative">
+<div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+<span class="text-[9px] font-bold px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded mb-2 inline-block">Cat B</span>
+<p class="text-xs font-bold text-slate-700 dark:text-slate-200">Lugo / Mota</p>
+<p class="text-xs font-bold text-slate-700 dark:text-slate-200">Duarte / Kim</p>
+</div>
+</div>
+</div>
+<!-- 11:00 Row -->
+<div class="grid-schedule border-b border-slate-200 dark:border-slate-800 min-h-[140px]">
+<div class="p-4 border-r border-slate-200 dark:border-slate-800 flex items-start justify-center">
+<span class="font-bold text-slate-400 text-sm">11:00</span>
+</div>
+<div class="p-3 border-r border-slate-200 dark:border-slate-800"></div>
+<div class="p-3 border-r border-slate-200 dark:border-slate-800"></div>
+<div class="p-3 border-r border-slate-200 dark:border-slate-800"></div>
+<div class="p-3 border-r border-slate-200 dark:border-slate-800"></div>
+<div class="p-3"></div>
+</div>
+</div>
+</div>
+<!-- Legends -->
+<div class="flex items-center gap-6 px-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="text-[10px] font-bold text-slate-500 uppercase">Men's Open</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-blue-500"></span>
+<span class="text-[10px] font-bold text-slate-500 uppercase">Category B</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-amber-500"></span>
+<span class="text-[10px] font-bold text-slate-500 uppercase">Category C</span>
+</div>
+<div class="flex items-center gap-2 ml-auto">
+<span class="w-3 h-3 rounded-sm bg-rose-100 border border-rose-300"></span>
+<span class="text-[10px] font-bold text-slate-500 uppercase">Conflict Detected</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Stats Overlay -->
+<div class="fixed bottom-6 right-6 bg-slate-900 dark:bg-slate-800 text-white p-4 rounded-xl shadow-2xl flex items-center gap-6 border border-slate-700/50">
+<div class="text-center">
+<p class="text-[10px] font-bold text-slate-400 uppercase leading-none">Total Matches</p>
+<p class="text-xl font-oswald text-primary">42</p>
+</div>
+<div class="w-px h-8 bg-slate-700"></div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-slate-400 uppercase leading-none">Pending</p>
+<p class="text-xl font-oswald text-amber-500">12</p>
+</div>
+<div class="w-px h-8 bg-slate-700"></div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-slate-400 uppercase leading-none">Conflicts</p>
+<p class="text-xl font-oswald text-rose-500">1</p>
+</div>
+</div>
+</body></html>

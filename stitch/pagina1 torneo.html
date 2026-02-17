@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WhinPadel Admin - Crear Torneo</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec6d",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#102218",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
+<!-- Navigation Header -->
+<nav class="border-b border-primary/10 bg-white dark:bg-background-dark sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-icons text-white text-xl">sports_tennis</span>
+</div>
+<span class="text-xl font-bold tracking-tight">WhinPadel <span class="text-primary">Admin</span></span>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-primary/10 rounded-full transition-colors">
+<span class="material-icons">notifications</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border-2 border-primary">
+<img alt="User" class="w-full h-full object-cover" data-alt="Admin user profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDliBU6sVjDHNvL1FPv-xAWOzITg08lmEomYYi9LjNqVlI3aiNIcQykEH1CuCRd5Cb0nCpw-62-iVEjcJ3URq7ohXaS5fEjIQS0avr9fMNxcQHuAwAQNjkb6bbCsRrV7QmGh29fnW8f2LY--E1xerIeEIelevQ0W3GsqGJk7wJj8OxQJ2iSfrIiLf1uNnaeQOU2IRSL3LRLe-6gn9D73yXZzKdWczYkAJy96EmAika3St5tCsXkExmOHbECFnkoEYf3Qr1CLWS72RM"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-4 py-8">
+<!-- Header & Stepper Section -->
+<header class="mb-10 text-center lg:text-left">
+<h1 class="text-3xl font-bold mb-8">Crear Nuevo Torneo</h1>
+<div class="relative">
+<!-- Progress Line -->
+<div class="absolute top-5 left-0 w-full h-0.5 bg-slate-200 dark:bg-slate-700 -z-10"></div>
+<div class="absolute top-5 left-0 w-1/4 h-0.5 bg-primary -z-10"></div>
+<div class="flex justify-between items-start">
+<!-- Step 1: Active -->
+<div class="flex flex-col items-center gap-2 group">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white ring-4 ring-white dark:ring-background-dark">
+<span class="font-bold">1</span>
+</div>
+<span class="text-sm font-semibold text-primary">General</span>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-500 ring-4 ring-white dark:ring-background-dark">
+<span class="font-bold">2</span>
+</div>
+<span class="text-sm font-medium text-slate-500">Categorías</span>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-500 ring-4 ring-white dark:ring-background-dark">
+<span class="font-bold">3</span>
+</div>
+<span class="text-sm font-medium text-slate-500">Canchas y Horarios</span>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-500 ring-4 ring-white dark:ring-background-dark">
+<span class="font-bold">4</span>
+</div>
+<span class="text-sm font-medium text-slate-500">Revisión</span>
+</div>
+</div>
+</div>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Main Form Column -->
+<div class="lg:col-span-2 space-y-6">
+<section class="bg-white dark:bg-slate-900/50 p-6 lg:p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+<span class="material-icons text-primary">info</span>
+                        Configuración General
+                    </h2>
+<div class="space-y-6">
+<!-- Tournament Name -->
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider" for="tournament-name">Nombre del Torneo</label>
+<input class="w-full px-4 py-3 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" id="tournament-name" placeholder="Ej. Open CDMX 2024" type="text"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Date Range -->
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Fecha del Evento</label>
+<div class="relative">
+<span class="material-icons absolute left-3 top-3 text-slate-400">calendar_today</span>
+<input class="w-full pl-10 pr-4 py-3 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="15 Oct - 17 Oct, 2024" type="text"/>
+</div>
+</div>
+<!-- Registration Deadline -->
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Cierre de Inscripciones</label>
+<div class="relative">
+<span class="material-icons absolute left-3 top-3 text-slate-400">event_busy</span>
+<input class="w-full pl-10 pr-4 py-3 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" type="datetime-local"/>
+</div>
+</div>
+</div>
+<!-- Price -->
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider" for="price">Precio por Pareja (MXN)</label>
+<div class="relative">
+<span class="absolute left-4 top-3.5 font-bold text-slate-400">$</span>
+<input class="w-full pl-8 pr-4 py-3 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-display" id="price" placeholder="1200.00" type="number"/>
+</div>
+</div>
+<!-- Description -->
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider" for="description">Descripción y Reglas</label>
+<textarea class="w-full px-4 py-3 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none" id="description" placeholder="Detalla las reglas, formato de juego y políticas de cancelación..." rows="6"></textarea>
+</div>
+</div>
+</section>
+</div>
+<!-- Sidebar Column -->
+<div class="space-y-6">
+<!-- Tips Card -->
+<aside class="bg-primary/10 dark:bg-primary/5 p-6 rounded-xl border border-primary/20">
+<div class="flex items-center gap-3 mb-4">
+<div class="bg-primary p-1.5 rounded-lg">
+<span class="material-icons text-white text-lg">lightbulb</span>
+</div>
+<h3 class="font-bold text-lg text-primary">Consejo Pro</h3>
+</div>
+<p class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed mb-4">
+                        Recomendamos cerrar las inscripciones <span class="font-bold">48 horas antes</span> del inicio del evento. 
+                    </p>
+<p class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                        Esto te dará tiempo suficiente para procesar los cuadros de juego, asignar horarios y notificar a los jugadores sin contratiempos de último minuto.
+                    </p>
+</aside>
+<!-- Status Summary -->
+<div class="bg-white dark:bg-slate-900/50 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<h3 class="font-bold mb-4 text-slate-600 dark:text-slate-400 text-sm uppercase">Resumen de Progreso</h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between text-sm">
+<span class="text-slate-500">Campos completados</span>
+<span class="font-semibold">0/5</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full transition-all" style="width: 5%"></div>
+</div>
+<div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-2 text-xs text-slate-400 italic">
+<span class="material-icons text-xs">auto_awesome</span>
+                                Tus cambios se guardan automáticamente
+                            </div>
+</div>
+</div>
+</div>
+<!-- Preview Card -->
+<div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 relative group h-48">
+<img alt="Tournament Background" class="w-full h-full object-cover" data-alt="Action shot of a padel match on professional court" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsdHNBL1uv0Bd7vAfvi_lCHSuO49x40IAqwTauZdy4eGQYAbPL5FpfM0l7fXxZ_C-M3DUw7VicO8JYlewvkW8D0A94z9Jx6Jmn7W_b46ilCcswcIjEwhHzun8Mlr76vRjFPoMfJQ0z5agEz08FmwxDIU0pgSmFKjQykPWz2mtlOmRSB1qsJL3aZr0sm9QsiHYe5-QYma7XiEEwRDm8yw8dmQkwwQWv-KDMd8uguBoD4zgRF2jjVVWSCA9-dh2L_YC4WAIzgZ-7Zm0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/90 via-background-dark/20 to-transparent p-4 flex flex-col justify-end">
+<span class="text-primary font-bold text-xs bg-black/40 px-2 py-1 rounded w-fit mb-2">VISTA PREVIA</span>
+<h4 class="text-white font-bold" id="preview-name">Nuevo Torneo</h4>
+<p class="text-slate-300 text-xs" id="preview-date">Fecha por definir</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Navigation Footer -->
+<footer class="fixed bottom-0 left-0 w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-40">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<button class="px-6 py-2.5 rounded text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 font-medium transition-colors">
+                Cancelar
+            </button>
+<div class="flex items-center gap-4">
+<button class="px-6 py-2.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-400 font-medium cursor-not-allowed flex items-center gap-2" disabled="">
+<span class="material-icons text-sm">arrow_back</span>
+                    Atrás
+                </button>
+<button class="px-8 py-2.5 rounded bg-primary hover:brightness-95 text-background-dark font-bold shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+                    Siguiente: Categorías
+                    <span class="material-icons">arrow_forward</span>
+</button>
+</div>
+</div>
+</footer>
+<!-- Bottom Spacing for Fixed Footer -->
+<div class="h-24"></div>
+</body></html>

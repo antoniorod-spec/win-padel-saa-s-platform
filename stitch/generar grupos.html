@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WhinPadel - Bracket Generation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec6d",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#102218",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 min-h-screen">
+<!-- Header / Navigation -->
+<header class="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10">
+<div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-icons text-background-dark font-bold">sports_tennis</span>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tight">WhinPadel <span class="text-primary">Admin</span></h1>
+<p class="text-xs text-slate-500 font-medium">Tournament Wizard: 4ta Categoría Varonil</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-primary transition-colors">
+                    Guardar Borrador
+                </button>
+<button class="bg-primary text-background-dark px-6 py-2.5 rounded-lg font-bold shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                    Publicar Torneo
+                </button>
+</div>
+</div>
+</header>
+<!-- Success Processing State (Post-Generation Summary) -->
+<main class="max-w-7xl mx-auto px-4 py-8">
+<!-- Summary Dashboard -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+<div class="bg-white dark:bg-slate-900/50 p-4 rounded-xl border border-primary/10 flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+<span class="material-icons text-primary">groups</span>
+</div>
+<div>
+<p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Parejas</p>
+<p class="text-xl font-bold">32</p>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900/50 p-4 rounded-xl border border-primary/10 flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+<span class="material-icons text-primary">grid_view</span>
+</div>
+<div>
+<p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Grupos</p>
+<p class="text-xl font-bold">8</p>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900/50 p-4 rounded-xl border border-primary/10 flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+<span class="material-icons text-primary">calendar_month</span>
+</div>
+<div>
+<p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Partidos</p>
+<p class="text-xl font-bold">64</p>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900/50 p-4 rounded-xl border border-primary/10 flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+<span class="material-icons text-primary">schedule</span>
+</div>
+<div>
+<p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Duración Est.</p>
+<p class="text-xl font-bold">2 Días</p>
+</div>
+</div>
+</div>
+<!-- Main View Tabs -->
+<div class="bg-white dark:bg-slate-900/50 rounded-xl border border-primary/10 overflow-hidden">
+<!-- Tabs Navigation -->
+<div class="flex border-b border-primary/10">
+<button class="px-8 py-5 text-sm font-bold border-b-2 border-primary text-primary flex items-center gap-2">
+<span class="material-icons text-lg">grid_on</span>
+                    FASE DE GRUPOS
+                </button>
+<button class="px-8 py-5 text-sm font-bold text-slate-400 hover:text-primary transition-colors flex items-center gap-2">
+<span class="material-icons text-lg">account_tree</span>
+                    FASE ELIMINATORIA
+                </button>
+<button class="px-8 py-5 text-sm font-bold text-slate-400 hover:text-primary transition-colors flex items-center gap-2">
+<span class="material-icons text-lg">event_note</span>
+                    ROL DE JUEGOS
+                </button>
+</div>
+<!-- Content Area: Group Stage -->
+<div class="p-8">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h2 class="text-2xl font-bold">Estructura de Grupos</h2>
+<p class="text-slate-500">Distribución automática basada en el Ranking WhinPadel.</p>
+</div>
+<button class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg text-sm font-bold hover:bg-primary/20 transition-colors">
+<span class="material-icons text-sm">refresh</span>
+                        Regenerar Grupos
+                    </button>
+</div>
+<!-- Groups Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Grupo A -->
+<div class="bg-background-light dark:bg-background-dark/50 rounded-lg p-4 border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-center mb-4">
+<span class="bg-primary text-background-dark text-[10px] font-black px-2 py-1 rounded uppercase tracking-tighter">Grupo A</span>
+<span class="material-icons text-slate-400 text-sm cursor-pointer">drag_indicator</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded shadow-sm border-l-4 border-primary">
+<span class="text-xs font-bold truncate">A. González / R. Ruiz</span>
+<span class="text-[10px] bg-primary/20 text-primary px-1.5 rounded font-bold">#1</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded shadow-sm">
+<span class="text-xs font-bold truncate">M. Silva / J. Torres</span>
+<span class="text-[10px] text-slate-400 font-bold">#16</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded shadow-sm">
+<span class="text-xs font-bold truncate">C. Mendez / P. Ortiz</span>
+<span class="text-[10px] text-slate-400 font-bold">#24</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded shadow-sm">
+<span class="text-xs font-bold truncate">L. Vega / F. Soto</span>
+<span class="text-[10px] text-slate-400 font-bold">#32</span>
+</div>
+</div>
+</div>
+<!-- Grupo B -->
+<div class="bg-background-light dark:bg-background-dark/50 rounded-lg p-4 border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-center mb-4">
+<span class="bg-primary text-background-dark text-[10px] font-black px-2 py-1 rounded uppercase tracking-tighter">Grupo B</span>
+<span class="material-icons text-slate-400 text-sm cursor-pointer">drag_indicator</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded shadow-sm border-l-4 border-primary">
+<span class="text-xs font-bold truncate">S. Luna / K. Lara</span>
+<span class="text-[10px] bg-primary/20 text-primary px-1.5 rounded font-bold">#2</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded shadow-sm">
+<span class="text-xs font-bold truncate">R. Flores / G. Díaz</span>
+<span class="text-[10px] text-slate-400 font-bold">#15</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded shadow-sm">
+<span class="text-xs font-bold truncate">H. Peña / J. Rivas</span>
+<span class="text-[10px] text-slate-400 font-bold">#23</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded shadow-sm">
+<span class="text-xs font-bold truncate">D. Rios / B. Cruz</span>
+<span class="text-[10px] text-slate-400 font-bold">#31</span>
+</div>
+</div>
+</div>
+<!-- Grupo C -->
+<div class="bg-background-light dark:bg-background-dark/50 rounded-lg p-4 border border-slate-200 dark:border-slate-800 opacity-60">
+<div class="flex justify-between items-center mb-4">
+<span class="bg-primary text-background-dark text-[10px] font-black px-2 py-1 rounded uppercase tracking-tighter">Grupo C</span>
+<span class="material-icons text-slate-400 text-sm cursor-pointer">drag_indicator</span>
+</div>
+<div class="flex items-center justify-center h-40 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded text-xs font-medium text-slate-400">
+                            Cargando parejas...
+                        </div>
+</div>
+<!-- Grupo D -->
+<div class="bg-background-light dark:bg-background-dark/50 rounded-lg p-4 border border-slate-200 dark:border-slate-800 opacity-60">
+<div class="flex justify-between items-center mb-4">
+<span class="bg-primary text-background-dark text-[10px] font-black px-2 py-1 rounded uppercase tracking-tighter">Grupo D</span>
+<span class="material-icons text-slate-400 text-sm cursor-pointer">drag_indicator</span>
+</div>
+<div class="flex items-center justify-center h-40 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded text-xs font-medium text-slate-400">
+                            Cargando parejas...
+                        </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Elimination Tree Preview (Concept) -->
+<div class="mt-12 opacity-80 pointer-events-none">
+<h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+<span class="material-icons text-primary">account_tree</span>
+                Vista Previa de Eliminatorias
+            </h3>
+<div class="flex items-center justify-between gap-8 py-10 overflow-x-auto">
+<!-- Quarter Finals -->
+<div class="space-y-12">
+<div class="w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-2">
+<div class="bg-slate-100 dark:bg-slate-800 h-6 mb-1 rounded flex items-center px-2"><span class="text-[9px] font-bold">1ro Grupo A</span></div>
+<div class="bg-slate-100 dark:bg-slate-800 h-6 rounded flex items-center px-2"><span class="text-[9px] font-bold">2do Grupo B</span></div>
+</div>
+<div class="w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-2">
+<div class="bg-slate-100 dark:bg-slate-800 h-6 mb-1 rounded flex items-center px-2"><span class="text-[9px] font-bold">1ro Grupo C</span></div>
+<div class="bg-slate-100 dark:bg-slate-800 h-6 rounded flex items-center px-2"><span class="text-[9px] font-bold">2do Grupo D</span></div>
+</div>
+</div>
+<!-- Connection Line -->
+<div class="w-12 h-24 border-y-2 border-r-2 border-primary/30 rounded-r-xl"></div>
+<!-- Semifinals -->
+<div class="space-y-24">
+<div class="w-48 bg-white dark:bg-slate-900 border-2 border-primary/20 rounded p-2">
+<div class="bg-primary/5 h-6 mb-1 rounded flex items-center px-2"><span class="text-[9px] font-bold">Ganador QF 1</span></div>
+<div class="bg-primary/5 h-6 rounded flex items-center px-2"><span class="text-[9px] font-bold">Ganador QF 2</span></div>
+</div>
+</div>
+<!-- Connection Line -->
+<div class="w-12 h-12 border-b-2 border-primary/30"></div>
+<!-- Final -->
+<div>
+<div class="w-56 bg-primary text-background-dark rounded-xl p-4 shadow-xl shadow-primary/20 text-center">
+<span class="text-[10px] font-black uppercase tracking-widest mb-2 block">Gran Final</span>
+<div class="bg-white/20 h-10 rounded-lg flex items-center justify-center font-bold text-xs">
+                            FINALISTA 1 VS FINALISTA 2
+                        </div>
+<div class="mt-2 text-[10px] font-bold">DOMINGO 24 • 18:00 HRS</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Roles & Schedule Sidebar (Hidden logic, but visually represented in Tab 3) -->
+<section class="max-w-7xl mx-auto px-4 pb-24">
+<div class="bg-white dark:bg-slate-900/50 rounded-xl border border-primary/10 p-6">
+<h3 class="text-lg font-bold mb-6">Próximos Partidos Asignados</h3>
+<div class="space-y-4">
+<div class="flex items-center gap-6 p-4 rounded-lg bg-background-light dark:bg-background-dark/30 hover:bg-white dark:hover:bg-slate-800 transition-all group">
+<div class="text-center min-w-[80px]">
+<p class="text-xs font-black text-primary">SÁB 23</p>
+<p class="text-xl font-bold">09:00</p>
+</div>
+<div class="w-px h-10 bg-slate-200 dark:bg-slate-800"></div>
+<div class="flex-1 grid grid-cols-2 gap-4">
+<div class="flex items-center gap-3">
+<span class="material-icons text-slate-400 text-sm">sports_tennis</span>
+<span class="text-sm font-semibold">Cancha 1</span>
+</div>
+<div class="flex items-center gap-3 justify-end">
+<span class="text-xs px-2 py-1 bg-slate-200 dark:bg-slate-800 rounded font-bold">GRUPO A</span>
+</div>
+</div>
+<div class="flex-1 text-center font-bold text-sm">
+                        Pareja A1 <span class="text-primary mx-2">VS</span> Pareja A2
+                    </div>
+<button class="material-icons text-slate-300 group-hover:text-primary transition-colors cursor-pointer">edit_calendar</button>
+</div>
+<div class="flex items-center gap-6 p-4 rounded-lg bg-background-light dark:bg-background-dark/30 hover:bg-white dark:hover:bg-slate-800 transition-all group border-l-4 border-primary/40">
+<div class="text-center min-w-[80px]">
+<p class="text-xs font-black text-primary">SÁB 23</p>
+<p class="text-xl font-bold">09:00</p>
+</div>
+<div class="w-px h-10 bg-slate-200 dark:bg-slate-800"></div>
+<div class="flex-1 grid grid-cols-2 gap-4">
+<div class="flex items-center gap-3">
+<span class="material-icons text-slate-400 text-sm">sports_tennis</span>
+<span class="text-sm font-semibold">Cancha 2</span>
+</div>
+<div class="flex items-center gap-3 justify-end">
+<span class="text-xs px-2 py-1 bg-slate-200 dark:bg-slate-800 rounded font-bold">GRUPO B</span>
+</div>
+</div>
+<div class="flex-1 text-center font-bold text-sm">
+                        Pareja B1 <span class="text-primary mx-2">VS</span> Pareja B2
+                    </div>
+<button class="material-icons text-slate-300 group-hover:text-primary transition-colors cursor-pointer">edit_calendar</button>
+</div>
+<div class="flex items-center gap-6 p-4 rounded-lg bg-background-light dark:bg-background-dark/30 hover:bg-white dark:hover:bg-slate-800 transition-all group">
+<div class="text-center min-w-[80px]">
+<p class="text-xs font-black text-primary">SÁB 23</p>
+<p class="text-xl font-bold">10:15</p>
+</div>
+<div class="w-px h-10 bg-slate-200 dark:bg-slate-800"></div>
+<div class="flex-1 grid grid-cols-2 gap-4">
+<div class="flex items-center gap-3">
+<span class="material-icons text-slate-400 text-sm">sports_tennis</span>
+<span class="text-sm font-semibold">Cancha 1</span>
+</div>
+<div class="flex items-center gap-3 justify-end">
+<span class="text-xs px-2 py-1 bg-slate-200 dark:bg-slate-800 rounded font-bold">GRUPO A</span>
+</div>
+</div>
+<div class="flex-1 text-center font-bold text-sm">
+                        Pareja A3 <span class="text-primary mx-2">VS</span> Pareja A4
+                    </div>
+<button class="material-icons text-slate-300 group-hover:text-primary transition-colors cursor-pointer">edit_calendar</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Actions Bar -->
+<div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-primary/10 px-6 py-4 shadow-2xl z-50">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-2 text-slate-500">
+<span class="material-icons text-sm">auto_awesome</span>
+<span class="text-xs font-medium">Algoritmo WhinPadel v2.4 - Optimización de descanso activada.</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-6 py-3 rounded-lg border border-slate-200 dark:border-slate-800 font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-icons text-sm">arrow_back</span>
+                    Atrás
+                </button>
+<button class="flex items-center gap-2 px-10 py-3 rounded-lg bg-primary text-background-dark font-black text-sm shadow-xl shadow-primary/30 hover:scale-[1.02] transition-transform">
+                    PUBLICAR TORNEO AHORA
+                    <span class="material-icons">send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Background Pattern -->
+<div class="fixed inset-0 -z-10 opacity-5 pointer-events-none">
+<div class="absolute top-0 right-0 w-1/2 h-1/2 bg-primary/20 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-0 left-0 w-1/3 h-1/3 bg-primary/10 blur-[100px] rounded-full"></div>
+</div>
+</body></html>

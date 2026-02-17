@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Selección de Pareja | Ranking Padel MX</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Oswald:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --primary: #00C853;
+            --navy: #0f172a;
+            --navy-light: #1e293b;
+            --white: #ffffff;
+            --border: #e2e8f0;
+        }
+        body { 
+            font-family: 'Inter', sans-serif;
+            color: var(--navy);
+        }
+        h1, h2, h3, .heading-oswald {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+        }
+        .bg-club-overlay {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuCknuPHwhfVWy4zej1LoanWbNXq0KbMBM-SIjnikXkKcBcqTzDCsgamWlsOyukR3uQ5ZMmWSnMWwQVZBqE7rLiBYFtWGY6Jz4E_xRBR3vk2gRAcKyYQy5qsef-cihMLMtWUd5byxrNRXMN3O8beqFe_zC1gvgs48oRnX6HrJ63xsaFojDuveKuH0ICbtOm6SuNkSp00_bpIjuQ5Pl6qL-zNZUs8y878ZFomXj-Ro3-aTY1WJg5VjkDU4U5ICmM8eEMJaNkAZm5xSLc');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .modal-glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(15, 23, 42, 0.1);
+        }
+        .search-input:focus {
+            box-shadow: 0 0 0 4px rgba(0, 200, 83, 0.15);
+        }
+        .partner-card:hover {
+            border-color: var(--primary);
+            background: rgba(0, 200, 83, 0.02);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-club-overlay min-h-screen">
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+<div class="modal-glass w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+<div class="p-6 border-b border-slate-100 flex items-center justify-between bg-white">
+<div>
+<p class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--primary)] mb-1">Paso 2 de 3</p>
+<h2 class="text-3xl font-bold text-[var(--navy)]">Selecciona tu pareja</h2>
+</div>
+<button class="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center transition-colors">
+<span class="material-icons text-slate-400">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-8">
+<div class="relative">
+<label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 ml-1">Buscar en base de datos RPM</label>
+<div class="relative">
+<span class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="search-input w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-xl focus:border-[var(--primary)] outline-none transition-all text-[var(--navy)] font-medium" placeholder="Nombre, Apellido o RPM-ID..." type="text"/>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xs font-black uppercase tracking-widest text-slate-500">Resultados encontrados</h3>
+<span class="text-[10px] bg-slate-100 px-2 py-1 rounded font-bold text-slate-500">3 Jugadores</span>
+</div>
+<div class="space-y-3">
+<div class="partner-card flex items-center gap-4 p-4 border-2 border-slate-100 rounded-2xl bg-white cursor-pointer transition-all">
+<div class="w-14 h-14 rounded-full overflow-hidden bg-slate-100 border-2 border-white shadow-sm">
+<img alt="Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyzzfGUOuOViETn6MulJFoz19oKziySzsaLDT6SyZjZQK1b7cDyj3Xem9l0V3PaGhem2AnBnPGl5NLqdsUHjGuqDG_x4-lD51CU0W8MTiz9GrQZCzNkEVbEH6Riyk-VwZK0L4NXusLklCiZrgwjrq1H67TTgDwIXSAdeEw2rrJ7kDVHbyuubWeOHiZ4C4K4kJRhMI69GLLtS7DU3fdNTqW14sjINBbeV4LffcCS-9hs1fGk1B3Mk0tbQkjgHdC0rKo5ewSEfoaiZU"/>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-[var(--navy)]">Santiago Méndez</h4>
+<div class="flex items-center gap-3 mt-0.5">
+<span class="text-[10px] font-black bg-slate-100 text-slate-600 px-2 py-0.5 rounded">RPM-8291</span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Ranking Nac: <span class="text-[var(--navy)]">#42</span></span>
+</div>
+</div>
+<button class="px-4 py-2 bg-[var(--navy)] text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-colors">Seleccionar</button>
+</div>
+<div class="partner-card flex items-center gap-4 p-4 border-2 border-slate-100 rounded-2xl bg-white cursor-pointer transition-all">
+<div class="w-14 h-14 rounded-full overflow-hidden bg-slate-100 border-2 border-white shadow-sm">
+<img alt="Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBP2M4Rgv_gV2lSSJJJFNi8RfFUgZAeAqdm2pLTGlqbxjnx7sdecMYkyMip1G572EAoIDJVDCuWuO4myZqKiEmpr_fHPZ2qkzrfV2s4fDPnyUdefDFTv4SmYsoxcgS6o7Jibj1FIc8Otpp1Q1lESbqvOF1bcGb0kqVAnJiFXl1vRfSiNlgHrEhutdt2igWHauml-ZJxOhRWcP_bNo5aHaIwQn4ic27GKTSxHXVaUI4siyJBVV76WcQsrrFA0hD5E0-DmPgnFvapo34"/>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-[var(--navy)]">Julián Rivas</h4>
+<div class="flex items-center gap-3 mt-0.5">
+<span class="text-[10px] font-black bg-slate-100 text-slate-600 px-2 py-0.5 rounded">RPM-4512</span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Ranking Nac: <span class="text-[var(--navy)]">#156</span></span>
+</div>
+</div>
+<button class="px-4 py-2 bg-[var(--navy)] text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-colors">Seleccionar</button>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-dashed border-slate-200">
+<div class="bg-white border-2 border-slate-100 rounded-3xl p-6 shadow-sm">
+<div class="flex items-start gap-4 mb-6">
+<div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500">
+<span class="material-symbols-outlined text-3xl">person_add</span>
+</div>
+<div>
+<h3 class="font-bold text-lg text-[var(--navy)]">¿Pareja no registrada?</h3>
+<p class="text-sm text-slate-500 leading-snug">Si tu pareja aún no tiene perfil en Ranking Padel MX, envíale una invitación para que se registre y se una a tu inscripción.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div>
+<label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5 ml-1">Teléfono de tu pareja</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">+52</span>
+<input class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-[var(--primary)] outline-none transition-all text-sm font-bold" placeholder="10 dígitos" type="tel"/>
+</div>
+</div>
+<div class="flex items-end">
+<button class="w-full h-[46px] bg-[var(--primary)] text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-lg shadow-emerald-500/20 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
+<span class="material-icons text-sm">send</span>
+                                Enviar invitación oficial
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-amber-50 border border-amber-100 rounded-xl p-4 flex gap-3">
+<span class="material-icons text-amber-500 text-xl">info</span>
+<p class="text-xs text-amber-800 leading-relaxed">
+<span class="font-bold block mb-0.5">Nota importante:</span>
+                    Tu pareja debe aceptar la invitación y contar con un <span class="font-bold">RPM-ID</span> activo para que la inscripción sea válida y puedan sumar puntos en el ranking oficial.
+                </p>
+</div>
+</div>
+<div class="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+<button class="text-sm font-bold text-slate-400 hover:text-[var(--navy)] flex items-center gap-2 transition-colors">
+<span class="material-icons text-sm">arrow_back</span>
+                Regresar
+            </button>
+<div class="flex items-center gap-4">
+<span class="text-xs font-bold text-slate-400 uppercase tracking-tighter">Esperando selección</span>
+<button class="px-8 py-3 bg-slate-200 text-slate-400 rounded-xl font-black text-xs uppercase tracking-widest cursor-not-allowed" disabled="">Continuar</button>
+</div>
+</div>
+</div>
+</div>
+<nav class="sticky top-0 z-40 nav-glass bg-white/80 backdrop-blur-md border-b border-slate-100">
+<div class="container mx-auto px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-[var(--primary)] rounded flex items-center justify-center">
+<span class="material-icons text-white text-xl font-bold">sports_tennis</span>
+</div>
+<span class="text-xl font-extrabold tracking-tighter uppercase italic text-[var(--navy)]">Ranking <span class="text-[var(--primary)]">Padel</span> MX</span>
+</div>
+<div class="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-tight text-[var(--navy)]">
+<a class="hover:text-[var(--primary)] transition-colors" href="#">Torneos</a>
+<a class="hover:text-[var(--primary)] transition-colors" href="#">Ranking</a>
+<a class="hover:text-[var(--primary)] transition-colors" href="#">Clubes</a>
+<button class="bg-[var(--navy)] text-white px-4 py-2 rounded-lg text-xs">MI PERFIL</button>
+</div>
+</div>
+</nav>
+<main class="container mx-auto px-4 py-8 blur-sm">
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+<div class="lg:col-span-5">
+<div class="aspect-[3/4] rounded-xl overflow-hidden shadow-2xl border-4 border-white">
+<img alt="Poster de Torneo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLTpPprTGTxL9XInMhIDLN0wO7HWm9B5YWOLYks-ZeLHCjpAYioKd0kYBW6qLsHL236R_UZyNfAQhlSNDecz_UuT9xqD_hHbespPGgtTkJKJaFvbDvJweHouqcG8JpTrH6ZCx9p5tutblL9530sk74VTI-6eGDshH08-OrKwXekhMLON_okncrIT-ofrVvAxRHBCLVrfPIsUEwlCrNDoDaK05hlZUly_SHedhDhAHMKxu4fRcKPHPG0G_PheSlucia2zUmOANh0Qo"/>
+</div>
+</div>
+<div class="lg:col-span-7 flex flex-col justify-center">
+<h1 class="text-5xl md:text-7xl mb-4 leading-none text-[var(--navy)] font-bold italic">
+                Master Final <br/> <span class="text-[var(--primary)]">San Luis Potosí</span>
+</h1>
+</div>
+</section>
+</main>
+<footer class="bg-[var(--navy)] text-white py-12 mt-12 border-t-8 border-[var(--primary)] opacity-50">
+<div class="container mx-auto px-4">
+<div class="grid grid-cols-1 md:grid-cols-3 items-center gap-8 text-center">
+<p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">© 2024 Ranking Padel México.</p>
+</div>
+</div>
+</footer>
+
+</body></html>

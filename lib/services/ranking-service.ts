@@ -528,6 +528,7 @@ export async function recalculateAllRankings() {
   })
 
   for (const mod of completedModalities) {
+    if (!mod.tournament.affectsRanking) continue
     const totalRounds = mod.matches[0]?.roundOrder ?? 0
     if (totalRounds > 0) {
       await assignTournamentPoints(mod.id, mod.tournament.category, totalRounds)

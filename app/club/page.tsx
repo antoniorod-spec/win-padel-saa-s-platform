@@ -4,7 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { useTranslations } from "next-intl"
-import { useRouter } from "@/i18n/navigation"
+import { Link, useRouter } from "@/i18n/navigation"
 import { DashboardShell } from "@/components/dashboard-shell"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -45,18 +45,38 @@ import {
   Snowflake,
 } from "lucide-react"
 import {
-  useCreateTournament,
   useTournaments,
+  useDeleteTournament,
+  useTransitionTournamentStatus,
   useImportTournamentResultsFile,
   useSubmitTournamentResultsManual,
   useTournamentResultSubmissions,
+  useTournamentCourts,
+  useCreateTournamentCourt,
+  useDeleteTournamentCourt,
+  useSetTournamentCourtAvailability,
+  useGenerateTournamentSlots,
+  useGenerateModalityGroups,
+  useGenerateTournamentSchedule,
+  useGenerateMirrorBracket,
+  useTournament,
 } from "@/hooks/use-tournaments"
 import { useToast } from "@/hooks/use-toast"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 const sectionIds = ["dashboard", "torneos", "jugadores", "pagos", "noticias", "estadisticas", "perfil"] as const
 type SectionId = (typeof sectionIds)[number]
 
-const wizardSteps = ["Info Basica", "Categorias", "Formato", "Reglas", "Publicar"]
 const surfaceOptions = ["Cesped Sintetico", "Mondo", "Cemento", "Mixta"]
 const resultStageOptions = ["CHAMPION", "RUNNER_UP", "SEMIFINAL", "QUARTERFINAL", "ROUND_OF_16", "ROUND_OF_32", "GROUP_STAGE"] as const
 
@@ -79,35 +99,6 @@ function ClubDashboardContent() {
     { id: "estadisticas", label: t("nav.estadisticas"), icon: BarChart3, href: "/club?section=estadisticas" },
     { id: "perfil", label: t("nav.perfil"), icon: Building2, href: "/club?section=perfil" },
   ]
-
-  const [wizardStep, setWizardStep] = useState(0)
-  const [showWizard, setShowWizard] = useState(false)
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [venue, setVenue] = useState("")
-  const [startDate, setStartDate] = useState("")
-  const [endDate, setEndDate] = useState("")
-  const defaultTournamentCategory: "A" | "B" | "C" = "C"
-  const [format, setFormat] = useState<"ELIMINATION" | "ROUND_ROBIN" | "LEAGUE" | "EXPRESS">("ROUND_ROBIN")
-  const [tournamentType, setTournamentType] = useState<"FULL" | "BASIC">("FULL")
-  const [registrationDeadline, setRegistrationDeadline] = useState("")
-  const [externalRegistrationType, setExternalRegistrationType] = useState<"URL" | "WHATSAPP" | "INSTAGRAM" | "FACEBOOK" | "OTHER">("URL")
-  const [externalRegistrationLink, setExternalRegistrationLink] = useState("")
-  const [posterUrl, setPosterUrl] = useState("")
-  const [price, setPrice] = useState("0")
-  const [prize, setPrize] = useState("")
-  const [sponsorName, setSponsorName] = useState("")
-  const [logoUrl, setLogoUrl] = useState("")
-  const [sponsorLogoUrl, setSponsorLogoUrl] = useState("")
-  const [rules, setRules] = useState({
-    setsPerMatch: 3,
-    gamesPerSet: 6,
-    tieBreak: "yes",
-    goldenPoint: false,
-  })
-  const [selectedModalities, setSelectedModalities] = useState<Array<{ modality: "VARONIL" | "FEMENIL" | "MIXTO"; category: string }>>([
-    { modality: "VARONIL", category: "C" },
-  ])
 
   // Club profile form
   const [clubId, setClubId] = useState("")
@@ -187,7 +178,8 @@ function ClubDashboardContent() {
   const [resultsFile, setResultsFile] = useState<File | null>(null)
 
   const { data: tournamentsData } = useTournaments({ pageSize: 20, mine: true })
-  const createTournament = useCreateTournament()
+  const deleteTournament = useDeleteTournament()
+  const transitionTournamentStatus = useTransitionTournamentStatus()
   const submitManualResults = useSubmitTournamentResultsManual()
   const importResultsFile = useImportTournamentResultsFile()
   const { data: resultSubmissionsData } = useTournamentResultSubmissions(resultTournamentId || undefined)
@@ -302,32 +294,6 @@ function ClubDashboardContent() {
     const teams = tournaments.reduce((sum: number, t: any) => sum + (t.registeredTeams || 0), 0)
     return { active, total: tournaments.length, teams }
   }, [tournaments])
-
-  async function publishTournament() {
-    await createTournament.mutateAsync({
-      name,
-      description,
-      venue,
-      startDate,
-      endDate,
-      category: defaultTournamentCategory,
-      format,
-      type: tournamentType,
-      registrationDeadline: registrationDeadline || undefined,
-      externalRegistrationType: tournamentType === "BASIC" ? externalRegistrationType : undefined,
-      externalRegistrationLink: tournamentType === "BASIC" ? externalRegistrationLink : undefined,
-      posterUrl: tournamentType === "BASIC" ? posterUrl : undefined,
-      affectsRanking: tournamentType === "BASIC" ? false : true,
-      prize,
-      sponsorName,
-      logoUrl,
-      sponsorLogoUrl,
-      inscriptionPrice: Number(price),
-      modalities: tournamentType === "FULL" ? selectedModalities : undefined,
-      rules,
-    })
-    setShowWizard(false)
-  }
 
   async function saveProfile() {
     if (!clubId) return
@@ -537,134 +503,15 @@ function ClubDashboardContent() {
           </div>
 
           <div className="mt-6">
-            <Dialog open={showWizard} onOpenChange={setShowWizard}>
-              <DialogTrigger asChild>
-                <Button className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
-                  <Plus className="h-4 w-4" />
-                  Crear Nuevo Torneo
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle className="font-display text-xl font-bold">Crear Torneo - Paso {wizardStep + 1} de {wizardSteps.length}</DialogTitle>
-                </DialogHeader>
-                <div className="flex items-center gap-2">
-                  {wizardSteps.map((s, i) => (
-                    <div key={s} className="flex flex-1 flex-col items-center gap-1">
-                      <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${i <= wizardStep ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-                        {i < wizardStep ? <Check className="h-4 w-4" /> : i + 1}
-                      </div>
-                      <span className="text-[10px] text-muted-foreground">{s}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4">
-                  {wizardStep === 0 && (
-                    <div className="flex flex-col gap-4">
-                      <div className="flex flex-col gap-2">
-                        <Label>Nombre del Torneo</Label>
-                        <Input placeholder="Ej: Open CDMX 2026" className="bg-background" value={name} onChange={(e) => setName(e.target.value)} />
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Label>Descripción</Label>
-                        <Input placeholder="Descripción corta para home y detalle" className="bg-background" value={description} onChange={(e) => setDescription(e.target.value)} />
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="flex flex-col gap-2">
-                          <Label>Fecha Inicio</Label>
-                          <Input type="date" className="bg-background" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <Label>Fecha Fin</Label>
-                          <Input type="date" className="bg-background" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="flex flex-col gap-2">
-                          <Label>Tipo de torneo</Label>
-                          <Select value={tournamentType} onValueChange={(v: "FULL" | "BASIC") => setTournamentType(v)}>
-                            <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="FULL">FULL</SelectItem>
-                              <SelectItem value="BASIC">BASIC</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <Label>Sede</Label>
-                          <Input placeholder="Club / dirección visible" className="bg-background" value={venue} onChange={(e) => setVenue(e.target.value)} />
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Label>Fecha límite inscripción</Label>
-                        <Input type="date" className="bg-background" value={registrationDeadline} onChange={(e) => setRegistrationDeadline(e.target.value)} />
-                      </div>
-                      {tournamentType === "BASIC" ? (
-                        <>
-                          <div className="flex flex-col gap-2">
-                            <Label>Tipo de link externo</Label>
-                            <Select value={externalRegistrationType} onValueChange={(v: "URL" | "WHATSAPP" | "INSTAGRAM" | "FACEBOOK" | "OTHER") => setExternalRegistrationType(v)}>
-                              <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="URL">URL</SelectItem>
-                                <SelectItem value="WHATSAPP">WHATSAPP</SelectItem>
-                                <SelectItem value="INSTAGRAM">INSTAGRAM</SelectItem>
-                                <SelectItem value="FACEBOOK">FACEBOOK</SelectItem>
-                                <SelectItem value="OTHER">OTHER</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="flex flex-col gap-2">
-                            <Label>Link de inscripción</Label>
-                            <Input placeholder="https://..." className="bg-background" value={externalRegistrationLink} onChange={(e) => setExternalRegistrationLink(e.target.value)} />
-                          </div>
-                          <div className="flex flex-col gap-2">
-                            <Label>Cartel (URL)</Label>
-                            <Input placeholder="https://.../cartel.jpg" className="bg-background" value={posterUrl} onChange={(e) => setPosterUrl(e.target.value)} />
-                          </div>
-                        </>
-                      ) : null}
-                      <div className="flex flex-col gap-2">
-                        <Label>Precio Inscripcion</Label>
-                        <Input placeholder="$800 MXN" className="bg-background" value={price} onChange={(e) => setPrice(e.target.value)} />
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Label>Premio</Label>
-                        <Input placeholder="$50,000 MXN" className="bg-background" value={prize} onChange={(e) => setPrize(e.target.value)} />
-                      </div>
-                    </div>
-                  )}
-                  {wizardStep === 1 && (
-                    <div className="flex flex-col gap-4">
-                      <Label className="text-base font-semibold">Modalidades y Categorias</Label>
-                      <div className="grid grid-cols-3 gap-3">
-                        {["VARONIL", "FEMENIL", "MIXTO"].map((mod) => (
-                          <Card key={mod} className="cursor-pointer border-2 border-border/50 transition-colors hover:border-primary">
-                            <CardContent className="p-4 text-center" onClick={() => setSelectedModalities([{ modality: mod as "VARONIL" | "FEMENIL" | "MIXTO", category: defaultTournamentCategory }])}>
-                              <p className="font-display font-bold text-card-foreground">{mod}</p>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="flex justify-between">
-                  <Button variant="outline" disabled={wizardStep === 0} onClick={() => setWizardStep(Math.max(0, wizardStep - 1))}>
-                    Anterior
-                  </Button>
-                  {wizardStep < wizardSteps.length - 1 ? (
-                    <Button className="bg-primary text-primary-foreground" onClick={() => setWizardStep(wizardStep + 1)}>
-                      Siguiente
-                    </Button>
-                  ) : (
-                    <Button className="bg-primary text-primary-foreground" onClick={publishTournament} disabled={createTournament.isPending}>
-                      Publicar Torneo
-                    </Button>
-                  )}
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button
+              className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+              asChild
+            >
+              <Link href="/club/torneos/nuevo">
+                <Plus className="h-4 w-4" />
+                Crear Nuevo Torneo
+              </Link>
+            </Button>
           </div>
 
           <div className="mt-6 space-y-3">
@@ -682,6 +529,120 @@ function ClubDashboardContent() {
                   <p>{new Date(t.startDate).toLocaleDateString()} - {new Date(t.endDate).toLocaleDateString()}</p>
                   <p>Parejas: {t.registeredTeams}/{t.maxTeams}</p>
                   <Progress value={(t.registeredTeams / t.maxTeams) * 100} />
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    <Button variant="outline" className="gap-2" asChild>
+                      <Link href={{ pathname: "/club/torneos/[id]/editar", params: { id: String(t.id) } }}>
+                        Editar
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="gap-2"
+                      onClick={() => {
+                        router.push({ pathname: "/club/torneos/[id]/automatizacion", params: { id: String(t.id) } } as any)
+                      }}
+                    >
+                      <Trophy className="h-4 w-4" />
+                      Automatizacion
+                    </Button>
+
+                    {t.status !== "DRAFT" && t.status !== "CANCELLED" && t.status !== "COMPLETED" ? (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="outline" className="gap-2" disabled={transitionTournamentStatus.isPending}>
+                            Cancelar
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>¿Seguro que quieres cancelar este torneo?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta accion cambia el estado a CANCELLED. No elimina el registro del torneo (queda como historico).
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>No cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              onClick={async () => {
+                                try {
+                                  const res: any = await transitionTournamentStatus.mutateAsync({ tournamentId: String(t.id), status: "CANCELLED" })
+                                  if (!res?.success) throw new Error(res?.error || "No se pudo cancelar")
+                                  toast({ title: "Torneo cancelado" })
+                                } catch (err) {
+                                  toast({
+                                    title: "Error",
+                                    description: err instanceof Error ? err.message : "No se pudo cancelar",
+                                    variant: "destructive",
+                                  })
+                                }
+                              }}
+                            >
+                              Si, cancelar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    ) : null}
+
+                    {Number(t.registeredTeams || 0) === 0 &&
+                    (t.status === "DRAFT" || t.status === "OPEN" || t.status === "CLOSED" || t.status === "GENERATED") ? (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" className="gap-2" disabled={deleteTournament.isPending}>
+                            Eliminar
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>¿Seguro que quieres eliminarlo?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esto eliminara el torneo y toda su configuracion. Si solo quieres bajarlo sin borrarlo, puedes usar la opcion de cancelar.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-muted text-foreground hover:bg-muted/80"
+                              onClick={async () => {
+                                try {
+                                  const res: any = await transitionTournamentStatus.mutateAsync({ tournamentId: String(t.id), status: "CANCELLED" })
+                                  if (!res?.success) throw new Error(res?.error || "No se pudo cancelar")
+                                  toast({ title: "Torneo cancelado" })
+                                } catch (err) {
+                                  toast({
+                                    title: "Error",
+                                    description: err instanceof Error ? err.message : "No se pudo cancelar",
+                                    variant: "destructive",
+                                  })
+                                }
+                              }}
+                            >
+                              Cancelar torneo
+                            </AlertDialogAction>
+                            <AlertDialogAction
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              onClick={async () => {
+                                try {
+                                  const res: any = await deleteTournament.mutateAsync(String(t.id))
+                                  if (!res?.success) throw new Error(res?.error || "No se pudo eliminar")
+                                  toast({ title: "Torneo eliminado" })
+                                } catch (err) {
+                                  toast({
+                                    title: "Error",
+                                    description: err instanceof Error ? err.message : "No se pudo eliminar",
+                                    variant: "destructive",
+                                  })
+                                }
+                              }}
+                            >
+                              Eliminar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    ) : null}
+                  </div>
                 </CardContent>
               </Card>
             ))}

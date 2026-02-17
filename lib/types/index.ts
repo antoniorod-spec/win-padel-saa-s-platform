@@ -7,7 +7,7 @@
 export type UserRole = "PLAYER" | "CLUB" | "ADMIN"
 export type Sex = "M" | "F"
 export type ClubStatus = "PENDING" | "APPROVED" | "REJECTED"
-export type TournamentCategory = "A" | "B" | "C"
+export type TournamentCategory = "A" | "B" | "C" | "D"
 export type TournamentFormat = "ELIMINATION" | "ROUND_ROBIN" | "LEAGUE" | "EXPRESS"
 export type TournamentStatus = "DRAFT" | "OPEN" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED"
 export type Modality = "VARONIL" | "FEMENIL" | "MIXTO"
@@ -108,7 +108,11 @@ export interface TournamentListItem {
   externalRegistrationType?: ExternalRegistrationType | null
   externalRegistrationLink?: string | null
   registrationDeadline?: string | null
+  registrationOpensAt?: string | null
+  officialBall?: string | null
+  supportWhatsApp?: string | null
   posterUrl?: string | null
+  rulesPdfUrl?: string | null
   resultsValidationStatus?: ResultsValidationStatus
   registeredTeams: number
   maxTeams: number
@@ -185,6 +189,13 @@ export const POINTS_TABLE = {
     { round: "Semifinalista", roundOrder: 5, points: 175 },
     { round: "Cuartofinalista", roundOrder: 4, points: 100 },
     { round: "Fase de grupos", roundOrder: 1, points: 20 },
+  ],
+  D: [
+    { round: "Campeon", roundOrder: 7, points: 250 },
+    { round: "Subcampeon", roundOrder: 6, points: 175 },
+    { round: "Semifinalista", roundOrder: 5, points: 120 },
+    { round: "Cuartofinalista", roundOrder: 4, points: 70 },
+    { round: "Fase de grupos", roundOrder: 1, points: 10 },
   ],
 } as const
 

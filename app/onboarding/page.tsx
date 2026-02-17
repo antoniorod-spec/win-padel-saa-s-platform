@@ -18,6 +18,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [checkingDestination, setCheckingDestination] = useState(false)
 
   // Player fields
   const [firstName, setFirstName] = useState("")
@@ -55,24 +56,38 @@ export default function OnboardingPage() {
   // Redirigir si ya tiene perfil completo
   useEffect(() => {
     if (status !== "authenticated") return
+    setCheckingDestination(true)
     let active = true
     fetch("/api/auth/profile-status")
       .then((r) => r.json())
       .then((payload) => {
-        if (!active || !payload?.success) return
+        if (!active) return
+        if (!payload?.success) {
+          // Si el endpoint falla, no bloquear la UI indefinidamente.
+          setCheckingDestination(false)
+          return
+        }
         const profile = payload.data
         if (profile.role === "ADMIN") {
           router.push("/admin")
+          return
         } else if (profile.hasClub) {
           router.push("/club")
+          return
         } else if (profile.hasPlayer && !profile.isPendingClub) {
           router.push("/jugador")
+          return
         }
+        // No redirect: allow user to choose onboarding flow.
+        setCheckingDestination(false)
+      })
+      .catch(() => {
+        if (active) setCheckingDestination(false)
       })
     return () => {
       active = false
     }
-  }, [status, session, router])
+  }, [status, router])
 
   // Redirigir si no está autenticado
   useEffect(() => {
@@ -113,7 +128,7 @@ export default function OnboardingPage() {
     }
   }
 
-  if (status === "loading") {
+  if (status === "loading" || status === "unauthenticated" || checkingDestination) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

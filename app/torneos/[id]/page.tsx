@@ -28,8 +28,10 @@ import {
 } from "lucide-react"
 import { useTournament, useTournamentBracket, useTournamentGroups, useTournamentTeams } from "@/hooks/use-tournaments"
 import { useGenerateBracket } from "@/hooks/use-tournaments"
+import { useTournamentPublicSchedule } from "@/hooks/use-tournaments"
 import { RegisterTeamModal } from "@/components/modals/register-team-modal"
 import { ImportTeamsModal } from "@/components/modals/import-teams-modal"
+import { TournamentRegistrationStep } from "@/components/club/tournament-registration-step"
 import { cn } from "@/lib/utils"
 
 function startOfMonth(date: Date) {
@@ -75,6 +77,7 @@ export default function TournamentPage() {
   const tournamentId = params.id as string
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
   const [isImportModalOpen, setIsImportModalOpen] = useState(false)
+  const [isRegistrationManageOpen, setIsRegistrationManageOpen] = useState(false)
   const [isPosterOpen, setIsPosterOpen] = useState(false)
   const [selectedModalityId, setSelectedModalityId] = useState<string>("")
   const [calendarMonth, setCalendarMonth] = useState<Date | null>(null)
@@ -86,6 +89,10 @@ export default function TournamentPage() {
     selectedModalityId || undefined
   )
   const { data: teamsData } = useTournamentTeams(tournamentId)
+  const { data: scheduleData, isLoading: scheduleLoading } = useTournamentPublicSchedule(
+    tournamentId,
+    selectedModalityId || undefined
+  )
   const generateBracket = useGenerateBracket()
 
   // IMPORTANT: all hooks (useMemo/useEffect) must run BEFORE any early returns.
@@ -93,6 +100,7 @@ export default function TournamentPage() {
   const bracket = bracketData?.data
   const teams = teamsData?.data || []
   const groups = groupsData?.data?.groups ?? []
+  const scheduleMatches = (scheduleData as any)?.data ?? []
 
   const tournamentStart = useMemo(() => {
     if (!tournament?.startDate) return null
@@ -172,6 +180,9 @@ export default function TournamentPage() {
       : null) ||
     (Array.isArray((tournament as any)?.images) && typeof (tournament as any).images[0] === "string"
       ? (tournament as any).images[0]
+      : null) ||
+    (typeof (tournament as any)?.clubLogoUrl === "string" && (tournament as any).clubLogoUrl.trim()
+      ? (tournament as any).clubLogoUrl.trim()
       : null) ||
     null
 
@@ -290,13 +301,24 @@ export default function TournamentPage() {
                     </Button>
                   </a>
                 ) : null}
-                {tournament.type !== "BASIC" ? <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setIsImportModalOpen(true)}
-                >
-                  {t("importTeams")}
-                </Button> : null}
+                {tournament.type !== "BASIC" ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => setIsRegistrationManageOpen(true)}
+                    >
+                      {t("manageRegistrations")}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => setIsImportModalOpen(true)}
+                    >
+                      {t("importTeams")}
+                    </Button>
+                  </>
+                ) : null}
                 {tournament.type !== "BASIC" && tournament.modalities?.[0] && (
                   <Button
                     variant="outline"
@@ -323,6 +345,7 @@ export default function TournamentPage() {
               {bracket && tournament.type !== "BASIC" ? <TabsTrigger value="bracket">{t("tabs.bracket")}</TabsTrigger> : null}
               <TabsTrigger value="teams">{t("tabs.teams")}</TabsTrigger>
               <TabsTrigger value="calendar">{t("tabs.calendar")}</TabsTrigger>
+              <TabsTrigger value="schedule">{t("tabs.schedule")}</TabsTrigger>
               <TabsTrigger value="groups">{t("tabs.groups")}</TabsTrigger>
               <TabsTrigger value="info">{t("tabs.info")}</TabsTrigger>
             </TabsList>
@@ -531,6 +554,76 @@ export default function TournamentPage() {
                       })}
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="schedule">
+              <Card className="border-border/50">
+                <CardHeader>
+                  <CardTitle className="text-lg">{t("schedule.title")}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {scheduleLoading ? (
+                    <p className="text-sm text-muted-foreground">{t("schedule.loading")}</p>
+                  ) : Array.isArray(scheduleMatches) && scheduleMatches.length > 0 ? (
+                    Object.entries(
+                      scheduleMatches.reduce((acc: Record<string, any[]>, m: any) => {
+                        const day = m?.slot?.date ? String(m.slot.date).slice(0, 10) : "sin-fecha"
+                        acc[day] = acc[day] ?? []
+                        acc[day].push(m)
+                        return acc
+                      }, {})
+                    )
+                      .sort((a, b) => a[0].localeCompare(b[0]))
+                      .map(([day, matches]) => (
+                        <div key={day} className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <p className="font-semibold text-card-foreground">
+                              {day !== "sin-fecha" ? new Date(day).toLocaleDateString(localeTag) : t("schedule.unknownDate")}
+                            </p>
+                            <Badge variant="outline">{matches.length} {t("schedule.matches")}</Badge>
+                          </div>
+                          <div className="rounded-lg border border-border/50">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>{t("scheduleTable.time")}</TableHead>
+                                  <TableHead>{t("scheduleTable.court")}</TableHead>
+                                  <TableHead>{t("scheduleTable.match")}</TableHead>
+                                  <TableHead className="text-right">{t("scheduleTable.modality")}</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {matches.map((m: any) => {
+                                  const a = m.teamARegistration
+                                  const b = m.teamBRegistration
+                                  const aName = a
+                                    ? `${a.player1.firstName} ${a.player1.lastName} / ${a.player2.firstName} ${a.player2.lastName}`
+                                    : "TBD"
+                                  const bName = b
+                                    ? `${b.player1.firstName} ${b.player1.lastName} / ${b.player2.firstName} ${b.player2.lastName}`
+                                    : "TBD"
+                                  const time = m?.slot ? `${m.slot.startTime}-${m.slot.endTime}` : "-"
+                                  const court = m?.slot?.court ? `${m.slot.court.venue} - ${m.slot.court.name}` : (m.court || "-")
+                                  const mod = m?.tournamentModality ? `${m.tournamentModality.modality} ${m.tournamentModality.category}` : "-"
+                                  return (
+                                    <TableRow key={m.id}>
+                                      <TableCell className="font-medium">{time}</TableCell>
+                                      <TableCell>{court}</TableCell>
+                                      <TableCell className="text-sm">{aName} vs {bName}</TableCell>
+                                      <TableCell className="text-right">{mod}</TableCell>
+                                    </TableRow>
+                                  )
+                                })}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </div>
+                      ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">{t("schedule.empty")}</p>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -794,6 +887,21 @@ export default function TournamentPage() {
         tournamentId={tournamentId}
         modalities={tournament.modalities}
       />
+
+      <Dialog open={isRegistrationManageOpen} onOpenChange={setIsRegistrationManageOpen}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t("manageRegistrations")}</DialogTitle>
+          </DialogHeader>
+          <TournamentRegistrationStep
+            tournamentId={tournamentId}
+            modalities={tournament.modalities}
+            clubId={tournament.clubId}
+            maxTeams={tournament.maxTeams}
+            showImportExcel
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

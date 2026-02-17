@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar, MapPin, Users, Trophy, Search, List, ChevronLeft, ChevronRight, Filter } from "lucide-react"
+import { DatePicker } from "@/components/ui/date-picker"
 import { useTournamentFiltersOptions, useTournaments } from "@/hooks/use-tournaments"
 import { cn } from "@/lib/utils"
 import { normalizeLocationToken } from "@/lib/location/keys"
@@ -342,15 +343,15 @@ function TorneosPageContent() {
         <div className="space-y-2">
           <Label>{tr("filters.dates")}</Label>
           <div className="grid gap-2">
-            <Input
-              type="date"
-              value={from}
-              onChange={(e) => updateParams({ from: e.target.value || undefined, page: "1" })}
+            <DatePicker
+              value={from ?? ""}
+              onChange={(v) => updateParams({ from: v || undefined, page: "1" })}
+              placeholder="Desde"
             />
-            <Input
-              type="date"
-              value={to}
-              onChange={(e) => updateParams({ to: e.target.value || undefined, page: "1" })}
+            <DatePicker
+              value={to ?? ""}
+              onChange={(v) => updateParams({ to: v || undefined, page: "1" })}
+              placeholder="Hasta"
             />
           </div>
         </div>
@@ -703,10 +704,12 @@ function TorneosPageContent() {
                       const isAlmostFull = t.registeredTeams >= t.maxTeams * 0.9
                       const hasPoster =
                         (typeof t.posterUrl === "string" && t.posterUrl.trim()) ||
-                        (typeof t.logoUrl === "string" && t.logoUrl.trim())
+                        (typeof t.logoUrl === "string" && t.logoUrl.trim()) ||
+                        (typeof t.clubLogoUrl === "string" && t.clubLogoUrl.trim())
                       const posterUrl =
                         (typeof t.posterUrl === "string" && t.posterUrl.trim() ? t.posterUrl.trim() : null) ||
                         (typeof t.logoUrl === "string" && t.logoUrl.trim() ? t.logoUrl.trim() : null) ||
+                        (typeof t.clubLogoUrl === "string" && t.clubLogoUrl.trim() ? t.clubLogoUrl.trim() : null) ||
                         "/demo/covers/default.svg"
                       const citySlug = typeof t.city === "string" && t.city.trim() ? normalizeLocationToken(t.city) : ""
                       const cityLabel = [t.city, t.state].filter(Boolean).join(t.state ? ", " : "")

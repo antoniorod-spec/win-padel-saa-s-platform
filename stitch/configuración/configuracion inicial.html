@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WhinPadel Admin - Configuración General Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00C853",
+                        "background-light": "#F8FAFC",
+                        "brand-dark": "#0F172A",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.5rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            input, textarea, select {
+                @apply border-slate-200 focus:ring-primary focus:border-primary rounded-lg transition-all;
+            }
+            label {
+                @apply text-sm font-semibold text-slate-700 mb-1.5 block;
+            }
+        }
+        .step-active { @apply text-primary border-primary bg-primary/5; }
+        .step-inactive { @apply text-slate-400 border-slate-200 bg-white; }
+        .type-card-input:checked + .type-card-label {
+            @apply border-primary bg-primary/5 ring-1 ring-primary;
+        }.toggle-checkbox:checked {
+            @apply right-0 border-primary bg-primary;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            @apply bg-primary/20;
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light text-slate-900 min-h-screen pb-24">
+<nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white text-xl">sports_tennis</span>
+</div>
+<span class="text-xl font-bold tracking-tight text-brand-dark">WhinPadel <span class="text-primary">Admin</span></span>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center hover:bg-slate-50 rounded-full transition-colors relative">
+<span class="material-symbols-outlined text-slate-600">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+</button>
+<div class="flex items-center gap-3 pl-2 border-l border-slate-200">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-bold text-slate-900">Admin Club</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider">Club Pro</p>
+</div>
+<div class="h-9 w-9 rounded-full overflow-hidden border-2 border-slate-100">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDliBU6sVjDHNvL1FPv-xAWOzITg08lmEomYYi9LjNqVlI3aiNIcQykEH1CuCRd5Cb0nCpw-62-iVEjcJ3URq7ohXaS5fEjIQS0avr9fMNxcQHuAwAQNjkb6bbCsRrV7QmGh29fnW8f2LY--E1xerIeEIelevQ0W3GsqGJk7wJj8OxQJ2iSfrIiLf1uNnaeQOU2IRSL3LRLe-6gn9D73yXZzKdWczYkAJy96EmAika3St5tCsXkExmOHbECFnkoEYf3Qr1CLWS72RM"/>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-6 py-8">
+<div class="mb-10 overflow-x-auto">
+<div class="flex items-center justify-between min-w-[600px] px-2">
+<div class="flex items-center gap-3 group">
+<div class="w-10 h-10 rounded-full flex items-center justify-center border-2 step-active font-bold shadow-sm">1</div>
+<div>
+<p class="text-sm font-bold text-primary leading-none">General</p>
+<p class="text-[10px] text-slate-400 uppercase tracking-tighter mt-1">Configuración</p>
+</div>
+</div>
+<div class="h-px bg-slate-200 flex-1 mx-4"></div>
+<div class="flex items-center gap-3 group">
+<div class="w-10 h-10 rounded-full flex items-center justify-center border-2 step-inactive font-bold">2</div>
+<div>
+<p class="text-sm font-bold text-slate-400 leading-none">Categorías</p>
+<p class="text-[10px] text-slate-400 uppercase tracking-tighter mt-1">Niveles &amp; Ramas</p>
+</div>
+</div>
+<div class="h-px bg-slate-200 flex-1 mx-4"></div>
+<div class="flex items-center gap-3 group">
+<div class="w-10 h-10 rounded-full flex items-center justify-center border-2 step-inactive font-bold">3</div>
+<div>
+<p class="text-sm font-bold text-slate-400 leading-none">Logística</p>
+<p class="text-[10px] text-slate-400 uppercase tracking-tighter mt-1">Canchas &amp; Horas</p>
+</div>
+</div>
+<div class="h-px bg-slate-200 flex-1 mx-4"></div>
+<div class="flex items-center gap-3 group">
+<div class="w-10 h-10 rounded-full flex items-center justify-center border-2 step-inactive font-bold">4</div>
+<div>
+<p class="text-sm font-bold text-slate-400 leading-none">Revisión</p>
+<p class="text-[10px] text-slate-400 uppercase tracking-tighter mt-1">Confirmar</p>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<div class="lg:col-span-8 space-y-8">
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+<div class="p-6 border-b border-slate-100 flex items-center justify-between">
+<div>
+<h1 class="text-2xl font-bold text-brand-dark">Configuración General</h1>
+<p class="text-slate-500 text-sm">Paso 1: Define la identidad y logística básica de tu evento.</p>
+</div>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Módulo Pro</span>
+</div>
+<div class="p-8 space-y-12">
+<section>
+<h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Tipo de Gestión</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<label class="cursor-pointer relative">
+<input checked="" class="hidden type-card-input" name="tournament_type" type="radio" value="auto"/>
+<div class="type-card-label border-2 border-slate-100 rounded-xl p-6 transition-all h-full relative group">
+<div class="flex items-start justify-between mb-4">
+<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl">smart_toy</span>
+</div>
+<div class="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Recomendado</div>
+</div>
+<h3 class="text-base font-bold text-slate-900 mb-1">Torneo Inteligente</h3>
+<p class="text-xs text-slate-500 leading-relaxed">Gestión total: categorías, inscripciones, cuadros automáticos y rol de juegos en la plataforma.</p>
+</div>
+</label>
+<label class="cursor-pointer relative">
+<input class="hidden type-card-input" id="type-solo-difusion" name="tournament_type" type="radio" value="basic"/>
+<div class="type-card-label border-2 border-slate-100 rounded-xl p-6 transition-all h-full group">
+<div class="flex items-start mb-4">
+<div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
+<span class="material-symbols-outlined text-2xl">campaign</span>
+</div>
+</div>
+<h3 class="text-base font-bold text-slate-900 mb-1">Solo Difusión</h3>
+<p class="text-xs text-slate-500 leading-relaxed">Aparece en el calendario nacional. La gestión de inscripciones y cuadros es externa.</p>
+</div>
+</label>
+</div>
+</section>
+<section class="space-y-6">
+<h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Información Básica</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="md:col-span-2">
+<label for="name">Nombre del Torneo</label>
+<input class="w-full h-12 px-4" id="name" placeholder="Ej. Open CDMX 2024" type="text" value="Open CDMX 2024"/>
+</div>
+<div>
+<label for="tier">Nivel / Clase</label>
+<select class="w-full h-12 px-4 appearance-none bg-white" id="tier">
+<option value="major">Major (FIP)</option>
+<option selected="" value="open">Open</option>
+<option value="express">Express</option>
+</select>
+</div>
+<div>
+<label for="ball">Pelota Oficial</label>
+<div class="relative">
+<select class="w-full h-12 px-4 appearance-none bg-white" id="ball">
+<option selected="" value="brand-1">Head Pro S</option>
+<option value="brand-2">Babolat Court</option>
+<option value="brand-3">Wilson X3</option>
+<option value="other">Otra (Especificar)</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-3 text-slate-400 pointer-events-none">expand_more</span>
+</div>
+</div>
+<div>
+<label for="price">Inscripción por Pareja (MXN)</label>
+<div class="relative">
+<span class="absolute left-4 top-3 text-slate-400 font-medium">$</span>
+<input class="w-full h-12 pl-8 pr-4" id="price" placeholder="1200.00" type="number" value="1200"/>
+</div>
+</div>
+<div>
+<label for="prize-pool">Bolsa de Premios Total (MXN)</label>
+<div class="relative">
+<span class="absolute left-4 top-3 text-slate-400 font-medium">$</span>
+<input class="w-full h-12 pl-8 pr-4" id="prize-pool" placeholder="50000.00" type="number"/>
+</div>
+</div>
+<div class="md:col-span-2">
+<label for="desc">Descripción del Evento</label>
+<textarea class="w-full px-4 py-3" id="desc" placeholder="Detalla las reglas, formato de juego y políticas..." rows="3"></textarea>
+</div>
+</div>
+</section>
+<section class="space-y-6">
+<h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Reglas de Competición</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+<div class="flex items-center justify-between md:justify-start md:gap-4">
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="golden_point" name="golden_point" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-200 cursor-pointer" for="golden_point"></label>
+</div>
+<label class="mb-0 text-slate-700 font-medium" for="golden_point">Punto de Oro</label>
+</div>
+<div class="flex items-center justify-between md:justify-start md:gap-4">
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="sets_best_of_3" name="sets_best_of_3" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-200 cursor-pointer" for="sets_best_of_3"></label>
+</div>
+<label class="mb-0 text-slate-700 font-medium" for="sets_best_of_3">Mejor de 3 Sets</label>
+</div>
+<div class="flex items-center justify-between md:justify-start md:gap-4">
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="tiebreak_all" name="tiebreak_all" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-200 cursor-pointer" for="tiebreak_all"></label>
+</div>
+<label class="mb-0 text-slate-700 font-medium" for="tiebreak_all">Tie-break (All sets)</label>
+</div>
+</div>
+</section>
+<section class="space-y-6">
+<h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Fechas &amp; Logística</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<label>Fecha de Inicio</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute right-4 top-3 text-slate-400 text-xl">calendar_today</span>
+<input class="w-full h-12 px-4" type="date" value="2024-10-15"/>
+</div>
+</div>
+<div>
+<label>Fecha de Finalización</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute right-4 top-3 text-slate-400 text-xl">calendar_today</span>
+<input class="w-full h-12 px-4" type="date" value="2024-10-17"/>
+</div>
+</div>
+<div>
+<label>Sede (Club)</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute right-4 top-3 text-slate-400 text-xl">location_on</span>
+<input class="w-full h-12 px-4" placeholder="Club / Dirección" type="text" value="Club Padel Pro, CDMX"/>
+</div>
+</div>
+<div>
+<label>WhatsApp de Soporte</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-3 text-slate-400 text-xl">chat</span>
+<input class="w-full h-12 pl-12 pr-4" placeholder="+52 (55) 0000 0000" type="tel"/>
+</div>
+</div>
+<div>
+<label>Cierre de Inscripciones</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute right-4 top-3 text-slate-400 text-xl">event_busy</span>
+<input class="w-full h-12 px-4" type="datetime-local"/>
+</div>
+</div>
+<div id="external-link-container">
+<label class="text-slate-400 opacity-60">Link de Inscripción Externo</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-3 text-slate-400 text-xl">link</span>
+<input class="w-full h-12 pl-12 pr-4 bg-slate-50 cursor-not-allowed" disabled="" placeholder="https://..." type="url"/>
+</div>
+<p class="text-[10px] text-slate-400 mt-1 italic">* Disponible solo en 'Solo Difusión'</p>
+</div>
+</div>
+</section>
+<section class="space-y-6">
+<h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Cartel del Torneo</h2>
+<div class="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center bg-slate-50/50 hover:bg-slate-50 transition-colors cursor-pointer group">
+<div class="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-4 text-slate-400 group-hover:text-primary group-hover:scale-110 transition-all">
+<span class="material-symbols-outlined text-2xl">upload_file</span>
+</div>
+<p class="text-sm font-bold text-slate-700">Haz clic o arrastra el cartel aquí</p>
+<p class="text-xs text-slate-500 mt-2">Formatos aceptados: JPG, PNG (Max. 5MB). Relación sugerida: 4:5</p>
+</div>
+</section>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4 sticky top-24 space-y-6">
+<div class="bg-white rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100">
+<div class="relative h-56 bg-slate-100">
+<img alt="Tournament Cover" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsdHNBL1uv0Bd7vAfvi_lCHSuO49x40IAqwTauZdy4eGQYAbPL5FpfM0l7fXxZ_C-M3DUw7VicO8JYlewvkW8D0A94z9Jx6Jmn7W_b46ilCcswcIjEwhHzun8Mlr76vRjFPoMfJQ0z5agEz08FmwxDIU0pgSmFKjQykPWz2mtlOmRSB1qsJL3aZr0sm9QsiHYe5-QYma7XiEEwRDm8yw8dmQkwwQWv-KDMd8uguBoD4zgRF2jjVVWSCA9-dh2L_YC4WAIzgZ-7Zm0"/>
+<div class="absolute top-4 left-4 flex gap-2">
+<span class="bg-primary text-white text-[10px] font-black px-3 py-1 rounded-full uppercase shadow-lg shadow-primary/30">Open</span>
+<span class="bg-brand-dark/80 backdrop-blur-sm text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">sports_baseball</span>
+                                Head Pro S
+                            </span>
+</div>
+<div class="absolute bottom-4 left-4">
+<div class="bg-yellow-400 text-brand-dark px-3 py-1 rounded-lg text-xs font-bold shadow-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">payments</span>
+                                Bolsa: $50,000 MXN
+                            </div>
+</div>
+</div>
+<div class="p-6">
+<div class="flex items-start justify-between mb-6">
+<div>
+<p class="text-[10px] font-bold text-primary uppercase tracking-tighter">Vista previa en vivo</p>
+<h3 class="text-xl font-bold text-brand-dark mt-1" id="preview-name">Open CDMX 2024</h3>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-slate-400 uppercase leading-none">Inscripción</p>
+<p class="text-lg font-bold text-brand-dark">$1,200</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 pb-6 border-b border-slate-50">
+<div class="flex items-center gap-2 text-slate-600">
+<span class="material-symbols-outlined text-lg text-slate-400">calendar_month</span>
+<div class="leading-tight">
+<p class="text-[10px] text-slate-400 font-bold uppercase">Fecha</p>
+<p class="text-xs font-medium">15 - 17 Oct, 2024</p>
+</div>
+</div>
+<div class="flex items-center gap-2 text-slate-600">
+<span class="material-symbols-outlined text-lg text-slate-400">location_on</span>
+<div class="leading-tight">
+<p class="text-[10px] text-slate-400 font-bold uppercase">Sede</p>
+<p class="text-xs font-medium">Padel Pro, CDMX</p>
+</div>
+</div>
+</div>
+<div class="mt-6">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold text-slate-500 uppercase">Configuración de paso 1</span>
+<span class="text-xs font-bold text-primary">85%</span>
+</div>
+<div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[85%]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-slate-900 rounded-2xl p-6 text-white relative overflow-hidden">
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-primary text-xl">verified</span>
+<h4 class="font-bold text-sm">Ventaja Pro</h4>
+</div>
+<p class="text-xs text-slate-400 leading-relaxed">
+                            Al especificar la <span class="text-white font-bold">Bolsa de Premios</span> y la <span class="text-white font-bold">Pelota Oficial</span>, incrementas el interés de jugadores competitivos en un <span class="text-primary font-bold">25%</span>.
+                        </p>
+</div>
+<div class="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl"></div>
+</div>
+</div>
+</div>
+</main>
+<footer class="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md border-t border-slate-200 p-4 z-50">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<button class="px-6 py-2.5 text-slate-500 hover:text-slate-800 font-bold transition-colors">
+                Cancelar
+            </button>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-slate-100 text-slate-400 font-bold cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-lg">chevron_left</span>
+                    Anterior
+                </button>
+<button class="flex items-center gap-2 px-10 py-2.5 rounded-xl bg-primary hover:bg-[#00B049] text-white font-bold shadow-lg shadow-primary/25 transition-all transform active:scale-95">
+                    Siguiente Paso
+                    <span class="material-symbols-outlined text-lg">chevron_right</span>
+</button>
+</div>
+</div>
+</footer>
+
+</body></html>

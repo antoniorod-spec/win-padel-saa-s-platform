@@ -97,6 +97,18 @@ export const routing = defineRouting({
       es: '/club',
       en: '/club'
     },
+    '/club/torneos/nuevo': {
+      es: '/club/torneos/nuevo',
+      en: '/club/torneos/nuevo'
+    },
+    '/club/torneos/[id]/automatizacion': {
+      es: '/club/torneos/[id]/automatizacion',
+      en: '/club/torneos/[id]/automatizacion'
+    },
+    '/club/torneos/[id]/editar': {
+      es: '/club/torneos/[id]/editar',
+      en: '/club/torneos/[id]/editar'
+    },
     '/admin': {
       es: '/admin',
       en: '/admin'

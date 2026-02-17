@@ -1,0 +1,348 @@
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cuadros: Eliminatoria Directa | Ranking Padel MX</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+          tailwind.config = {
+            darkMode: "class",
+            theme: {
+              extend: {
+                colors: {
+                  "primary": "#0dbd54",
+                  "background-light": "#f8faf9",
+                  "card-light": "#ffffff",
+                  "border-light": "#e2e8f0",
+                },
+                fontFamily: {
+                  "sans": ["Inter", "sans-serif"],
+                  "display": ["Oswald", "sans-serif"]
+                },
+                borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+              },
+            },
+          }
+    </script>
+<style type="text/tailwindcss">
+        body { font-family: 'Inter', sans-serif; }
+        .heading-bold { font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: -0.01em; text-transform: uppercase; }
+        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); }
+        .bg-club-overlay {
+            background-image: linear-gradient(rgba(248, 250, 249, 0.94), rgba(248, 250, 249, 0.94)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuACOxHy701Ed85xO_wMaOeAu8L-3PqN7ZIQCZEjiPwLlgVLB84lIaGPDT_UtlLtzg3E38AGWGeeOltsuE_1xIJVHcD64eELTRyqJiZcYTg4yw4ZbDvjM3v141fn7iXXAqsPgaReNQpM52imscjKeTI2iQHz-zKSISIjoCxPUBPGB_VDvRL1DneTLJQLPa74HiSSfWmA339CfTfOqJlQvGMjxoje-Unr3BS5b66Ktc82Wv_aNEfPzZ27yCI5RCPyWWd7YyGFsP6J4S4');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .bracket-connector {
+            border-color: #0dbd54;
+            border-width: 2px;
+        }
+        .match-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(13, 189, 84, 0.1);
+        }.bracket-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .bracket-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .bracket-container::-webkit-scrollbar-thumb {
+            background: #0dbd54;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-light text-slate-900 min-h-screen bg-club-overlay">
+<nav class="sticky top-0 z-50 border-b border-slate-200 glass-panel">
+<div class="container mx-auto px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-icons text-white text-xl font-bold">sports_tennis</span>
+</div>
+<span class="text-xl font-extrabold tracking-tighter uppercase italic heading-bold text-slate-900">Ranking <span class="text-primary">Padel</span> MX</span>
+</div>
+<div class="hidden md:flex items-center gap-8 text-sm font-semibold uppercase tracking-wider text-slate-600">
+<a class="hover:text-primary transition-colors" href="#">Torneos</a>
+<a class="hover:text-primary transition-colors" href="#">Ranking</a>
+<a class="hover:text-primary transition-colors" href="#">Clubes</a>
+<a class="text-primary border-b-2 border-primary" href="#">Mi Perfil</a>
+</div>
+</div>
+</nav>
+<main class="container mx-auto px-4 py-8">
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div>
+<nav class="flex items-center gap-2 text-slate-500 text-xs mb-2 font-medium uppercase tracking-widest">
+<span>Torneos</span>
+<span class="material-icons text-xs">chevron_right</span>
+<span>Master Final</span>
+</nav>
+<h1 class="text-4xl md:text-5xl heading-bold text-slate-900">Cuadro <span class="text-primary">Playoffs</span></h1>
+<p class="text-slate-500 font-medium">1ra Fuerza Varonil - Eliminatoria Directa</p>
+</div>
+<div class="flex gap-3">
+<select class="bg-white border-slate-200 rounded-lg text-sm font-bold text-slate-600 px-4 py-2 focus:ring-primary focus:border-primary">
+<option>1ra Fuerza</option>
+<option>2da Fuerza</option>
+<option>3ra Fuerza</option>
+</select>
+<button class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors">
+<span class="material-icons text-lg">download</span>
+                PDF
+            </button>
+</div>
+</section>
+<div class="flex border-b border-slate-200 mb-8 overflow-x-auto bg-white/50 backdrop-blur rounded-t-xl">
+<button class="px-6 py-4 text-sm font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 whitespace-nowrap">Información</button>
+<button class="px-6 py-4 text-sm font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 whitespace-nowrap">Puntos y Premios</button>
+<button class="px-6 py-4 text-sm font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 whitespace-nowrap">Parejas (48)</button>
+<button class="px-6 py-4 text-sm font-bold uppercase tracking-wider border-b-2 border-primary text-primary whitespace-nowrap">Cuadros</button>
+</div>
+<div class="bracket-container overflow-x-auto pb-12">
+<div class="inline-flex gap-0 min-w-max p-4">
+<div class="flex flex-col w-72">
+<h3 class="heading-bold text-slate-400 text-sm tracking-widest mb-8 text-center px-4">Octavos de Final</h3>
+<div class="flex flex-col h-full justify-around gap-8">
+<div class="relative px-4">
+<div class="match-card bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden transition-all duration-300">
+<div class="flex items-center justify-between p-3 border-b border-slate-50 bg-primary/5">
+<span class="text-[10px] font-black text-primary uppercase">M1 • 10:00 AM</span>
+<span class="text-[10px] font-bold text-slate-400">Pista 1</span>
+</div>
+<div class="divide-y divide-slate-100">
+<div class="p-3 flex items-center justify-between group">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="text-xs font-black text-primary">[1]</span>
+<span class="text-sm font-bold text-slate-800">Galán / Lebrón</span>
+</div>
+<span class="text-[10px] text-slate-400 uppercase">Padel Club SLP</span>
+</div>
+<span class="text-lg font-black text-slate-900">6 6</span>
+</div>
+<div class="p-3 flex items-center justify-between opacity-50">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-800">Ruiz / Tello</span>
+<span class="text-[10px] text-slate-400 uppercase">Lomas Raquet</span>
+</div>
+<span class="text-lg font-bold text-slate-400">4 2</span>
+</div>
+</div>
+</div>
+<div class="absolute top-1/2 -right-4 w-4 h-[2px] bg-primary"></div>
+</div>
+<div class="relative px-4">
+<div class="match-card bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden transition-all">
+<div class="flex items-center justify-between p-3 border-b border-slate-50">
+<span class="text-[10px] font-black text-slate-400 uppercase">M2 • 10:00 AM</span>
+<span class="text-[10px] font-bold text-slate-400">Pista 2</span>
+</div>
+<div class="divide-y divide-slate-100">
+<div class="p-3 flex items-center justify-between opacity-50">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-800">Sánchez / Campa</span>
+<span class="text-[10px] text-slate-400 uppercase">Padel Pro</span>
+</div>
+<span class="text-lg font-bold text-slate-400">3 1</span>
+</div>
+<div class="p-3 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-800">Bela / Yanguas</span>
+<span class="text-[10px] text-slate-400 uppercase">Padel House</span>
+</div>
+<span class="text-lg font-black text-slate-900">6 6</span>
+</div>
+</div>
+</div>
+<div class="absolute top-1/2 -right-4 w-4 h-[2px] bg-primary"></div>
+</div>
+</div>
+</div>
+<div class="flex flex-col w-8">
+<div class="h-full flex flex-col justify-around py-24">
+<div class="h-[25%] border-r-2 border-t-2 border-b-2 border-primary rounded-r-lg"></div>
+<div class="h-[25%]"></div> 
+</div>
+</div>
+<div class="flex flex-col w-72">
+<h3 class="heading-bold text-slate-400 text-sm tracking-widest mb-8 text-center px-4">Cuartos de Final</h3>
+<div class="flex flex-col h-full justify-around gap-16">
+<div class="relative px-4">
+<div class="match-card bg-white rounded-lg border border-slate-200 shadow-md overflow-hidden ring-2 ring-primary/5">
+<div class="flex items-center justify-between p-3 border-b border-slate-50 bg-slate-50">
+<span class="text-[10px] font-black text-slate-500 uppercase">QF1 • 18:00 PM</span>
+<span class="bg-primary text-white text-[9px] px-1.5 py-0.5 rounded font-black">EN VIVO</span>
+</div>
+<div class="divide-y divide-slate-100">
+<div class="p-4 flex items-center justify-between bg-primary/5">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="text-xs font-black text-primary">[1]</span>
+<span class="text-sm font-bold text-slate-800">Galán / Lebrón</span>
+</div>
+<span class="text-[10px] text-slate-400 uppercase">Padel Club SLP</span>
+</div>
+<div class="flex gap-2">
+<span class="text-lg font-black text-primary italic">6 4 3</span>
+</div>
+</div>
+<div class="p-4 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-800">Bela / Yanguas</span>
+<span class="text-[10px] text-slate-400 uppercase">Padel House</span>
+</div>
+<div class="flex gap-2">
+<span class="text-lg font-black text-slate-900 italic">4 6 2</span>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute top-1/2 -right-4 w-4 h-[2px] bg-primary"></div>
+</div>
+</div>
+</div>
+<div class="flex flex-col w-8">
+<div class="h-full flex flex-col justify-center">
+<div class="h-[45%] border-r-2 border-t-2 border-b-2 border-primary rounded-r-lg mt-12"></div>
+</div>
+</div>
+<div class="flex flex-col w-72">
+<h3 class="heading-bold text-slate-400 text-sm tracking-widest mb-8 text-center px-4">Semifinales</h3>
+<div class="flex flex-col h-full justify-center">
+<div class="relative px-4">
+<div class="match-card bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden opacity-60">
+<div class="flex items-center justify-between p-3 border-b border-slate-50 bg-slate-50">
+<span class="text-[10px] font-black text-slate-400 uppercase">SF1 • Mañana</span>
+<span class="text-[10px] font-bold text-slate-400">Pista Central</span>
+</div>
+<div class="divide-y divide-slate-100">
+<div class="p-4 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-xs font-black text-primary tracking-widest uppercase mb-1">Ganador QF1</span>
+<span class="text-sm font-bold text-slate-400 italic">Por definir</span>
+</div>
+</div>
+<div class="p-4 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-xs font-black text-primary tracking-widest uppercase mb-1">Ganador QF2</span>
+<span class="text-sm font-bold text-slate-400 italic">Por definir</span>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute top-1/2 -right-4 w-4 h-[2px] bg-primary"></div>
+</div>
+</div>
+</div>
+<div class="flex flex-col w-8">
+<div class="h-full flex flex-col justify-center">
+<div class="h-[20%] border-r-2 border-t-2 border-b-2 border-primary rounded-r-lg"></div>
+</div>
+</div>
+<div class="flex flex-col w-80">
+<h3 class="heading-bold text-primary text-sm tracking-widest mb-8 text-center px-4 flex items-center justify-center gap-2">
+<span class="material-icons text-sm">emoji_events</span> GRAN FINAL
+                </h3>
+<div class="flex flex-col h-full justify-center">
+<div class="px-4">
+<div class="match-card bg-slate-900 rounded-xl border-4 border-primary shadow-2xl overflow-hidden relative group">
+<div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="p-4 border-b border-white/10 text-center bg-slate-800">
+<span class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Domingo 22 • 12:00 PM</span>
+</div>
+<div class="divide-y divide-white/5">
+<div class="p-6 flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-3">
+<span class="material-icons text-white/20">person</span>
+</div>
+<span class="text-xs font-black text-primary tracking-widest uppercase mb-1">Finalista A</span>
+<span class="text-lg font-bold text-white italic">TBD</span>
+</div>
+<div class="py-2 bg-primary/10 flex items-center justify-center">
+<span class="text-xs font-black text-primary italic">VERSUS</span>
+</div>
+<div class="p-6 flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-3">
+<span class="material-icons text-white/20">person</span>
+</div>
+<span class="text-xs font-black text-primary tracking-widest uppercase mb-1">Finalista B</span>
+<span class="text-lg font-bold text-white italic">TBD</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-12">
+<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+<span class="material-icons">info</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900">Formato de Juego</h4>
+<p class="text-xs text-slate-500">Mejor de 3 sets con punto de oro (Tie-break a 7).</p>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+<span class="material-icons">stars</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900">Cabezas de Serie</h4>
+<p class="text-xs text-slate-500">Los brackets [1] al [4] están protegidos por ranking.</p>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+<span class="material-icons">timer</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900">Tiempos de Espera</h4>
+<p class="text-xs text-slate-500">Máximo 15 minutos de tolerancia para walk-over.</p>
+</div>
+</div>
+</div>
+<section class="mt-12 bg-white rounded-2xl p-8 border border-slate-200 shadow-sm">
+<div class="flex flex-col md:flex-row items-center justify-between gap-8">
+<p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Patrocinadores Oficiales</p>
+<div class="flex flex-wrap justify-center gap-12 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-600">fitness_center</span>
+<span class="text-[10px] font-bold text-slate-600 uppercase">Performance X</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-600">electric_bolt</span>
+<span class="text-[10px] font-bold text-slate-600 uppercase">Energy Peak</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-600">local_drink</span>
+<span class="text-[10px] font-bold text-slate-600 uppercase">HydroPure</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-600">watch</span>
+<span class="text-[10px] font-bold text-slate-600 uppercase">Precision Time</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-white border-t border-slate-200 py-12 mt-12">
+<div class="container mx-auto px-4 text-center">
+<div class="flex items-center justify-center gap-2 mb-6">
+<div class="w-6 h-6 bg-primary/20 rounded flex items-center justify-center">
+<span class="material-icons text-primary text-sm font-bold">sports_tennis</span>
+</div>
+<span class="text-sm font-extrabold tracking-tighter uppercase italic heading-bold text-slate-900">Ranking <span class="text-primary">Padel</span> MX</span>
+</div>
+<p class="text-xs text-slate-400 font-medium">© 2024 Ranking Padel México. Circuito Master de San Luis Potosí.</p>
+</div>
+</footer>
+
+</body></html>

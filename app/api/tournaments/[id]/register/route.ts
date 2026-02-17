@@ -45,10 +45,11 @@ export async function POST(
       )
     }
 
-    // Check max teams
-    if (modality._count.registrations >= tournament.maxTeams) {
+    // Check max teams (per modality if set, else tournament global)
+    const maxAllowed = modality.maxPairs ?? tournament.maxTeams
+    if (modality._count.registrations >= maxAllowed) {
       return NextResponse.json(
-        { success: false, error: "El torneo esta lleno" },
+        { success: false, error: "Esta categoría está llena" },
         { status: 400 }
       )
     }

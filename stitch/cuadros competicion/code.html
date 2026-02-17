@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tournament Brackets | Ranking Padel MX</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#00ba51",
+              "navy-dark": "#0f172a",
+              "navy-light": "#1e293b",
+              "background-soft": "#f8fafc",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style type="text/tailwindcss">body {
+    font-family: "Inter", sans-serif
+    }
+.heading-bold {
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    text-transform: uppercase
+    }
+.club-bg-overlay {
+    background-image: linear-gradient(rgba(248, 250, 252, 0.92), rgba(248, 250, 252, 0.92)), url(https://lh3.googleusercontent.com/aida-public/AB6AXuDRvpx4LlzyS6KCbnpbJyC_pGlrG0i_Hd1dlIO_4ybxPJSYw75yniZaiS1ZvYW-16UPDOssYC28OGRt5upbWc5Lbfoka6LNTeTzi6qgTrwh9k2N4whDgPodK6r9oQOPydyDhYSyNw40jBwjY7CD8Up1L--bn8Anurek9tq72Y-_Zqq2xhZ5ucOuE3XdpGAQW-kqFAWdK4pSu6Bhixpv4tQXZq2zUQNudHQQGAuocrRn5uSXu9aQK8EvAX2-WnrLW6ZMwPgedlGBCIE);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed
+    }
+.bracket-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2.5rem;
+    min-width: 1100px
+    }
+.bracket-round {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    position: relative
+    }.match-node {
+    position: relative;
+    z-index: 10
+    }
+.match-node::after {
+    content: "";
+    position: absolute;
+    right: -1.25rem;
+    top: 50%;
+    width: 1.25rem;
+    height: 2px;
+    background-color: #cbd5e1;}
+.bracket-round:last-child .match-node::after {
+    display: none
+    }
+.round-connector {
+    position: absolute;
+    right: -1.25rem;
+    width: 2px;
+    background-color: #cbd5e1
+    }
+.live-pulse {
+    position: relative;
+    display: flex;
+    height: 8px;
+    width: 8px
+    }
+.live-pulse span:nth-child(1) {
+    animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+    position: absolute;
+    display: inline-flex;
+    height: 100%;
+    width: 100%;
+    border-radius: 9999px;
+    background-color: #22c55e;
+    opacity: 0.75
+    }
+.live-pulse span:nth-child(2) {
+    position: relative;
+    display: inline-flex;
+    border-radius: 9999px;
+    height: 8px;
+    width: 8px;
+    background-color: #16a34a
+    }</style>
+</head>
+<body class="bg-background-soft text-navy-dark min-h-screen font-display club-bg-overlay">
+<nav class="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-md">
+<div class="container mx-auto px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-navy-dark rounded flex items-center justify-center">
+<span class="material-icons text-primary text-xl font-bold">sports_tennis</span>
+</div>
+<span class="text-xl font-extrabold tracking-tighter uppercase italic">Ranking <span class="text-primary">Padel</span> MX</span>
+</div>
+<div class="hidden md:flex items-center gap-8 text-sm font-semibold text-navy-light">
+<a class="hover:text-primary transition-colors" href="#">Torneos</a>
+<a class="hover:text-primary transition-colors" href="#">Ranking</a>
+<a class="hover:text-primary transition-colors" href="#">Clubes</a>
+<a class="bg-navy-dark text-white px-4 py-2 rounded-lg text-xs uppercase tracking-wider" href="#">Mi Perfil</a>
+</div>
+</div>
+</nav>
+<main class="container mx-auto px-4 py-8">
+<header class="mb-8">
+<nav class="flex items-center gap-2 text-slate-500 text-xs mb-4 uppercase font-bold tracking-wider">
+<span>Torneos</span>
+<span class="material-icons text-xs">chevron_right</span>
+<span>Master Final San Luis Potosí</span>
+<span class="material-icons text-xs">chevron_right</span>
+<span class="text-navy-dark">Cuadros</span>
+</nav>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h1 class="text-3xl md:text-5xl heading-bold leading-none mb-2 text-navy-dark">Cuadros de Competición</h1>
+<div class="flex items-center gap-2 text-slate-600">
+<span class="material-icons text-sm">location_on</span>
+<p class="font-medium text-sm">Padel Club San Luis • Master Final 2024</p>
+</div>
+</div>
+<div class="flex p-1.5 bg-white border border-slate-200 rounded-xl shadow-sm">
+<button class="px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-lg bg-navy-dark text-white shadow-md transition-all">1ra Fuerza</button>
+<button class="px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-lg text-slate-500 hover:bg-slate-50 transition-colors">2da Fuerza</button>
+<button class="px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-lg text-slate-500 hover:bg-slate-50 transition-colors">3ra Fuerza</button>
+<button class="px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-lg text-slate-500 hover:bg-slate-50 transition-colors">Varonil Open</button>
+</div>
+</div>
+</header>
+<div class="bg-white/40 backdrop-blur-sm border border-slate-200 rounded-3xl overflow-hidden shadow-xl mb-12">
+<div class="flex border-b border-slate-200 bg-white/60 overflow-x-auto">
+<button class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-navy-dark whitespace-nowrap border-b-2 border-transparent">Información</button>
+<button class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-navy-dark whitespace-nowrap border-b-2 border-transparent">Parejas (48)</button>
+<button class="px-8 py-5 text-xs font-bold uppercase tracking-widest border-b-2 border-navy-dark text-navy-dark bg-white whitespace-nowrap">Cuadros Interactivos</button>
+<button class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-navy-dark whitespace-nowrap border-b-2 border-transparent">Resultados</button>
+</div>
+<div class="p-10 overflow-x-auto">
+<div class="bracket-container py-4">
+<div class="bracket-round space-y-12">
+<div class="uppercase text-[11px] font-black tracking-[0.25em] text-slate-400 mb-2 text-center">Octavos de Final</div>
+<div class="match-node">
+<div class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+<div class="px-3 py-2 flex justify-between items-center border-b border-slate-100 bg-slate-50/50">
+<span class="text-[10px] font-bold text-slate-400">M-01 | 10:00 AM</span>
+<span class="text-[9px] font-bold text-slate-500 bg-slate-200 px-1.5 py-0.5 rounded">FINALIZADO</span>
+</div>
+<div class="p-3 space-y-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-[9px] bg-slate-100 text-slate-500 w-4 h-4 flex items-center justify-center rounded-sm font-bold">1</span>
+<span class="text-sm font-bold text-navy-dark">Galan / Lebron</span>
+</div>
+<span class="text-sm font-black text-primary italic">6 6</span>
+</div>
+<div class="flex items-center justify-between opacity-50">
+<div class="flex items-center gap-2">
+<span class="text-[9px] bg-slate-100 text-slate-400 w-4 h-4 flex items-center justify-center rounded-sm font-bold">16</span>
+<span class="text-sm font-medium">Ruiz / Gonzalez</span>
+</div>
+<span class="text-sm font-bold text-slate-400 italic">2 4</span>
+</div>
+</div>
+</div>
+</div>
+<div class="match-node">
+<div class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+<div class="px-3 py-2 flex justify-between items-center border-b border-slate-100 bg-slate-50/50">
+<span class="text-[10px] font-bold text-slate-400">M-02 | 11:30 AM</span>
+<span class="text-[9px] font-bold text-slate-500 bg-slate-200 px-1.5 py-0.5 rounded">FINALIZADO</span>
+</div>
+<div class="p-3 space-y-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-[9px] bg-slate-100 text-slate-500 w-4 h-4 flex items-center justify-center rounded-sm font-bold">8</span>
+<span class="text-sm font-bold text-navy-dark">Sanchez / Capra</span>
+</div>
+<span class="text-sm font-black text-primary italic">7 6</span>
+</div>
+<div class="flex items-center justify-between opacity-50">
+<div class="flex items-center gap-2">
+<span class="text-[9px] bg-slate-100 text-slate-400 w-4 h-4 flex items-center justify-center rounded-sm font-bold">9</span>
+<span class="text-sm font-medium">Yanguas / Bela</span>
+</div>
+<span class="text-sm font-bold text-slate-400 italic">5 4</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bracket-round space-y-24">
+<div class="uppercase text-[11px] font-black tracking-[0.25em] text-slate-400 mb-2 text-center">Cuartos de Final</div>
+<div class="match-node">
+<div class="bg-white border-2 border-primary/40 rounded-xl shadow-lg shadow-primary/5 overflow-hidden">
+<div class="px-3 py-2 flex justify-between items-center border-b border-primary/10 bg-primary/5">
+<div class="flex items-center gap-1.5">
+<div class="live-pulse"><span></span><span></span></div>
+<span class="text-[10px] font-black text-primary uppercase italic">En Vivo</span>
+</div>
+<span class="text-[10px] font-bold text-navy-dark/60 uppercase">Cancha 1</span>
+</div>
+<div class="p-3 space-y-2">
+<div class="flex items-center justify-between bg-primary/5 -mx-1 px-1 rounded">
+<div class="flex items-center gap-2">
+<span class="text-[9px] bg-primary text-white w-4 h-4 flex items-center justify-center rounded-sm font-bold">1</span>
+<span class="text-sm font-bold text-navy-dark">Galan / Lebron</span>
+</div>
+<span class="text-sm font-black text-primary italic">6 4</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-[9px] bg-slate-100 text-slate-500 w-4 h-4 flex items-center justify-center rounded-sm font-bold">8</span>
+<span class="text-sm font-bold text-navy-dark">Sanchez / Capra</span>
+</div>
+<span class="text-sm font-black text-navy-dark italic">3 1</span>
+</div>
+</div>
+</div>
+</div>
+<div class="match-node opacity-60">
+<div class="bg-slate-50/50 border border-slate-200 border-dashed rounded-xl overflow-hidden">
+<div class="p-8 flex flex-col items-center gap-2">
+<div class="h-2 w-24 bg-slate-200 rounded-full"></div>
+<div class="h-2 w-16 bg-slate-200 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="bracket-round space-y-48">
+<div class="uppercase text-[11px] font-black tracking-[0.25em] text-slate-400 mb-2 text-center">Semifinales</div>
+<div class="match-node group">
+<div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden min-h-[100px] flex flex-col items-center justify-center p-4 border-dashed">
+<span class="material-icons text-slate-300 mb-1">schedule</span>
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Por Definir</span>
+</div>
+</div>
+</div>
+<div class="bracket-round">
+<div class="uppercase text-[11px] font-black tracking-[0.25em] text-primary mb-4 text-center">Gran Final</div>
+<div class="match-node scale-110 origin-right">
+<div class="bg-white border-2 border-navy-dark rounded-2xl shadow-2xl overflow-hidden">
+<div class="px-4 py-3 flex justify-between items-center border-b border-slate-100 bg-navy-dark">
+<div class="flex items-center gap-2">
+<span class="material-icons text-primary text-sm">emoji_events</span>
+<span class="text-[10px] font-black text-white uppercase italic tracking-tighter">Match de Campeonato</span>
+</div>
+</div>
+<div class="p-5 space-y-4">
+<div class="flex items-center justify-between">
+<div class="h-4 bg-slate-100 rounded w-32"></div>
+<span class="font-black text-slate-200 italic text-2xl">0</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="h-4 bg-slate-100 rounded w-28"></div>
+<span class="font-black text-slate-200 italic text-2xl">0</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-slate-50/80 p-6 border-t border-slate-200 flex flex-wrap items-center justify-between gap-6">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2.5">
+<span class="live-pulse"><span></span><span></span></span>
+<span class="text-[10px] font-bold text-slate-600 uppercase tracking-widest">En Juego</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="w-2 h-2 rounded-full bg-slate-300"></span>
+<span class="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Pendiente</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="w-2 h-2 rounded-full bg-slate-500"></span>
+<span class="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Completado</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-white hover:bg-slate-50 text-navy-dark px-4 py-2 rounded-lg border border-slate-200 flex items-center gap-2 text-xs font-bold transition-all shadow-sm">
+<span class="material-icons text-sm">picture_as_pdf</span>
+                    Exportar PDF
+                </button>
+<button class="bg-white hover:bg-slate-50 text-navy-dark px-4 py-2 rounded-lg border border-slate-200 flex items-center gap-2 text-xs font-bold transition-all shadow-sm">
+<span class="material-icons text-sm">fullscreen</span>
+                    Pantalla Completa
+                </button>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<div class="lg:col-span-8">
+<div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-xl font-bold flex items-center gap-2 text-navy-dark">
+<span class="material-icons text-primary">analytics</span>
+                        Próximo Partido Destacado
+                    </h3>
+<span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Horario Central</span>
+</div>
+<div class="bg-slate-50 border border-slate-200 rounded-2xl p-8 flex items-center justify-between relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<div class="text-center flex-1">
+<p class="text-navy-dark font-black text-xl mb-1 italic">Galan / Lebron</p>
+<p class="text-[10px] text-primary font-bold uppercase tracking-[0.2em]">Sembrados #1</p>
+</div>
+<div class="px-12 text-center flex flex-col items-center">
+<div class="text-4xl font-black italic text-slate-200 mb-2">VS</div>
+<div class="px-4 py-1.5 bg-navy-dark text-white rounded-full">
+<p class="text-[10px] font-bold uppercase tracking-widest">18:30 PM</p>
+</div>
+</div>
+<div class="text-center flex-1">
+<p class="text-navy-dark font-black text-xl mb-1 italic">Tello / Ruiz</p>
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">Sembrados #4</p>
+</div>
+</div>
+</div>
+</div>
+<aside class="lg:col-span-4">
+<div class="bg-navy-dark rounded-2xl p-8 shadow-xl text-white">
+<h4 class="font-bold text-lg mb-6 flex items-center gap-2">
+<span class="material-icons text-primary">military_tech</span>
+                    Favoritos al Título
+                </h4>
+<div class="space-y-4">
+<div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+<span class="text-2xl">🥇</span>
+<div>
+<p class="font-bold text-sm">Galan / Lebron</p>
+<p class="text-[10px] text-slate-400 uppercase font-medium">92% Proyección de victoria</p>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+<span class="text-2xl">🥈</span>
+<div>
+<p class="font-bold text-sm">Coello / Tapia</p>
+<p class="text-[10px] text-slate-400 uppercase font-medium">Lado Opuesto del Cuadro</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-3 border border-primary/30 text-primary text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-primary/10 transition-all">
+                    Ver Ranking Completo
+                </button>
+</div>
+</aside>
+</div>
+</main>
+<footer class="bg-white border-t border-slate-200 py-12 mt-12">
+<div class="container mx-auto px-4">
+<div class="flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 bg-navy-dark rounded flex items-center justify-center">
+<span class="material-icons text-primary text-sm font-bold">sports_tennis</span>
+</div>
+<span class="text-sm font-extrabold tracking-tighter uppercase italic text-navy-dark">Ranking <span class="text-primary">Padel</span> MX</span>
+</div>
+<div class="flex gap-8 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+<a class="hover:text-primary transition-colors" href="#">Privacidad</a>
+<a class="hover:text-primary transition-colors" href="#">Términos</a>
+<a class="hover:text-primary transition-colors" href="#">Contacto</a>
+</div>
+<p class="text-[10px] text-slate-400 font-medium">© 2024 RANKING PADEL MÉXICO. TODOS LOS DERECHOS RESERVADOS.</p>
+</div>
+</div>
+</footer>
+
+</body></html>

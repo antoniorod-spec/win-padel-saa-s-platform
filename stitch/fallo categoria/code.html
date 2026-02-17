@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Validación de Nivel y Fair-Play - Ranking Padel MX</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0df26c",
+                        "background-light": "#f5f8f7",
+                        "background-dark": "#102217",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-[#0d1c13]">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#cee8d9] bg-white px-6 md:px-20 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-[#0d1c13]">
+<div class="size-8 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_535)">
+<path clip-rule="evenodd" d="M47.2426 24L24 47.2426L0.757355 24L24 0.757355L47.2426 24ZM12.2426 21H35.7574L24 9.24264L12.2426 21Z" fill="currentColor" fill-rule="evenodd"></path>
+</g>
+<defs>
+<clippath id="clip0_6_535"><rect fill="white" height="48" width="48"></rect></clippath>
+</defs>
+</svg>
+</div>
+<h2 class="text-[#0d1c13] text-xl font-bold leading-tight tracking-[-0.015em]">Ranking Padel MX</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8 items-center">
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-[#0d1c13] text-sm font-medium hover:text-primary transition-colors" href="#">Torneos</a>
+<a class="text-[#0d1c13] text-sm font-medium hover:text-primary transition-colors" href="#">Mi Ranking</a>
+<a class="text-[#0d1c13] text-sm font-medium hover:text-primary transition-colors" href="#">Clubes</a>
+</nav>
+<div class="size-10 rounded-full border-2 border-primary/20 bg-cover bg-center" data-alt="User profile picture of a padel player" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD7iHvOykig5_d4bIxzd_lvaKqP1oL-V1V63AFaK3SUHXoXnTto57OCE64Josvc1m6qqhwO0_XzvOfC4d5O5nwD9OC3XC8umuzFRpEOVO_rDGiMT7VZp88V9Ey27pWqWeKlq85hA77GH5DnE83v7sIn5hKUG5IRkSDGwzogxOi8_Vdw5twMnii7Z5k9rUgj55Zg1sliarV60s6L1oYzw6dkTMrJVcp7mjJ6bS6hYkvTo8kpev2akhE6wE3FJTMzjSl8t616Tgo9Pyw");'>
+</div>
+</div>
+</header>
+<main class="flex flex-1 justify-center py-10 px-4 md:px-0">
+<div class="layout-content-container flex flex-col max-w-[800px] flex-1 gap-6">
+<!-- Alert Header Section -->
+<div class="flex flex-col items-center text-center gap-4 mb-4">
+<div class="bg-red-50 p-4 rounded-full">
+<span class="material-symbols-outlined text-red-500 text-5xl">warning</span>
+</div>
+<h1 class="text-3xl font-black text-[#0d1c13] tracking-tight">Categoría no compatible con tu Ranking</h1>
+<p class="text-[#499c6c] text-lg font-medium max-w-2xl">
+                            Se ha detectado una restricción de Fair-Play basada en tu nivel oficial registrado en el sistema.
+                        </p>
+</div>
+<!-- Comparison Dashboard -->
+<div class="grid grid-cols-1 md:grid-cols-7 items-center gap-4 p-6 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-[#cee8d9]">
+<!-- Left: Official Level -->
+<div class="md:col-span-3 flex flex-col items-center p-6 bg-primary/10 rounded-lg border-2 border-primary/30">
+<span class="text-xs font-bold text-[#499c6c] uppercase tracking-widest mb-2">Tu Nivel Actual</span>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary">verified</span>
+<p class="text-2xl font-bold text-[#0d1c13]">Varonil 3ra</p>
+</div>
+<p class="text-3xl font-black text-primary">2,450 pts</p>
+<p class="text-xs text-[#499c6c] mt-2">Validado por Whin Ranking</p>
+</div>
+<!-- Center: Icon -->
+<div class="md:col-span-1 flex justify-center">
+<span class="material-symbols-outlined text-gray-300 text-4xl transform rotate-90 md:rotate-0">compare_arrows</span>
+</div>
+<!-- Right: Target Category -->
+<div class="md:col-span-3 flex flex-col items-center p-6 bg-red-50 rounded-lg border-2 border-red-200">
+<span class="text-xs font-bold text-red-500 uppercase tracking-widest mb-2">Categoría del Torneo</span>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-red-400">block</span>
+<p class="text-2xl font-bold text-red-700">Varonil 5ta</p>
+</div>
+<p class="text-sm text-red-500 font-medium mt-2">Nivel no permitido</p>
+</div>
+</div>
+<!-- Fair-Play Policy Explanation -->
+<div class="bg-[#f8fcfa] border-l-4 border-primary p-6 rounded-r-lg shadow-sm">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-primary">info</span>
+<div class="flex flex-col gap-2">
+<h3 class="font-bold text-[#0d1c13]">Reglamento de Fair-Play</h3>
+<p class="text-[#499c6c] text-sm leading-relaxed">
+                                    Tu nivel actual de ranking es superior a la categoría seleccionada. Para mantener una competencia justa (Fair-Play) y evitar ventajas competitivas desleales, <strong>solo puedes inscribirte en tu categoría oficial o una superior</strong>. Jugar dos niveles por debajo no está permitido en este torneo.
+                                </p>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-3 pt-4">
+<button class="flex items-center justify-center gap-2 bg-primary text-[#0d1c13] py-4 rounded-xl font-bold text-lg hover:brightness-95 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">trending_up</span>
+                            Cambiar a mi Categoría (3ra)
+                        </button>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 border-2 border-[#cee8d9] text-[#0d1c13] py-3 rounded-xl font-semibold hover:bg-gray-50 transition-all">
+<span class="material-symbols-outlined">contact_support</span>
+                                Contactar al Organizador
+                            </button>
+<button class="flex items-center justify-center gap-2 bg-white text-[#499c6c] py-3 rounded-xl font-semibold hover:text-[#0d1c13] transition-all">
+<span class="material-symbols-outlined">rule_folder</span>
+                                Ver Reglamento Oficial
+                            </button>
+</div>
+</div>
+<!-- Secondary Option / Edge Case -->
+<div class="mt-8 pt-6 border-t border-[#cee8d9] flex flex-col items-center gap-2">
+<p class="text-sm text-[#499c6c]">¿Crees que tu nivel es incorrecto?</p>
+<button class="text-primary font-bold hover:underline text-sm flex items-center gap-1">
+                            Solicitar Revisión de Nivel por Comité Técnico
+                            <span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Club Image Footer (Padel Atmosphere) -->
+<footer class="mt-auto px-10 py-8">
+<div class="w-full h-48 rounded-2xl bg-cover bg-center relative overflow-hidden group border border-[#cee8d9]" data-alt="Blurred professional padel court with bright lighting" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCX5-aXJ8n2Ka11k1B0Xxgxa6g5GOvR0MiQx5QWot12piOGBvkiCu_VnC729kBxVy7Wxfc-4eHSQqOcmBv1_9-EMygVL_El4Ybzk7o7ov2ANPy7q29Ox-EwkmOG07DSGxMs2mhPnrdZP0HWcl_e9Pj02OaVYmeZj7pOaPuU5uJu06GoC8R2QGw7GKGQoiZcsps6NeLjZbVdzQIy3SacwySM6g9G1AJ-8EIZxd15W-ZVSHLX4AtncKYc-ZDTLDYA1YRygnevZNUh-S8");'>
+<div class="absolute inset-0 bg-gradient-to-t from-[#102217]/80 to-transparent flex flex-col justify-end p-8">
+<p class="text-white font-bold text-lg italic">"Competición íntegra, Padel real."</p>
+<p class="text-primary text-sm font-medium">Ranking Padel México Circuit 2024</p>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

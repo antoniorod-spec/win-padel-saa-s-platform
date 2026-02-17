@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Progress } from "@/components/ui/progress"
 import { ClubPlacesPicker } from "@/components/club/club-places-picker"
 import { Loader2, User, BadgeCheck, SlidersHorizontal, ArrowLeft, ArrowRight, Check } from "lucide-react"
+import { DatePicker } from "@/components/ui/date-picker"
 
 type Props = {
   // onboarding: show "Rellenar despues" and sign-out CTA
@@ -470,7 +471,7 @@ export function PlayerProfileForm({ mode }: Props) {
             </div>
             <div className="flex flex-col gap-2">
               <Label>Fecha de nacimiento (opcional)</Label>
-              <Input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
+              <DatePicker value={birthDate} onChange={setBirthDate} placeholder="Seleccionar fecha" />
             </div>
             <div className="flex flex-col gap-2">
               <Label>Genero (opcional)</Label>

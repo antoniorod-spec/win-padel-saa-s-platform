@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tournament Details | Ranking Padel MX</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Oswald:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --primary: #00C853;
+            --navy: #0f172a;
+            --navy-light: #1e293b;
+            --white: #ffffff;
+            --border: #e2e8f0;
+        }
+        body { 
+            font-family: 'Inter', sans-serif;
+            color: var(--navy);
+        }
+        h1, h2, h3, .heading-oswald {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+        }
+        .bg-club-overlay {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuCknuPHwhfVWy4zej1LoanWbNXq0KbMBM-SIjnikXkKcBcqTzDCsgamWlsOyukR3uQ5ZMmWSnMWwQVZBqE7rLiBYFtWGY6Jz4E_xRBR3vk2gRAcKyYQy5qsef-cihMLMtWUd5byxrNRXMN3O8beqFe_zC1gvgs48oRnX6HrJ63xsaFojDuveKuH0ICbtOm6SuNkSp00_bpIjuQ5Pl6qL-zNZUs8y878ZFomXj-Ro3-aTY1WJg5VjkDU4U5ICmM8eEMJaNkAZm5xSLc');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .content-card {
+            background: var(--white);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -1px rgba(15, 23, 42, 0.03);
+            border-left: 4px solid var(--navy);
+        }
+        .nav-glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-club-overlay min-h-screen">
+<nav class="sticky top-0 z-50 nav-glass">
+<div class="container mx-auto px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-[var(--primary)] rounded flex items-center justify-center">
+<span class="material-icons text-white text-xl font-bold">sports_tennis</span>
+</div>
+<span class="text-xl font-extrabold tracking-tighter uppercase italic text-[var(--navy)]">Ranking <span class="text-[var(--primary)]">Padel</span> MX</span>
+</div>
+<div class="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-tight text-[var(--navy)]">
+<a class="hover:text-[var(--primary)] transition-colors" href="#">Torneos</a>
+<a class="hover:text-[var(--primary)] transition-colors" href="#">Ranking</a>
+<a class="hover:text-[var(--primary)] transition-colors" href="#">Clubes</a>
+<button class="bg-[var(--navy)] text-white px-4 py-2 rounded-lg text-xs">MI PERFIL</button>
+</div>
+</div>
+</nav>
+<main class="container mx-auto px-4 py-8">
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+<div class="lg:col-span-5 relative group">
+<div class="absolute top-4 left-4 z-10 flex gap-2">
+<span class="bg-[var(--primary)] text-white px-3 py-1 rounded-sm font-bold text-xs uppercase tracking-wider flex items-center gap-1 shadow-lg">
+<span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> Abierto
+                </span>
+<span class="bg-[var(--navy)] text-white px-3 py-1 rounded-sm font-bold text-xs uppercase tracking-wider">
+                    Major 1000 Pts
+                </span>
+</div>
+<div class="aspect-[3/4] rounded-xl overflow-hidden shadow-2xl border-4 border-white">
+<img alt="Poster de Torneo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLTpPprTGTxL9XInMhIDLN0wO7HWm9B5YWOLYks-ZeLHCjpAYioKd0kYBW6qLsHL236R_UZyNfAQhlSNDecz_UuT9xqD_hHbespPGgtTkJKJaFvbDvJweHouqcG8JpTrH6ZCx9p5tutblL9530sk74VTI-6eGDshH08-OrKwXekhMLON_okncrIT-ofrVvAxRHBCLVrfPIsUEwlCrNDoDaK05hlZUly_SHedhDhAHMKxu4fRcKPHPG0G_PheSlucia2zUmOANh0Qo"/>
+</div>
+</div>
+<div class="lg:col-span-7 flex flex-col justify-center">
+<nav class="flex items-center gap-2 text-[var(--navy-light)]/60 text-xs font-bold uppercase tracking-widest mb-4">
+<span>Torneos</span>
+<span class="material-icons text-xs">chevron_right</span>
+<span>México</span>
+<span class="material-icons text-xs">chevron_right</span>
+<span class="text-[var(--primary)]">San Luis Potosí</span>
+</nav>
+<h1 class="text-5xl md:text-7xl mb-4 leading-none text-[var(--navy)] font-bold">
+                Master Final <br/> <span class="text-[var(--primary)]">San Luis Potosí</span>
+</h1>
+<div class="flex flex-wrap items-center gap-6 mb-8">
+<div class="flex items-center gap-2 text-[var(--navy-light)]">
+<span class="material-icons text-[var(--primary)]">calendar_today</span>
+<span class="font-bold">15 - 22 Octubre, 2024</span>
+</div>
+<div class="flex items-center gap-2 text-[var(--navy-light)]">
+<span class="material-icons text-[var(--primary)]">emoji_events</span>
+<span class="font-bold">FIP Gold / 1000 Puntos</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-0 content-card overflow-hidden">
+<div class="flex items-start gap-4 p-6 border-r border-slate-100">
+<div class="w-10 h-10 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center text-[var(--primary)]">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Sede</p>
+<p class="font-bold text-[var(--navy)]">Padel Club San Luis</p>
+<p class="text-xs text-slate-500">Lomas 4ta Sección</p>
+</div>
+</div>
+<div class="flex items-start gap-4 p-6 border-r border-slate-100">
+<div class="w-10 h-10 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center text-[var(--primary)]">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Inscripción</p>
+<p class="font-bold text-[var(--navy)]">$1,250 MXN</p>
+<p class="text-xs text-slate-500">Por jugador</p>
+</div>
+</div>
+<div class="flex items-start gap-4 p-6">
+<div class="w-10 h-10 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center text-[var(--primary)]">
+<span class="material-symbols-outlined">groups</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Categorías</p>
+<p class="font-bold text-[var(--navy)]">1ra a 4ta Fuerza</p>
+<p class="text-xs text-slate-500">Varonil y Femenil</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<div class="lg:col-span-8">
+<div class="flex border-b-2 border-slate-200 mb-8 overflow-x-auto whitespace-nowrap">
+<button class="px-8 py-4 text-sm font-black uppercase tracking-widest border-b-4 border-[var(--primary)] text-[var(--navy)]">Información</button>
+<button class="px-8 py-4 text-sm font-black uppercase tracking-widest text-slate-400 hover:text-[var(--navy)] transition-colors">Parejas (48)</button>
+<button class="px-8 py-4 text-sm font-black uppercase tracking-widest text-slate-400 hover:text-[var(--navy)] transition-colors">Cuadros</button>
+<button class="px-8 py-4 text-sm font-black uppercase tracking-widest text-slate-400 hover:text-[var(--navy)] transition-colors">Resultados</button>
+</div>
+<div class="space-y-12 pb-12">
+<section>
+<h3 class="text-3xl font-bold mb-6 flex items-center gap-4 text-[var(--navy)]">
+<span class="w-12 h-1 bg-[var(--primary)] rounded-full"></span>
+                        Reglamento y Detalles
+                    </h3>
+<div class="space-y-6">
+<p class="text-lg leading-relaxed text-slate-600">Bienvenidos a la edición más grande del año en el Bajío. El Master Final de San Luis Potosí reúne a los mejores exponentes del ranking nacional en una competencia de alto nivel bajo las reglas oficiales.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="content-card p-5 flex items-center gap-4">
+<span class="material-icons text-[var(--primary)]">check_circle</span>
+<span class="font-bold text-sm">Sistema: Round Robin + Eliminatoria</span>
+</div>
+<div class="content-card p-5 flex items-center gap-4">
+<span class="material-icons text-[var(--primary)]">check_circle</span>
+<span class="font-bold text-sm">Partidos a 3 sets con Golden Point</span>
+</div>
+<div class="content-card p-5 flex items-center gap-4">
+<span class="material-icons text-[var(--primary)]">check_circle</span>
+<span class="font-bold text-sm">Pelota oficial: Premium Padel Ball</span>
+</div>
+<div class="content-card p-5 flex items-center gap-4">
+<span class="material-icons text-[var(--primary)]">check_circle</span>
+<span class="font-bold text-sm">Fisioterapia y Zona de Recuperación</span>
+</div>
+</div>
+</div>
+</section>
+<section>
+<h3 class="text-3xl font-bold mb-6 flex items-center gap-4 text-[var(--navy)]">
+<span class="w-12 h-1 bg-[var(--primary)] rounded-full"></span>
+                        Premios y Reconocimientos
+                    </h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="content-card p-8 flex flex-col items-center text-center !border-left-0 border-t-4 border-t-[var(--primary)]">
+<div class="text-[var(--primary)] mb-4">
+<span class="material-symbols-outlined text-5xl">payments</span>
+</div>
+<h4 class="font-bold text-2xl text-[var(--navy)] mb-1">$25,000 MXN</h4>
+<p class="text-slate-500 text-xs font-bold uppercase tracking-tighter">Bolsa total a repartir</p>
+</div>
+<div class="content-card p-8 flex flex-col items-center text-center !border-left-0 border-t-4 border-t-[var(--primary)]">
+<div class="text-[var(--primary)] mb-4">
+<span class="material-symbols-outlined text-5xl">military_tech</span>
+</div>
+<h4 class="font-bold text-2xl text-[var(--navy)] mb-1">Trofeos Custom</h4>
+<p class="text-slate-500 text-xs font-bold uppercase tracking-tighter">Finalistas y Campeones</p>
+</div>
+<div class="content-card p-8 flex flex-col items-center text-center !border-left-0 border-t-4 border-t-[var(--primary)]">
+<div class="text-[var(--primary)] mb-4">
+<span class="material-symbols-outlined text-5xl">shopping_bag</span>
+</div>
+<h4 class="font-bold text-2xl text-[var(--navy)] mb-1">Welcome Kit</h4>
+<p class="text-slate-500 text-xs font-bold uppercase tracking-tighter">Playeras y Accesorios</p>
+</div>
+</div>
+</section>
+<section>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+<h3 class="text-3xl font-bold flex items-center gap-4 text-[var(--navy)]">
+<span class="w-12 h-1 bg-[var(--primary)] rounded-full"></span>
+                            Ubicación
+                        </h3>
+<button class="bg-[var(--navy)] text-white flex items-center gap-2 font-bold text-sm px-6 py-3 rounded-lg hover:bg-slate-800 transition-all shadow-lg">
+<span class="material-icons text-sm">directions</span>
+                            ¿CÓMO LLEGAR?
+                        </button>
+</div>
+<div class="rounded-2xl overflow-hidden border-4 border-white shadow-xl h-[450px] relative">
+<img alt="Mapa Ubicación" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCknuPHwhfVWy4zej1LoanWbNXq0KbMBM-SIjnikXkKcBcqTzDCsgamWlsOyukR3uQ5ZMmWSnMWwQVZBqE7rLiBYFtWGY6Jz4E_xRBR3vk2gRAcKyYQy5qsef-cihMLMtWUd5byxrNRXMN3O8beqFe_zC1gvgs48oRnX6HrJ63xsaFojDuveKuH0ICbtOm6SuNkSp00_bpIjuQ5Pl6qL-zNZUs8y878ZFomXj-Ro3-aTY1WJg5VjkDU4U5ICmM8eEMJaNkAZm5xSLc"/>
+<div class="absolute inset-0 bg-navy/10 pointer-events-none"></div>
+<div class="absolute bottom-8 left-8">
+<div class="bg-white p-6 rounded-xl shadow-2xl border border-slate-100 max-w-sm">
+<div class="flex items-center gap-4 mb-3">
+<div class="w-12 h-12 bg-[var(--primary)] rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+<div>
+<h5 class="font-black text-[var(--navy)] text-lg">Padel Club San Luis</h5>
+<p class="text-slate-500 text-xs font-medium">Av. Tercer Milenio 201, Lomas 4ta.</p>
+</div>
+</div>
+<span class="inline-block w-full text-center px-3 py-2 bg-slate-50 text-[var(--navy)] rounded text-[10px] font-black uppercase tracking-widest border border-slate-100">Sede Oficial Ranking MX</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<aside class="lg:col-span-4">
+<div class="sticky top-24 space-y-6">
+<div class="bg-[var(--navy)] rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+<div class="absolute -right-10 -bottom-10 w-40 h-40 bg-[var(--primary)]/10 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-8">
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-1">Registro hasta</p>
+<p class="text-xl font-bold text-white">12 Octubre</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-1">Disponibilidad</p>
+<p class="text-xl font-bold text-[var(--primary)]">85% Lleno</p>
+</div>
+</div>
+<button class="w-full bg-[var(--primary)] text-white py-5 rounded-xl font-black text-xl uppercase tracking-tighter hover:scale-[1.02] active:scale-95 transition-all shadow-lg flex items-center justify-center gap-3 mb-6">
+<span class="material-icons">how_to_reg</span>
+                            Inscribirme Ahora
+                        </button>
+<div class="grid grid-cols-2 gap-3">
+<button class="bg-white/5 border border-white/10 hover:bg-white/10 py-3 rounded-lg flex items-center justify-center gap-2 text-xs font-bold text-white transition-all">
+<span class="material-icons text-lg text-[var(--primary)]">share</span> Compartir
+                            </button>
+<div class="flex gap-2">
+<button class="flex-1 rounded-lg bg-[#25D366]/10 text-[#25D366] flex items-center justify-center hover:bg-[#25D366] hover:text-white transition-all">
+<svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.246 2.248 3.484 5.232 3.484 8.412 0 6.556-5.338 11.892-11.893 11.892-1.997-.001-3.951-.5-5.688-1.448l-6.309 1.656zm6.224-3.52c1.54.914 3.51 1.403 5.61 1.403 5.514 0 10.002-4.488 10.002-10.002 0-2.67-1.04-5.18-2.93-7.07-1.89-1.89-4.4-2.93-7.07-2.93-5.515 0-10.002 4.488-10.002 10.002 0 2.136.6 4.425 1.655 5.86l-.993 3.628 3.728-.991zm11.734-7.061c-.301-.15-1.779-.879-2.053-.98s-.47-.15-.67.15c-.2.301-.77.98-.945 1.18-.175.2-.35.225-.65.075-.301-.15-1.267-.467-2.414-1.492-.893-.795-1.495-1.778-1.67-2.078-.175-.301-.019-.464.13-.614.134-.135.301-.35.451-.525.15-.175.2-.3.3-.5s.05-.375-.025-.525c-.075-.15-.67-1.615-.918-2.213-.242-.584-.487-.504-.67-.514l-.57-.01c-.2 0-.525.075-.8.375-.275.3-.1.525-1.1 1.5-.1.175-.225.375-.35.525-.45.525-.9 1.05-1.35 1.575-.5.575-1.125 1.15-1.6 1.7-.125.15-.25.3-.375.45-.67.804-1.25 1.688-1.74 2.613-.225.424-.45.85-.625 1.3-.175.45-.3.9-.35 1.35-.05.45.1 1 .325 1.5.225.5.55 1 .95 1.45.4.45.85.85 1.35 1.2.5.35 1.05.65 1.65.9.6.25 1.25.45 1.95.55.7.1 1.45.1 2.25-.05.8-.15 1.6-.45 2.45-.85.85-.4 1.7-.95 2.5-1.6.8-.65 1.55-1.45 2.15-2.35.6-.9 1.1-1.9 1.45-3 .35-1.1.55-2.25.6-3.45z"></path></svg>
+</button>
+<button class="flex-1 rounded-lg bg-gradient-to-tr from-orange-400/10 via-pink-500/10 to-purple-600/10 text-pink-600 flex items-center justify-center hover:from-orange-400 hover:to-purple-600 hover:text-white transition-all">
+<svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.332 3.608 1.308.975.975 1.245 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.332 2.633-1.308 3.608-.975.975-2.242 1.245-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.332-3.608-1.308-.975-.975-1.245-2.242-1.308-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.332-2.633 1.308-3.608.975-.975 2.242-1.245 3.608-1.308 1.266-.058 1.646-.07 4.85-.07m0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98-1.28-.058-1.689-.072-4.948-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path></svg>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="content-card p-6 !border-left-0 border-t-4 border-t-[var(--navy)]">
+<p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-4">Organizado por</p>
+<div class="flex items-center gap-4 mb-4">
+<div class="w-14 h-14 rounded-lg bg-slate-50 border border-slate-200 overflow-hidden p-1">
+<img alt="Club Logo" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACOxHy701Ed85xO_wMaOeAu8L-3PqN7ZIQCZEjiPwLlgVLB84lIaGPDT_UtlLtzg3E38AGWGeeOltsuE_1xIJVHcD64eELTRyqJiZcYTg4yw4ZbDvjM3v141fn7iXXAqsPgaReNQpM52imscjKeTI2iQHz-zKSISIjoCxPUBPGB_VDvRL1DneTLJQLPa74HiSSfWmA339CfTfOqJlQvGMjxoje-Unr3BS5b66Ktc82Wv_aNEfPzZ27yCI5RCPyWWd7YyGFsP6J4S4"/>
+</div>
+<div>
+<h4 class="font-black text-[var(--navy)] text-lg">Padel Club SLP</h4>
+<div class="flex items-center gap-1 text-yellow-500">
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star_half</span>
+<span class="text-slate-400 text-[10px] font-bold ml-1">4.8 (124)</span>
+</div>
+</div>
+</div>
+<button class="w-full py-2.5 border-2 border-slate-100 rounded-lg text-xs font-black uppercase tracking-widest text-[var(--navy)] hover:bg-slate-50 transition-colors">Ver Perfil del Club</button>
+</div>
+<div class="p-4">
+<p class="text-center text-[10px] text-slate-400 uppercase font-black tracking-[0.2em] mb-4">Partners Oficiales</p>
+<div class="flex justify-center gap-6 opacity-40 grayscale">
+<span class="material-symbols-outlined text-2xl">fitness_center</span>
+<span class="material-symbols-outlined text-2xl">electric_bolt</span>
+<span class="material-symbols-outlined text-2xl">local_drink</span>
+<span class="material-symbols-outlined text-2xl">watch</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<footer class="bg-[var(--navy)] text-white py-12 mt-12 border-t-8 border-[var(--primary)]">
+<div class="container mx-auto px-4">
+<div class="grid grid-cols-1 md:grid-cols-3 items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 bg-[var(--primary)] rounded flex items-center justify-center">
+<span class="material-icons text-white text-xl font-bold">sports_tennis</span>
+</div>
+<span class="text-2xl font-black tracking-tighter uppercase italic">Ranking <span class="text-[var(--primary)]">Padel</span> MX</span>
+</div>
+<div class="flex justify-center gap-8 text-[10px] font-black uppercase tracking-widest text-slate-400">
+<a class="hover:text-white transition-colors" href="#">Privacidad</a>
+<a class="hover:text-white transition-colors" href="#">Términos</a>
+<a class="hover:text-white transition-colors" href="#">Contacto</a>
+</div>
+<p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest md:text-right">
+                © 2024 Ranking Padel México.
+            </p>
+</div>
+</div>
+</footer>
+
+</body></html>

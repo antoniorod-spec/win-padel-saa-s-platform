@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cuadros: Fase de Grupos | Ranking Padel MX</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+          tailwind.config = {
+            darkMode: "class",
+            theme: {
+              extend: {
+                colors: {
+                  "primary": "#0dbd54",
+                  "navy": "#0f172a",
+                  "background-light": "#f8faf9",
+                  "card-light": "#ffffff",
+                  "border-light": "#e2e8f0",
+                },
+                fontFamily: {
+                  "sans": ["Inter", "sans-serif"],
+                  "display": ["Oswald", "sans-serif"]
+                },
+                borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+              },
+            },
+          }
+    </script>
+<style type="text/tailwindcss">
+        body { font-family: 'Inter', sans-serif; }
+        .heading-bold { font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: -0.01em; text-transform: uppercase; }
+        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); }
+        .bg-club-overlay {
+            background-image: linear-gradient(rgba(248, 250, 249, 0.94), rgba(248, 250, 249, 0.94)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuACOxHy701Ed85xO_wMaOeAu8L-3PqN7ZIQCZEjiPwLlgVLB84lIaGPDT_UtlLtzg3E38AGWGeeOltsuE_1xIJVHcD64eELTRyqJiZcYTg4yw4ZbDvjM3v141fn7iXXAqsPgaReNQpM52imscjKeTI2iQHz-zKSISIjoCxPUBPGB_VDvRL1DneTLJQLPa74HiSSfWmA339CfTfOqJlQvGMjxoje-Unr3BS5b66Ktc82Wv_aNEfPzZ27yCI5RCPyWWd7YyGFsP6J4S4');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .table-row:nth-child(even) { background-color: rgba(15, 23, 42, 0.02); }
+    </style>
+</head>
+<body class="bg-background-light text-slate-900 min-h-screen bg-club-overlay">
+<nav class="sticky top-0 z-50 border-b border-slate-200 glass-panel">
+<div class="container mx-auto px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-icons text-white text-xl font-bold">sports_tennis</span>
+</div>
+<span class="text-xl font-extrabold tracking-tighter uppercase italic heading-bold text-navy">Ranking <span class="text-primary">Padel</span> MX</span>
+</div>
+<div class="hidden md:flex items-center gap-8 text-sm font-semibold uppercase tracking-wider text-slate-600">
+<a class="hover:text-primary transition-colors" href="#">Torneos</a>
+<a class="hover:text-primary transition-colors" href="#">Ranking</a>
+<a class="hover:text-primary transition-colors" href="#">Clubes</a>
+<a class="text-primary border-b-2 border-primary" href="#">Mi Perfil</a>
+</div>
+</div>
+</nav>
+<main class="container mx-auto px-4 py-8">
+<header class="mb-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<nav class="flex items-center gap-2 text-slate-500 text-xs mb-2 font-medium uppercase tracking-widest">
+<span>Torneos</span>
+<span class="material-icons text-xs">chevron_right</span>
+<span class="text-primary">Master Final SLP</span>
+</nav>
+<h1 class="text-4xl md:text-5xl heading-bold text-navy">Fase de Grupos</h1>
+<p class="text-slate-500 font-medium">Categoría: 1ra Fuerza Varonil</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-bold text-navy hover:bg-slate-50 transition-all">
+<span class="material-icons text-sm">download</span> Descargar PDF
+                </button>
+</div>
+</div>
+</header>
+<div class="flex items-center gap-4 border-b border-slate-200 mb-8 overflow-x-auto">
+<button class="px-8 py-4 text-sm font-bold uppercase tracking-widest border-b-2 border-primary text-primary flex items-center gap-2 whitespace-nowrap">
+<span class="material-symbols-outlined text-lg">grid_view</span>
+            Fase de Grupos
+        </button>
+<button class="px-8 py-4 text-sm font-bold uppercase tracking-widest text-slate-400 hover:text-navy border-b-2 border-transparent transition-all flex items-center gap-2 whitespace-nowrap">
+<span class="material-symbols-outlined text-lg">account_tree</span>
+            Fase Final
+        </button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+<div class="bg-navy p-4 flex justify-between items-center">
+<h3 class="heading-bold text-white text-lg tracking-wider">Grupo A</h3>
+<span class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Fase de Clasificación</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm">
+<thead>
+<tr class="bg-slate-50 border-b border-slate-200">
+<th class="py-3 px-4 font-bold text-slate-500 uppercase tracking-tighter text-[11px]">Pos / Pareja</th>
+<th class="py-3 px-2 font-bold text-slate-500 uppercase text-[11px] text-center">J</th>
+<th class="py-3 px-2 font-bold text-slate-500 uppercase text-[11px] text-center">Sets</th>
+<th class="py-3 px-2 font-bold text-slate-500 uppercase text-[11px] text-center">Dif</th>
+<th class="py-3 px-4 font-bold text-slate-500 uppercase text-[11px] text-right">Pts</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<tr class="table-row">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-center">
+<span class="text-xs font-black text-navy">1</span>
+<span class="material-icons text-primary text-sm">check_circle</span>
+</div>
+<div class="leading-tight">
+<p class="font-bold text-navy">G. Galán / J. Lebrón</p>
+<span class="text-[10px] text-primary font-bold uppercase">Clasificado</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-2 text-center font-bold text-navy">3</td>
+<td class="py-4 px-2 text-center text-slate-600">6-1</td>
+<td class="py-4 px-2 text-center font-medium text-primary">+18</td>
+<td class="py-4 px-4 text-right font-black text-navy">9</td>
+</tr>
+<tr class="table-row">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-center">
+<span class="text-xs font-black text-navy">2</span>
+<span class="material-icons text-primary text-sm">check_circle</span>
+</div>
+<div class="leading-tight">
+<p class="font-bold text-navy">F. Belasteguín / S. Gutiérrez</p>
+<span class="text-[10px] text-primary font-bold uppercase">Clasificado</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-2 text-center font-bold text-navy">3</td>
+<td class="py-4 px-2 text-center text-slate-600">4-3</td>
+<td class="py-4 px-2 text-center font-medium text-navy">+5</td>
+<td class="py-4 px-4 text-right font-black text-navy">6</td>
+</tr>
+<tr class="table-row">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<span class="text-xs font-black text-slate-400 w-5 text-center">3</span>
+<div class="leading-tight">
+<p class="font-bold text-slate-600">M. Yanguas / F. Navarro</p>
+<span class="text-[10px] text-slate-400 font-bold uppercase">Eliminado</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-2 text-center font-bold text-slate-500">3</td>
+<td class="py-4 px-2 text-center text-slate-500">2-4</td>
+<td class="py-4 px-2 text-center font-medium text-red-500">-8</td>
+<td class="py-4 px-4 text-right font-black text-slate-500">3</td>
+</tr>
+<tr class="table-row">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<span class="text-xs font-black text-slate-400 w-5 text-center">4</span>
+<div class="leading-tight">
+<p class="font-bold text-slate-600">A. Coello / A. Tapia</p>
+<span class="text-[10px] text-slate-400 font-bold uppercase">Eliminado</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-2 text-center font-bold text-slate-500">3</td>
+<td class="py-4 px-2 text-center text-slate-500">0-6</td>
+<td class="py-4 px-2 text-center font-medium text-red-500">-22</td>
+<td class="py-4 px-4 text-right font-black text-slate-500">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+<div class="bg-navy p-4 flex justify-between items-center">
+<h3 class="heading-bold text-white text-lg tracking-wider">Grupo B</h3>
+<span class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Fase de Clasificación</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm">
+<thead>
+<tr class="bg-slate-50 border-b border-slate-200">
+<th class="py-3 px-4 font-bold text-slate-500 uppercase tracking-tighter text-[11px]">Pos / Pareja</th>
+<th class="py-3 px-2 font-bold text-slate-500 uppercase text-[11px] text-center">J</th>
+<th class="py-3 px-2 font-bold text-slate-500 uppercase text-[11px] text-center">Sets</th>
+<th class="py-3 px-2 font-bold text-slate-500 uppercase text-[11px] text-center">Dif</th>
+<th class="py-3 px-4 font-bold text-slate-500 uppercase text-[11px] text-right">Pts</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<tr class="table-row">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-center">
+<span class="text-xs font-black text-navy">1</span>
+<span class="material-icons text-primary text-sm">check_circle</span>
+</div>
+<div class="leading-tight">
+<p class="font-bold text-navy">J. Tello / F. Chingotto</p>
+<span class="text-[10px] text-primary font-bold uppercase">Clasificado</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-2 text-center font-bold text-navy">3</td>
+<td class="py-4 px-2 text-center text-slate-600">6-0</td>
+<td class="py-4 px-2 text-center font-medium text-primary">+24</td>
+<td class="py-4 px-4 text-right font-black text-navy">9</td>
+</tr>
+<tr class="table-row">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-center">
+<span class="text-xs font-black text-navy">2</span>
+<span class="material-icons text-primary text-sm">check_circle</span>
+</div>
+<div class="leading-tight">
+<p class="font-bold text-navy">M. Di Nenno / F. Stupaczuk</p>
+<span class="text-[10px] text-primary font-bold uppercase">Clasificado</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-2 text-center font-bold text-navy">3</td>
+<td class="py-4 px-2 text-center text-slate-600">4-3</td>
+<td class="py-4 px-2 text-center font-medium text-navy">+2</td>
+<td class="py-4 px-4 text-right font-black text-navy">6</td>
+</tr>
+<tr class="table-row">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<span class="text-xs font-black text-slate-400 w-5 text-center">3</span>
+<div class="leading-tight">
+<p class="font-bold text-slate-600">P. Lima / C. Gutierrez</p>
+<span class="text-[10px] text-slate-400 font-bold uppercase">Eliminado</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-2 text-center font-bold text-slate-500">3</td>
+<td class="py-4 px-2 text-center text-slate-500">3-5</td>
+<td class="py-4 px-2 text-center font-medium text-red-500">-4</td>
+<td class="py-4 px-4 text-right font-black text-slate-500">3</td>
+</tr>
+<tr class="table-row">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<span class="text-xs font-black text-slate-400 w-5 text-center">4</span>
+<div class="leading-tight">
+<p class="font-bold text-slate-600">L. Campagnolo / J. Garrido</p>
+<span class="text-[10px] text-slate-400 font-bold uppercase">Eliminado</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-2 text-center font-bold text-slate-500">3</td>
+<td class="py-4 px-2 text-center text-slate-500">1-6</td>
+<td class="py-4 px-2 text-center font-medium text-red-500">-15</td>
+<td class="py-4 px-4 text-right font-black text-slate-500">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="relative py-12 px-8 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden max-w-4xl mx-auto mb-12 group cursor-pointer">
+<div class="absolute inset-0 bg-gradient-to-r from-navy/5 to-transparent opacity-50"></div>
+<div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+<div class="text-center md:text-left">
+<span class="text-xs font-black uppercase tracking-[0.3em] text-primary mb-2 block">Siguiente Etapa</span>
+<h4 class="text-3xl heading-bold text-navy mb-2">Llaves de Eliminatoria</h4>
+<p class="text-slate-500 text-sm max-w-md">La fase de grupos ha terminado. Descubre los enfrentamientos directos que definirán al campeón del Master Final.</p>
+</div>
+<div class="flex flex-col items-center">
+<button class="bg-navy text-white px-8 py-4 rounded-xl font-extrabold uppercase tracking-tight hover:bg-primary transition-all shadow-lg flex items-center gap-3 group-hover:scale-105 transform">
+                    Ver Fase Final
+                    <span class="material-icons">account_tree</span>
+</button>
+<span class="text-[10px] mt-4 font-bold text-slate-400 uppercase tracking-widest">Cuartos • Semis • Final</span>
+</div>
+</div>
+<span class="material-symbols-outlined absolute -right-8 -bottom-8 text-[180px] text-navy/5 -rotate-12 pointer-events-none">emoji_events</span>
+</div>
+<section class="max-w-4xl mx-auto bg-slate-50/50 rounded-xl border border-slate-200 p-6">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-navy/10 flex items-center justify-center text-navy shrink-0">
+<span class="material-icons">info</span>
+</div>
+<div>
+<h5 class="font-bold text-navy mb-2">Criterios de Desempate</h5>
+<ul class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-xs text-slate-600 font-medium">
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span> 1. Puntos Totales</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span> 2. Enfrentamiento Directo</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span> 3. Diferencia de Sets</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span> 4. Diferencia de Juegos</li>
+</ul>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-white border-t border-slate-200 py-12 mt-12">
+<div class="container mx-auto px-4">
+<div class="flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 bg-primary/20 rounded flex items-center justify-center">
+<span class="material-icons text-primary text-sm font-bold">sports_tennis</span>
+</div>
+<span class="text-sm font-extrabold tracking-tighter uppercase italic heading-bold text-navy">Ranking <span class="text-primary">Padel</span> MX</span>
+</div>
+<div class="flex gap-8 text-xs text-slate-500 font-bold uppercase tracking-widest">
+<a class="hover:text-primary transition-colors" href="#">Aviso de Privacidad</a>
+<a class="hover:text-primary transition-colors" href="#">Términos y Condiciones</a>
+<a class="hover:text-primary transition-colors" href="#">Contacto</a>
+</div>
+<p class="text-xs text-slate-400 font-medium">© 2024 Ranking Padel México. Todos los derechos reservados.</p>
+</div>
+</div>
+</footer>
+
+</body></html>

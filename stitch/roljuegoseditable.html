@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ranking Padel MX - Gestión Dinámica de Horarios</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec6d",
+                        "primary-dark": "#0dbd57",
+                        "background-light": "#f8faf9",
+                        "surface": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .grid-schedule {
+                display: grid;
+                grid-template-columns: 80px repeat(4, 1fr);
+            }
+            .time-slot {
+                height: 140px;
+                border-bottom: 1px solid rgba(0,0,0,0.05);
+                border-right: 1px solid rgba(0,0,0,0.05);
+            }
+            .match-card {
+                cursor: grab;
+                transition: all 0.2s ease;
+            }
+            .match-card:active {
+                cursor: grabbing;
+                transform: scale(0.98);
+                opacity: 0.8;
+            }
+            .drop-zone-active {
+                background-color: rgba(19, 236, 109, 0.05);
+                border: 2px dashed rgba(19, 236, 109, 0.4);
+            }
+            .conflict-zone {
+                background-color: rgba(ef, 68, 68, 0.05);
+                border: 2px solid #ef4444 !important;
+            }
+            .suggested-slot {
+                animation: pulse-suggestion 2s infinite;
+            }
+            @keyframes pulse-suggestion {
+                0% { background-color: transparent; }
+                50% { background-color: rgba(19, 236, 109, 0.15); }
+                100% { background-color: transparent; }
+            }
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light text-slate-800 min-h-screen overflow-hidden flex flex-col">
+<div class="fixed inset-0 -z-10 opacity-40 pointer-events-none">
+<div class="absolute top-0 right-0 w-1/2 h-1/2 bg-primary/10 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-0 left-0 w-1/3 h-1/3 bg-primary/5 blur-[100px] rounded-full"></div>
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+</div>
+<header class="bg-white border-b border-slate-200 shrink-0">
+<div class="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 bg-slate-900 rounded-lg flex items-center justify-center">
+<span class="material-icons text-primary text-xl">sports_tennis</span>
+</div>
+<div>
+<h1 class="text-lg font-bold tracking-tight leading-none text-slate-900">Ranking <span class="text-primary-dark">Padel MX</span></h1>
+<p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Admin Dashboard</p>
+</div>
+</div>
+<nav class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+<button class="px-5 py-1.5 rounded-lg bg-white shadow-sm text-sm font-bold text-slate-900">Rol de Juegos</button>
+<button class="px-5 py-1.5 rounded-lg text-sm font-semibold text-slate-500 hover:text-slate-700">Parejas</button>
+<button class="px-5 py-1.5 rounded-lg text-sm font-semibold text-slate-500 hover:text-slate-700">Resultados</button>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center text-[10px] font-bold">JD</div>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-primary flex items-center justify-center text-[10px] font-bold">MX</div>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100">
+<span class="material-symbols-outlined text-slate-500">notifications</span>
+</button>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<main class="flex-1 flex flex-col min-w-0">
+<div class="px-6 py-4 flex items-center justify-between bg-white border-b border-slate-200">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-lg hover:bg-slate-100 text-slate-400">
+<span class="material-icons">chevron_left</span>
+</button>
+<div class="flex gap-2">
+<div class="flex flex-col items-center px-4 py-2 bg-primary text-slate-900 rounded-xl shadow-md shadow-primary/20">
+<span class="text-[10px] font-bold uppercase opacity-70">Vie</span>
+<span class="text-lg font-black leading-none">22</span>
+</div>
+<div class="flex flex-col items-center px-4 py-2 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-100 cursor-pointer border border-slate-200">
+<span class="text-[10px] font-bold uppercase">Sab</span>
+<span class="text-lg font-black leading-none">23</span>
+</div>
+<div class="flex flex-col items-center px-4 py-2 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-100 cursor-pointer border border-slate-200">
+<span class="text-[10px] font-bold uppercase">Dom</span>
+<span class="text-lg font-black leading-none">24</span>
+</div>
+</div>
+<button class="p-2 rounded-lg hover:bg-slate-100 text-slate-400">
+<span class="material-icons">chevron_right</span>
+</button>
+</div>
+<div class="h-8 w-px bg-slate-200"></div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-slate-400 uppercase tracking-tighter">Categoría:</span>
+<select class="border-none bg-slate-100 rounded-lg text-sm font-bold focus:ring-primary py-1.5 pl-3 pr-8">
+<option>4ta Fuerza Varonil</option>
+<option>3ra Fuerza Varonil</option>
+<option>Open Femenil</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-bold text-slate-700 hover:border-primary transition-all group">
+<span class="material-symbols-outlined text-xl text-primary group-hover:scale-110 transition-transform">auto_awesome</span>
+                    Sugerir Horarios Libres
+                </button>
+<div class="h-8 w-px bg-slate-200"></div>
+<button class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50 rounded-lg">
+<span class="material-symbols-outlined">file_download</span>
+                    PDF
+                </button>
+<button class="px-6 py-2 bg-slate-900 text-white rounded-lg font-bold text-sm shadow-lg shadow-slate-200 hover:bg-slate-800 active:scale-95 transition-all">
+                    Publicar Rol
+                </button>
+</div>
+</div>
+<div class="flex-1 overflow-auto p-6 bg-slate-50/50">
+<div class="min-w-[1000px] bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+<div class="grid-schedule bg-slate-900 text-white">
+<div class="h-12 flex items-center justify-center border-r border-slate-700">
+<span class="material-symbols-outlined text-slate-500">schedule</span>
+</div>
+<div class="h-12 flex items-center justify-center gap-2 border-r border-slate-700">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[11px] font-bold uppercase tracking-widest">Cancha 1</span>
+</div>
+<div class="h-12 flex items-center justify-center gap-2 border-r border-slate-700">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[11px] font-bold uppercase tracking-widest">Cancha 2</span>
+</div>
+<div class="h-12 flex items-center justify-center gap-2 border-r border-slate-700">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[11px] font-bold uppercase tracking-widest">Cancha 3</span>
+</div>
+<div class="h-12 flex items-center justify-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[11px] font-bold uppercase tracking-widest">Cancha 4</span>
+</div>
+</div>
+<div class="relative">
+<div class="grid-schedule">
+<div class="time-slot flex items-center justify-center bg-slate-50 border-r border-slate-200">
+<span class="text-xs font-black text-slate-400">08:00</span>
+</div>
+<div class="time-slot p-2">
+<div class="match-card h-full w-full bg-white rounded-xl border-l-4 border-primary p-3 shadow-sm border border-slate-200 hover:shadow-md">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[9px] font-black bg-primary/10 text-primary-dark px-1.5 py-0.5 rounded uppercase tracking-tighter">Fase Grupos</span>
+<span class="material-icons text-slate-300 text-sm">drag_indicator</span>
+</div>
+<div class="space-y-1">
+<p class="text-[11px] font-bold text-slate-700 truncate">A. González / R. Ruiz</p>
+<div class="flex items-center gap-2">
+<div class="h-px flex-1 bg-slate-100"></div>
+<span class="text-[9px] font-black text-primary italic">VS</span>
+<div class="h-px flex-1 bg-slate-100"></div>
+</div>
+<p class="text-[11px] font-bold text-slate-700 truncate">M. Silva / J. Torres</p>
+</div>
+</div>
+</div>
+<div class="time-slot p-2">
+<div class="match-card h-full w-full bg-white rounded-xl border-l-4 border-primary p-3 shadow-sm border border-slate-200 hover:shadow-md">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[9px] font-black bg-primary/10 text-primary-dark px-1.5 py-0.5 rounded uppercase tracking-tighter">Fase Grupos</span>
+<span class="material-icons text-slate-300 text-sm">drag_indicator</span>
+</div>
+<p class="text-[11px] font-bold text-slate-700 truncate">S. Luna / K. Lara</p>
+<div class="text-[10px] text-primary font-black py-0.5 text-center">VS</div>
+<p class="text-[11px] font-bold text-slate-700 truncate">R. Flores / G. Díaz</p>
+</div>
+</div>
+<div class="time-slot p-2 suggested-slot">
+</div>
+<div class="time-slot p-2 conflict-zone">
+<div class="h-full w-full bg-red-50 rounded-xl border-l-4 border-red-500 p-3 flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-red-500 mb-1">warning</span>
+<p class="text-[10px] text-red-700 font-bold leading-none">Conflicto Jugador</p>
+<p class="text-[9px] text-red-500 font-medium">P. Ortiz ya juega 09:30</p>
+</div>
+</div>
+</div>
+<div class="grid-schedule">
+<div class="time-slot flex items-center justify-center bg-slate-50 border-r border-slate-200">
+<span class="text-xs font-black text-slate-400">09:30</span>
+</div>
+<div class="time-slot p-2">
+<div class="match-card h-full w-full bg-white rounded-xl border-l-4 border-primary p-3 shadow-sm border border-slate-200 hover:shadow-md">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[9px] font-black bg-primary/10 text-primary-dark px-1.5 py-0.5 rounded uppercase tracking-tighter">Fase Grupos</span>
+<span class="material-icons text-slate-300 text-sm">drag_indicator</span>
+</div>
+<p class="text-[11px] font-bold text-slate-700 truncate">C. Mendez / P. Ortiz</p>
+<div class="text-[10px] text-primary font-black py-0.5 text-center">VS</div>
+<p class="text-[11px] font-bold text-slate-700 truncate">L. Vega / F. Soto</p>
+</div>
+</div>
+<div class="time-slot p-2 drop-zone-active">
+<div class="h-full w-full flex flex-col items-center justify-center text-slate-400 border-2 border-dashed border-slate-200 rounded-xl">
+<span class="material-icons text-lg">add</span>
+<span class="text-[10px] font-bold uppercase">Soltar Aquí</span>
+</div>
+</div>
+<div class="time-slot p-2"></div>
+<div class="time-slot p-2">
+<div class="match-card h-full w-full bg-white rounded-xl border-l-4 border-primary p-3 shadow-sm border border-slate-200 hover:shadow-md">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[9px] font-black bg-primary/10 text-primary-dark px-1.5 py-0.5 rounded uppercase tracking-tighter">Fase Grupos</span>
+<span class="material-icons text-slate-300 text-sm">drag_indicator</span>
+</div>
+<p class="text-[11px] font-bold text-slate-700 truncate">H. Peña / J. Rivas</p>
+<div class="text-[10px] text-primary font-black py-0.5 text-center">VS</div>
+<p class="text-[11px] font-bold text-slate-700 truncate">D. Rios / B. Cruz</p>
+</div>
+</div>
+</div>
+<div class="grid-schedule">
+<div class="time-slot flex items-center justify-center bg-slate-50 border-r border-slate-200">
+<span class="text-xs font-black text-slate-400">11:00</span>
+</div>
+<div class="time-slot p-2">
+<div class="h-full w-full bg-slate-100 rounded-xl flex flex-col items-center justify-center text-slate-400">
+<span class="material-symbols-outlined mb-1">block</span>
+<span class="text-[10px] font-bold uppercase tracking-tight">Cancha Bloqueada</span>
+</div>
+</div>
+<div class="time-slot p-2"></div>
+<div class="time-slot p-2">
+<div class="match-card h-full w-full bg-white rounded-xl border-l-4 border-blue-500 p-3 shadow-sm border border-slate-200 hover:shadow-md">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[9px] font-black bg-blue-500 text-white px-1.5 py-0.5 rounded uppercase tracking-tighter">Cuartos Final</span>
+<span class="material-symbols-outlined text-blue-500 text-sm">lock</span>
+</div>
+<p class="text-[11px] font-bold text-slate-400 italic">Por definir vs Por definir</p>
+<div class="mt-2 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+<span class="text-[9px] font-bold text-blue-500 uppercase tracking-tighter">Descanso OK</span>
+</div>
+</div>
+</div>
+<div class="time-slot p-2 suggested-slot"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white border-t border-slate-200 p-4 shrink-0 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2">
+<span class="flex h-2 w-2 rounded-full bg-primary"></span>
+<span class="text-xs font-bold text-slate-600">84% de Horarios Asignados</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="flex h-2 w-2 rounded-full bg-blue-500"></span>
+<span class="text-xs font-bold text-slate-600">6 Descansos Garantizados (90min)</span>
+</div>
+<div class="flex items-center gap-2 text-red-500">
+<span class="material-symbols-outlined text-sm">warning</span>
+<span class="text-xs font-black uppercase">1 Conflicto pendiente</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-black text-slate-400 uppercase">Zoom:</span>
+<div class="flex border border-slate-200 rounded-lg overflow-hidden">
+<button class="px-2 py-1 bg-white hover:bg-slate-50 text-slate-400">-</button>
+<div class="px-3 py-1 bg-slate-50 text-[10px] font-bold flex items-center border-x border-slate-200">100%</div>
+<button class="px-2 py-1 bg-white hover:bg-slate-50 text-slate-400">+</button>
+</div>
+</div>
+</div>
+</main>
+<aside class="w-80 bg-white border-l border-slate-200 flex flex-col shadow-2xl relative z-20">
+<div class="p-6 border-b border-slate-200 bg-slate-50">
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-black text-sm uppercase tracking-tight flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">shopping_bag</span>
+                    Bolsa de Re-programación
+                </h3>
+<span class="bg-slate-900 text-white text-[10px] font-black px-2 py-1 rounded-full">3</span>
+</div>
+<p class="text-xs text-slate-500 leading-tight">Arrastra partidos aquí para cambiar de día o asignar un nuevo horario luego.</p>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/30">
+<div class="match-card bg-white p-4 rounded-xl border border-slate-200 shadow-sm border-l-4 border-amber-400">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[9px] font-black bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded uppercase tracking-tighter">Pendiente</span>
+<span class="material-icons text-slate-300 text-sm">drag_indicator</span>
+</div>
+<div class="space-y-2">
+<div>
+<p class="text-[11px] font-bold text-slate-800">U. Paredes / L. Ortiz</p>
+<p class="text-[11px] font-bold text-slate-800 mt-1">G. Ferrari / J. Belaste</p>
+</div>
+<div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+<span class="text-[9px] font-bold text-slate-400 uppercase">Cat: 3ra Fuerza</span>
+<button class="text-[10px] text-primary-dark font-black hover:underline">Auto-Slot</button>
+</div>
+</div>
+</div>
+<div class="match-card bg-white p-4 rounded-xl border border-slate-200 shadow-sm border-l-4 border-amber-400">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[9px] font-black bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded uppercase tracking-tighter">Pendiente</span>
+<span class="material-icons text-slate-300 text-sm">drag_indicator</span>
+</div>
+<div class="space-y-2">
+<div>
+<p class="text-[11px] font-bold text-slate-800">F. Chingotto / P. Tello</p>
+<p class="text-[11px] font-bold text-slate-800 mt-1">M. Di Nenno / F. Stupa</p>
+</div>
+<div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+<span class="text-[9px] font-bold text-slate-400 uppercase">Cat: 1ra Fuerza</span>
+<button class="text-[10px] text-primary-dark font-black hover:underline">Auto-Slot</button>
+</div>
+</div>
+</div>
+<div class="h-32 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center text-slate-400 bg-white/50">
+<span class="material-symbols-outlined text-3xl mb-1">move_to_inbox</span>
+<p class="text-[10px] font-bold uppercase tracking-widest px-4 text-center">Suelta aquí para remover del rol actual</p>
+</div>
+</div>
+<div class="p-4 bg-white border-t border-slate-200">
+<button class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">bolt</span>
+                Re-programar Todo
+            </button>
+</div>
+</aside>
+</div>
+
+</body></html>

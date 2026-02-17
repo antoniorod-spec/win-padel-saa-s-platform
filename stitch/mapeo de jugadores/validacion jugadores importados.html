@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Validación de Jugadores por Teléfono - Ranking Padel MX</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec6d",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#102218",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111814] min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 bg-white border-b border-[#dbe6e0] px-6 lg:px-10 py-3 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-background-dark">
+<span class="material-symbols-outlined">sports_tennis</span>
+</div>
+<h1 class="text-lg font-bold tracking-tight">Ranking Padel MX</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-sm font-medium hover:text-primary transition-colors border-b-2 border-primary pb-1" href="#">Torneos</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Rankings</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Jugadores</a>
+</nav>
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-xl bg-[#f0f4f2] hover:bg-[#e2e8e5] transition-colors">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+<div class="size-10 rounded-full border-2 border-primary overflow-hidden">
+<img alt="Admin" class="w-full h-full object-cover" data-alt="Perfil del administrador del club de padel" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAH55Ux8GAp54Xv1ufhezou7hXYZDeVDa-gYmDxjKwOLzbkDfHIzE0YvFN-Aq4pKwuWChkZhSDH22PhMiyMUs9S8msnQzTqH42Y6kA7LZO3wrzA7s8A1NFc2GEcamy5eu-YqU2Ak6Tc08H9P4HVRhXncr0yrBa78owNm__8X0G357tZhRdCQ5x76BOkk5IwFvWq2uPLcHQJ-dWLuiWcfE-iO_5t0vRxmAHFLx5yURzOEkFnHxtNgpQWwri2jer-MgvwyAiLz5foIs"/>
+</div>
+</div>
+</header>
+<main class="flex-1 flex flex-col max-w-[1440px] mx-auto w-full px-4 lg:px-10 py-6 gap-6">
+<!-- Progress Header -->
+<div class="flex flex-col gap-4">
+<div class="flex flex-wrap items-end justify-between gap-4">
+<div class="flex flex-col gap-1">
+<span class="text-primary text-xs font-bold uppercase tracking-widest">Paso 2 de 3</span>
+<h2 class="text-3xl font-black tracking-tight">Validación de Jugadores Importados</h2>
+<p class="text-[#618972] text-sm">Validación masiva basada en número telefónico como ID único.</p>
+</div>
+<div class="flex items-center gap-2 text-sm font-medium bg-white px-4 py-2 rounded-lg border border-[#dbe6e0]">
+<span class="material-symbols-outlined text-primary">cloud_upload</span>
+<span>Archivo: torneos_primavera_2024.csv</span>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border border-[#dbe6e0] shadow-sm">
+<div class="flex justify-between items-center mb-2">
+<span class="text-sm font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined animate-spin text-primary" style="font-size: 18px;">sync</span>
+                        Procesando identidades...
+                    </span>
+<span class="text-sm font-bold">85%</span>
+</div>
+<div class="w-full bg-[#dbe6e0] h-2.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full transition-all duration-500" style="width: 85%;"></div>
+</div>
+</div>
+</div>
+<!-- Summary Bar / KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="bg-white p-5 rounded-xl border-l-4 border-primary shadow-sm flex items-center gap-4">
+<div class="size-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">person_check</span>
+</div>
+<div>
+<p class="text-2xl font-bold">142</p>
+<p class="text-xs text-[#618972] font-medium">Registrados (se sumarán puntos)</p>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl border-l-4 border-blue-400 shadow-sm flex items-center gap-4">
+<div class="size-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
+<span class="material-symbols-outlined">person_add</span>
+</div>
+<div>
+<p class="text-2xl font-bold">28</p>
+<p class="text-xs text-[#618972] font-medium">Nuevos (se creará RPM-ID)</p>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl border-l-4 border-red-400 shadow-sm flex items-center gap-4">
+<div class="size-12 rounded-full bg-red-50 flex items-center justify-center text-red-500">
+<span class="material-symbols-outlined">error</span>
+</div>
+<div>
+<p class="text-2xl font-bold">3</p>
+<p class="text-xs text-[#618972] font-medium">Errores (formato inválido)</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col lg:flex-row gap-6 items-start">
+<!-- Validation Table -->
+<div class="flex-1 w-full bg-white rounded-xl border border-[#dbe6e0] shadow-sm overflow-hidden">
+<div class="p-4 border-b border-[#dbe6e0] bg-[#fcfdfc] flex justify-between items-center">
+<h3 class="font-bold">Listado de Validación</h3>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#618972] text-lg">search</span>
+<input class="pl-10 pr-4 py-1.5 text-sm border-[#dbe6e0] rounded-lg focus:ring-primary focus:border-primary w-64" placeholder="Buscar jugador..." type="text"/>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm">
+<thead class="bg-[#f6f8f7] text-[#618972] uppercase text-[11px] font-bold tracking-wider">
+<tr>
+<th class="px-6 py-3">Pareja</th>
+<th class="px-6 py-3">Teléfono</th>
+<th class="px-6 py-3">Estatus</th>
+<th class="px-6 py-3 text-right">Acción</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#dbe6e0]">
+<!-- Row 1: Existing Player -->
+<tr class="hover:bg-[#fcfdfc] transition-colors">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-semibold">Juan Pérez</span>
+<span class="text-xs text-[#618972]">vs</span>
+<span class="font-semibold">Ricardo Gómez</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col gap-1">
+<code class="bg-[#f0f4f2] px-2 py-0.5 rounded text-xs">55 1234 5678</code>
+<code class="bg-[#f0f4f2] px-2 py-0.5 rounded text-xs">55 8765 4321</code>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-primary/10 text-primary font-medium text-xs">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                                        Jugador ya en Ranking (RPM-12345)
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-[#618972] hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</td>
+</tr>
+<!-- Row 2: New Player -->
+<tr class="hover:bg-[#fcfdfc] transition-colors border-l-4 border-blue-400">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-semibold">Santi Giménez</span>
+<span class="text-xs text-[#618972]">vs</span>
+<span class="font-semibold">Mateo Silva</span>
+</div>
+</td>
+<td class="px-6 py-4 text-blue-600 font-mono">
+                                    55 9900 1122
+                                </td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-blue-50 text-blue-600 font-medium text-xs">
+<span class="material-symbols-outlined text-sm">person_add</span>
+                                        Nuevo Jugador (Invitación pendiente)
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-[#618972] hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</td>
+</tr>
+<!-- Row 3: Error Field -->
+<tr class="bg-red-50/30 hover:bg-red-50/50 transition-colors border-l-4 border-red-400">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-semibold">Luis Chavez</span>
+<span class="text-xs text-[#618972]">vs</span>
+<span class="font-semibold font-italic opacity-50 text-red-800 underline decoration-dotted">Dato faltante</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-[#618972]">+52</span>
+<input class="w-32 py-1 px-2 text-xs border-red-300 bg-white rounded focus:ring-red-500 focus:border-red-500 text-red-600 font-bold" placeholder="Faltan dígitos" type="text" value="55 123"/>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-red-100 text-red-700 font-medium text-xs">
+<span class="material-symbols-outlined text-sm">warning</span>
+                                        Teléfono Inválido (Faltan dígitos)
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-red-600 hover:text-red-800 transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Sidebar: Conflict Resolution -->
+<aside class="w-full lg:w-80 flex flex-col gap-4">
+<div class="bg-white p-5 rounded-xl border border-[#dbe6e0] shadow-sm">
+<h4 class="font-bold flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-orange-400">error_outline</span>
+                        Conflictos de Categoría
+                    </h4>
+<div class="space-y-4">
+<!-- Conflict Item 1 -->
+<div class="p-3 rounded-lg bg-orange-50 border border-orange-100">
+<div class="flex justify-between items-start mb-2">
+<span class="text-sm font-bold">Carlos Vela</span>
+<span class="text-[10px] bg-white px-2 py-0.5 rounded border border-orange-200 uppercase font-bold text-orange-600">Discrepancia</span>
+</div>
+<div class="grid grid-cols-2 gap-2 text-[11px] mb-3">
+<div>
+<p class="text-[#618972] font-medium">Importado</p>
+<p class="font-bold text-red-600">4ta Fuerza</p>
+</div>
+<div>
+<p class="text-[#618972] font-medium">En Sistema</p>
+<p class="font-bold text-green-600">2da Fuerza</p>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-orange-200">
+<span class="text-[10px] font-bold text-[#111814]">Permitir excepción</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<!-- Conflict Item 2 -->
+<div class="p-3 rounded-lg bg-orange-50 border border-orange-100">
+<div class="flex justify-between items-start mb-2">
+<span class="text-sm font-bold">Héctor Herrera</span>
+<span class="text-[10px] bg-white px-2 py-0.5 rounded border border-orange-200 uppercase font-bold text-orange-600">Discrepancia</span>
+</div>
+<div class="grid grid-cols-2 gap-2 text-[11px] mb-3">
+<div>
+<p class="text-[#618972] font-medium">Importado</p>
+<p class="font-bold text-red-600">Open</p>
+</div>
+<div>
+<p class="text-[#618972] font-medium">En Sistema</p>
+<p class="font-bold text-green-600">1ra Fuerza</p>
+</div>
+</div>
+<button class="w-full py-1.5 text-[11px] font-bold bg-white border border-orange-300 text-orange-600 rounded-lg hover:bg-orange-100 transition-colors">
+                                Reasignar Automáticamente
+                            </button>
+</div>
+</div>
+</div>
+<div class="bg-primary/10 p-5 rounded-xl border border-primary/30">
+<h4 class="text-xs font-bold uppercase tracking-wider text-primary-dark mb-2">Resumen Final</h4>
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-[#618972]">Parejas Validadas</span>
+<span class="font-bold">173</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-[#618972]">Correcciones Pendientes</span>
+<span class="font-bold text-red-600">3</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Sticky Footer -->
+<footer class="sticky bottom-0 bg-white border-t border-[#dbe6e0] px-6 lg:px-10 py-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<div class="max-w-[1440px] mx-auto flex items-center justify-between">
+<button class="text-red-500 text-sm font-bold hover:underline">
+                Anular Importación
+            </button>
+<div class="flex gap-4">
+<button class="px-6 py-2.5 bg-[#f0f4f2] text-[#111814] rounded-xl text-sm font-bold hover:bg-[#e2e8e5] transition-colors">
+                    Guardar Borrador
+                </button>
+<button class="px-8 py-2.5 bg-primary text-background-dark rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform active:scale-95 flex items-center gap-2">
+                    Confirmar y Crear Parejas
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</footer>
+<!-- Background Decoration Overlay -->
+<div class="fixed inset-0 pointer-events-none -z-10 opacity-[0.03]">
+<img alt="Background pattern" class="w-full h-full object-cover grayscale" data-alt="Fondo abstracto de una cancha de padel" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDLNTyesHe0W0eaTIc8a3u0_n4yfaSo5NKLJR_jserO_eo_RgbeJPpboerrK7VqviZq_u7YBNdN3YMa4vnxPtP5tUTLbTwZt3DxHUL6zdF8HbRux2Yfj577ZAANS9Z_9JLnDphuXpJVB2XVobGQML3f3irxUMTkdSY_SgAzFHzREsv-_CUipO-vUt02YWjdtz0HSzX8ptsnPIQbbBu2VCYOX4G-v8gFQ9BzjppazLxM4Qjug7Trj1ljzA5Baf01_vqARGgp5VNoeY"/>
+</div>
+</body></html>

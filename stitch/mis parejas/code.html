@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mis Parejas e Historial de Victorias | Ranking Padel MX</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0df26c",
+                        "background-light": "#f5f8f7",
+                        "background-dark": "#102217",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>body {
+    font-family: "Lexend", sans-serif
+    }
+.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    vertical-align: middle
+    }
+.court-overlay {
+    background-image: linear-gradient(rgba(245, 248, 247, 0.95), rgba(245, 248, 247, 0.95)), url(https://lh3.googleusercontent.com/aida-public/AB6AXuDLyne4uvMhd2MofeIbJxevhSEDkKEkv0mkJDCt48arHuj6h2lCVyAD7XTHu37HJpOpgxBn9m0nMkskHSLJTQl4Sg_58D4IhPXDJE5_gPZGZFkiQOowUvYbFd5e_ZLhc8e2bso5N6_u_8AdmSKH5rmkpv87BZlZqf-0CfrUvGhzSdM4DIDRNO1N0UjDRh_hG5jEimqJpBahfV4Zi6tY70UEh8VuhefS5FLDeDVIZUpw3ra_GinKg1rzBPIEITODMs4j_YYgd2ki96o);
+    background-size: cover;
+    background-attachment: fixed
+    }</style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#0d1c13] font-display min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden court-overlay">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#0df26c]/20 px-6 py-3 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-[#0d1c13]">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-background-dark">
+<span class="material-symbols-outlined font-bold">sports_tennis</span>
+</div>
+<h2 class="text-[#0d1c13] text-lg font-black leading-tight tracking-tight uppercase">Ranking Padel MX</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-[#0d1c13]/70 hover:text-primary text-sm font-semibold transition-colors" href="#">Inicio</a>
+<a class="text-[#0d1c13]/70 hover:text-primary text-sm font-semibold transition-colors" href="#">Torneos</a>
+<a class="text-[#0d1c13]/70 hover:text-primary text-sm font-semibold transition-colors" href="#">Ranking</a>
+<a class="text-primary text-sm font-bold border-b-2 border-primary pb-1" href="#">Mis Parejas</a>
+<a class="text-[#0d1c13]/70 hover:text-primary text-sm font-semibold transition-colors" href="#">Mi Perfil</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden lg:flex items-center bg-[#0d1c13]/5 rounded-full px-4 py-1.5 gap-2 border border-transparent focus-within:border-primary/50 transition-all">
+<span class="material-symbols-outlined text-[#0d1c13]/40 text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm p-0 w-32 placeholder:text-[#0d1c13]/40" placeholder="Buscar jugador..." type="text"/>
+</div>
+<button class="p-2 hover:bg-primary/10 rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-primary rounded-full border-2 border-white"></span>
+</button>
+<div class="size-10 rounded-full border-2 border-primary p-0.5 overflow-hidden">
+<img class="w-full h-full object-cover rounded-full" data-alt="Profile picture of the current user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9GMqOekj65MBtcdbANyRVFNATp-MdqVVvQlMdLWds6uRPybGxIfh1lZS1ZPNrfxRH3GNVrg8DPeYLBZRrac5w5wRMvne0-LjPSsHIHWnHdIuigKIAfQkWakTGJvSB80LT6u6pX842hSDSjFmK2-v8uADpjcDFCTg7XjGmXGDMFy2z1VH2ucwea9Pv9GEvVdDvlJRvfksXFYiTxT-GSacvRU1rsPCTfRpS519Ofbkh6lzu33tkARGJp51s7gx2W1k4KY2QiRoLlwQ"/>
+</div>
+</div>
+</header>
+<main class="flex-1 max-w-7xl mx-auto w-full p-6 lg:p-10 space-y-8">
+<!-- Page Title & Main Stats Hero -->
+<div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6">
+<div class="space-y-2">
+<h1 class="text-4xl md:text-5xl font-black text-[#0d1c13] tracking-tight">Mis Parejas y <span class="text-primary bg-[#0d1c13] px-2 rounded-lg">Rendimiento</span></h1>
+<p class="text-[#0d1c13]/60 max-w-2xl text-lg">Análisis detallado de tu desempeño histórico en el circuito mexicano con cada compañero de pista.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 bg-white px-5 py-2.5 rounded-xl border border-[#0d1c13]/10 font-bold text-sm shadow-sm hover:shadow-md transition-all">
+<span class="material-symbols-outlined text-lg">download</span>
+                            Exportar Reporte
+                        </button>
+</div>
+</div>
+<!-- Highlight Card: Most Successful Partner -->
+<section class="bg-[#0d1c13] text-white rounded-3xl p-1 overflow-hidden shadow-2xl">
+<div class="bg-gradient-to-br from-[#1a3a2a] to-[#0d1c13] p-6 md:p-10 rounded-[1.4rem] relative">
+<div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[120px]">stars</span>
+</div>
+<div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+<div class="relative">
+<div class="size-32 md:size-40 rounded-2xl overflow-hidden border-4 border-primary">
+<img class="w-full h-full object-cover" data-alt="Portrait of Alejandro Galán" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-wPwMh5w3uSgCybS0bfle8xBZ1-tQ8ALk7Bbp4LZn7N7x1mDc72stJvaFFFyYgAnMzqVufRx6H3UBTn5mdxK1w08L05FzBzrzvRBEeZubwdfridpSqF2uw9pcscf7D8RpJVRKzvYOz42Qe-0JgQNSFOZUo0IsPj2sGMIfO2yOtAIQHG3tzPTXfgEQtfuAcO-kWwRmc_OBsg0yJ3PibZjQz7XezyJyJFexGLZTe9Iyqji50eNBgrITLk909Uy8grehm0Urgi1gisM"/>
+</div>
+<div class="absolute -bottom-4 -right-4 bg-primary text-background-dark font-black px-4 py-2 rounded-xl text-xl rotate-3 shadow-lg">
+                                    88% WIN
+                                </div>
+</div>
+<div class="flex-1 space-y-4 text-center md:text-left">
+<div>
+<span class="text-primary font-bold tracking-widest text-xs uppercase bg-primary/10 px-3 py-1 rounded-full">Pareja más exitosa</span>
+<h2 class="text-3xl md:text-4xl font-black mt-2">Alejandro Galán</h2>
+<p class="text-white/50 font-medium">RPM-ID: #MX-7721 • Ciudad de México</p>
+</div>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 pt-4 border-t border-white/10">
+<div>
+<p class="text-white/40 text-xs uppercase font-bold tracking-wider">Partidos</p>
+<p class="text-2xl font-bold">24</p>
+</div>
+<div>
+<p class="text-white/40 text-xs uppercase font-bold tracking-wider">Récord V-D</p>
+<p class="text-2xl font-bold">21 - 3</p>
+</div>
+<div>
+<p class="text-white/40 text-xs uppercase font-bold tracking-wider">Efectividad</p>
+<p class="text-2xl font-bold text-primary">87.5%</p>
+</div>
+<div>
+<p class="text-white/40 text-xs uppercase font-bold tracking-wider">Puntos</p>
+<p class="text-2xl font-bold">1,250 pts</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-3 w-full md:w-auto">
+<button class="bg-primary hover:bg-white text-background-dark px-8 py-4 rounded-xl font-black text-lg transition-all flex items-center justify-center gap-2 group">
+<span class="material-symbols-outlined group-hover:rotate-12 transition-transform">send</span>
+                                    Invitar de nuevo
+                                </button>
+<div class="bg-white/5 p-3 rounded-xl border border-white/10 text-center">
+<p class="text-xs text-white/50 uppercase font-bold mb-1">Mejor Resultado</p>
+<p class="text-sm font-semibold">🏆 Campeones - Open SLP 2023</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Partners Grid Section -->
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="text-2xl font-black tracking-tight">Historial Completo</h3>
+<div class="flex gap-2">
+<button class="size-10 flex items-center justify-center rounded-lg bg-white border border-[#0d1c13]/10 text-[#0d1c13]/60 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded-lg bg-white border border-[#0d1c13]/10 text-[#0d1c13]/60 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">sort</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Partner Card 1 -->
+<div class="bg-white rounded-2xl p-6 border border-[#0d1c13]/5 shadow-sm hover:shadow-xl transition-all group relative">
+<div class="flex items-start gap-4 mb-6">
+<div class="size-16 rounded-xl overflow-hidden bg-background-light">
+<img class="w-full h-full object-cover" data-alt="Portrait of Juan Lebrón" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHceKP91VOVCXKBqJ5vRPll8ePtY93leAkRDu0Tnp3-EAMRCgdn-sxNlA-MSW4Ec5cSoZ-p1kcnowhpd03yfv8D5YiSK8EzU5s3SbgApz4fG186vo92T1AeKCjhWbnptigYzgyqWV-5JrzkVEvhB64x8OLs1Xr8vbvDnmmyKIjI2-AijtKRm_H1HYBZeJ3MrsEC-dBBCq6SNErX0CBK7fK6ycOWAgi9scQ2z_fBOMdvUTUkhKEqLD1rUmBsoz0h5ZQamboU5Xa3KI"/>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-lg leading-tight group-hover:text-primary transition-colors">Juan Lebrón</h4>
+<p class="text-xs font-bold text-[#0d1c13]/40 uppercase tracking-widest">#MX-5529 • Monterrey</p>
+<div class="mt-2 inline-flex items-center gap-1 bg-primary/10 text-[#078829] px-2 py-0.5 rounded text-[10px] font-bold uppercase">
+<span class="material-symbols-outlined text-xs">military_tech</span> Finalista
+                                    </div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-4 mb-6">
+<div>
+<p class="text-[10px] uppercase font-black text-[#0d1c13]/40 tracking-widest">Partidos</p>
+<p class="text-xl font-black">18</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-black text-[#0d1c13]/40 tracking-widest">W - L</p>
+<p class="text-xl font-black">12 - 6</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-black text-[#0d1c13]/40 tracking-widest">Win Rate</p>
+<p class="text-xl font-black">66%</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-black text-[#0d1c13]/40 tracking-widest">Puntos</p>
+<p class="text-xl font-black">840 pts</p>
+</div>
+</div>
+<div class="space-y-2 mb-6">
+<div class="flex items-center justify-between text-xs font-bold">
+<span class="text-[#0d1c13]/60 uppercase tracking-tighter">Sinergia</span>
+<span class="text-primary">74%</span>
+</div>
+<div class="h-1.5 w-full bg-background-light rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 74%"></div>
+</div>
+</div>
+<button class="w-full bg-[#0d1c13]/5 hover:bg-primary hover:text-background-dark py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">person_add</span>
+                                Invitar de nuevo
+                            </button>
+</div>
+<!-- Partner Card 2 -->
+<div class="bg-white rounded-2xl p-6 border border-[#0d1c13]/5 shadow-sm hover:shadow-xl transition-all group relative">
+<div class="flex items-start gap-4 mb-6">
+<div class="size-16 rounded-xl overflow-hidden bg-background-light">
+<img class="w-full h-full object-cover" data-alt="Portrait of Paola Longoria" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe6Q0ev8RjBFerIfI5L--ueVaNR2aIkW0Yd8C60MIOv18X2N-vITcjjIGDSWbeQGF2gQhuclFrjLCmAQn5oqMfRH-fOnw9MoocNNOTkIZ7RpShZxEjYmBD8Z2_TDn8Rb7x1OLzYNpoOMLGrrrCI90KhPKXmjKiE0YTbEjD5EwKOssKNBX2TR6nfy1aUw3PNbCg-7C3GrE5as_fe9jQJIt27mq8MFwNG6cTWjfXN4yPfdq1Aem1av6U6kzK3XcE9n2SxFEGiCR65lo"/>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-lg leading-tight group-hover:text-primary transition-colors">Paola Longoria</h4>
+<p class="text-xs font-bold text-[#0d1c13]/40 uppercase tracking-widest">#MX-0001 • San Luis Potosí</p>
+<div class="mt-2 inline-flex items-center gap-1 bg-primary/10 text-[#078829] px-2 py-0.5 rounded text-[10px] font-bold uppercase">
+<span class="material-symbols-outlined text-xs">emoji_events</span> Campeones
+                                    </div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-4 mb-6">
+<div>
+<p class="text-[10px] uppercase font-black text-[#0d1c13]/40 tracking-widest">Partidos</p>
+<p class="text-xl font-black">12</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-black text-[#0d1c13]/40 tracking-widest">W - L</p>
+<p class="text-xl font-black">11 - 1</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-black text-[#0d1c13]/40 tracking-widest">Win Rate</p>
+<p class="text-xl font-black">91%</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-black text-[#0d1c13]/40 tracking-widest">Puntos</p>
+<p class="text-xl font-black">1,500 pts</p>
+</div>
+</div>
+<div class="space-y-2 mb-6">
+<div class="flex items-center justify-between text-xs font-bold">
+<span class="text-[#0d1c13]/60 uppercase tracking-tighter">Sinergia</span>
+<span class="text-primary">98%</span>
+</div>
+<div class="h-1.5 w-full bg-background-light rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 98%"></div>
+</div>
+</div>
+<button class="w-full bg-[#0d1c13]/5 hover:bg-primary hover:text-background-dark py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">person_add</span>
+                                Invitar de nuevo
+                            </button>
+</div>
+<!-- Partner Card 3 -->
+<div class="bg-white rounded-2xl p-6 border border-[#0d1c13]/5 shadow-sm hover:shadow-xl transition-all group relative opacity-80 hover:opacity-100">
+<div class="flex items-start gap-4 mb-6">
+<div class="size-16 rounded-xl overflow-hidden bg-background-light">
+<img class="w-full h-full object-cover" data-alt="Portrait of Fernando Belasteguín" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDO0nnBnfm-D_lcvNIhKQ2nPieQEJI4-aKSqHHYSAmIUxTLX0DJ5iePX9R6xbZuUDTQFaPtjEDEVOujPxmmHzeu_tIP1gG0Ea4VciIYN_aGtUEG_pVydFjtcDPPmNee57IAadRjCVdgT5PKQ2pEH0KySz6Njp7RUnYhfl95pM4YAQdgAKujzGiDaO9vyideKRr00mao19knzk5IbTZqLVLvPFPC783Kjq9TmYhxR88QFRQ-wjw7lXUCIybHedpQadDTbq3XeaqYmNU"/>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-lg leading-tight group-hover:text-primary transition-colors">Fernando Belasteguín</h4>
+<p class="text-xs font-bold text-[#0d1c13]/40 uppercase tracking-widest">#MX-3301 • Guadalajara</p>
+<div class="mt-2 inline-flex items-center gap-1 bg-[#0d1c13]/5 text-[#0d1c13]/40 px-2 py-0.5 rounded text-[10px] font-bold uppercase">
+<span class="material-symbols-outlined text-xs">monitoring</span> 4tos de Final
+                                    </div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-4 mb-6">
+<div>
+<p class="text-[10px] uppercase font-black text-[#0d1c13]/40 tracking-widest">Partidos</p>
+<p class="text-xl font-black">6</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-black text-[#0d1c13]/40 tracking-widest">W - L</p>
+<p class="text-xl font-black">3 - 3</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-black text-[#0d1c13]/40 tracking-widest">Win Rate</p>
+<p class="text-xl font-black">50%</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-black text-[#0d1c13]/40 tracking-widest">Puntos</p>
+<p class="text-xl font-black">220 pts</p>
+</div>
+</div>
+<div class="space-y-2 mb-6">
+<div class="flex items-center justify-between text-xs font-bold">
+<span class="text-[#0d1c13]/60 uppercase tracking-tighter">Sinergia</span>
+<span class="text-primary/50">42%</span>
+</div>
+<div class="h-1.5 w-full bg-background-light rounded-full overflow-hidden">
+<div class="h-full bg-primary/30 rounded-full" style="width: 42%"></div>
+</div>
+</div>
+<button class="w-full bg-[#0d1c13]/5 hover:bg-primary hover:text-background-dark py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">person_add</span>
+                                Invitar de nuevo
+                            </button>
+</div>
+</div>
+</div>
+<!-- Empty State (Hidden) -->
+<!-- 
+                <div class="flex flex-col items-center justify-center py-20 text-center space-y-4 bg-white/40 rounded-3xl border-2 border-dashed border-[#0d1c13]/10">
+                    <span class="material-symbols-outlined text-6xl text-[#0d1c13]/20">groups</span>
+                    <h3 class="text-xl font-bold text-[#0d1c13]/60">Aún no tienes parejas registradas</h3>
+                    <p class="text-[#0d1c13]/40 max-w-sm">Comienza a competir en torneos oficiales de Ranking Padel MX para ver tus estadísticas por pareja aquí.</p>
+                    <button class="bg-primary text-background-dark px-6 py-2 rounded-lg font-bold">Inscribirme a un torneo</button>
+                </div>
+                -->
+</main>
+<!-- Footer Section -->
+<footer class="bg-[#0d1c13] text-white p-10 mt-12">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-background-dark">
+<span class="material-symbols-outlined font-bold">sports_tennis</span>
+</div>
+<h2 class="text-lg font-black tracking-tight uppercase">Ranking Padel MX</h2>
+</div>
+<div class="flex gap-8 text-white/50 font-medium text-sm">
+<a class="hover:text-primary transition-colors" href="#">Términos y Condiciones</a>
+<a class="hover:text-primary transition-colors" href="#">Aviso de Privacidad</a>
+<a class="hover:text-primary transition-colors" href="#">Soporte</a>
+</div>
+<p class="text-white/30 text-xs uppercase font-bold tracking-widest">© 2024 RPM Circuit México</p>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

@@ -103,3 +103,28 @@ export async function fetchPlayerMatches(id: string, params?: {
 }) {
   return api.get<PaginatedResponse<PlayerMatch>>(`/players/${id}/matches`, params)
 }
+
+export async function fetchPlayerByPhone(phone: string) {
+  return api.get<{ id: string; firstName: string; lastName: string } | null>(
+    "/players/by-phone",
+    { phone }
+  )
+}
+
+export async function createPlayerFromPhone(data: {
+  phone: string
+  firstName: string
+  lastName: string
+  email?: string
+  sex?: "M" | "F"
+  suggestedCategory?: string
+  sourceClubId?: string
+}) {
+  return api.post<{
+    id: string
+    firstName: string
+    lastName: string
+    phone: string | null
+    created: boolean
+  }>("/players/create-from-phone", data)
+}

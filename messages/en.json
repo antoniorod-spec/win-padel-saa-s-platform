@@ -271,7 +271,7 @@
   "TournamentDetail": {
     "loading": "Loading tournament...",
     "notFound": "Tournament not found",
-    "basicTournament": "Basic tournament",
+    "basicTournament": "Solo Difusión",
     "registrationOpen": "Registration open",
     "almostFull": "Almost full",
     "inProgress": "In progress",
@@ -286,12 +286,14 @@
     "registerNow": "Register now",
     "goToExternalRegistration": "Go to external registration",
     "importTeams": "Import teams (club)",
+    "manageRegistrations": "Manage registrations",
     "generateBrackets": "Generate brackets",
     "pointsShort": "pts",
     "tabs": {
       "bracket": "Bracket",
       "teams": "Teams",
       "calendar": "Calendar",
+      "schedule": "Schedule",
       "groups": "Groups",
       "info": "Tournament info"
     },
@@ -319,6 +321,19 @@
       "tooltipTournamentDay": "Tournament day",
       "tooltipRegistrationDeadline": "Registration deadline",
       "registrationDeadline": "Registration deadline"
+    },
+    "schedule": {
+      "title": "Schedule",
+      "loading": "Loading schedule...",
+      "empty": "No schedule published yet.",
+      "unknownDate": "Date TBD",
+      "matches": "matches"
+    },
+    "scheduleTable": {
+      "time": "Time",
+      "court": "Court",
+      "match": "Match",
+      "modality": "Category"
     }
   },
   "TorneosCityPage": {

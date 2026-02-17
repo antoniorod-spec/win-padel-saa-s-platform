@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WhinPadel - Edición Manual de Grupos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec6d",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#102218",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .pair-card:hover .action-buttons {
+            opacity: 1;
+        }
+        .action-buttons {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .drag-ghost {
+            opacity: 0.5;
+            background: #e2e8f0;
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 min-h-screen pb-32">
+<header class="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10">
+<div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-icons text-background-dark font-bold">sports_tennis</span>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tight">WhinPadel <span class="text-primary">Admin</span></h1>
+<p class="text-xs text-slate-500 font-medium">Torneo: 4ta Categoría Varonil</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-primary transition-colors">
+                Guardar Borrador
+            </button>
+<button class="bg-primary text-background-dark px-6 py-2.5 rounded-lg font-bold shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                Publicar Torneo
+            </button>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-4 py-8">
+<div class="mb-8 bg-white dark:bg-slate-900 border-2 border-dashed border-primary/30 rounded-xl p-6 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">inventory_2</span>
+<h3 class="text-sm font-bold uppercase tracking-wider">Bolsa de Parejas (Sin Asignar)</h3>
+</div>
+<span class="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded font-bold text-slate-500">3 PAREJAS DISPONIBLES</span>
+</div>
+<div class="flex flex-wrap gap-3">
+<div class="pair-card group flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg cursor-move hover:border-primary/50 transition-all min-w-[240px]" draggable="true">
+<span class="material-symbols-outlined text-slate-400 text-sm">drag_indicator</span>
+<div class="flex-1">
+<p class="text-xs font-bold">J. Moreno / L. Rojas</p>
+<p class="text-[9px] text-slate-400">Ranking #45</p>
+</div>
+<div class="action-buttons flex gap-1">
+<button class="p-1 hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
+<button class="p-1 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+</div>
+</div>
+<div class="pair-card group flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg cursor-move hover:border-primary/50 transition-all min-w-[240px]" draggable="true">
+<span class="material-symbols-outlined text-slate-400 text-sm">drag_indicator</span>
+<div class="flex-1">
+<p class="text-xs font-bold">R. Garibay / A. Montes</p>
+<p class="text-[9px] text-slate-400">Ranking #38</p>
+</div>
+<div class="action-buttons flex gap-1">
+<button class="p-1 hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
+<button class="p-1 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+</div>
+</div>
+<button class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg text-slate-400 hover:text-primary hover:border-primary/50 transition-all text-xs font-bold">
+<span class="material-symbols-outlined text-sm">person_add</span>
+                Nueva Pareja
+            </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900/50 rounded-xl border border-primary/10 overflow-hidden">
+<div class="flex border-b border-primary/10 bg-white dark:bg-slate-900">
+<button class="px-8 py-5 text-sm font-bold border-b-2 border-primary text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">grid_view</span>
+                FASE DE GRUPOS
+            </button>
+<button class="px-8 py-5 text-sm font-bold text-slate-400 hover:text-primary transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">account_tree</span>
+                FASE ELIMINATORIA
+            </button>
+<button class="px-8 py-5 text-sm font-bold text-slate-400 hover:text-primary transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">event_note</span>
+                ROL DE JUEGOS
+            </button>
+</div>
+<div class="p-8">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h2 class="text-2xl font-bold">Edición de Grupos</h2>
+<p class="text-slate-500 text-sm">Arrastra las parejas para moverlas entre grupos o usa el botón para añadir nuevas.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg text-sm font-bold hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-sm">refresh</span>
+                        Reordenar por Ranking
+                    </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<div class="bg-slate-50 dark:bg-background-dark/50 rounded-xl p-4 border border-slate-200 dark:border-slate-800 min-h-[400px] flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-2">
+<span class="bg-primary text-background-dark text-[10px] font-black px-2 py-1 rounded uppercase tracking-tighter">Grupo A</span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">4/4 Parejas</span>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">settings</span>
+</button>
+</div>
+<div class="space-y-3 flex-1">
+<div class="pair-card flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border-l-4 border-primary cursor-move hover:shadow-md transition-all" draggable="true">
+<div class="flex items-center gap-2 overflow-hidden">
+<span class="material-symbols-outlined text-slate-300 text-xs">drag_indicator</span>
+<span class="text-xs font-bold truncate">A. González / R. Ruiz</span>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<div class="action-buttons flex gap-1 mr-2">
+<button class="text-slate-400 hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
+<button class="text-slate-400 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+</div>
+<span class="text-[10px] bg-primary/20 text-primary px-1.5 rounded font-bold">#1</span>
+</div>
+</div>
+<div class="pair-card flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border-l-4 border-slate-200 dark:border-slate-700 cursor-move hover:shadow-md transition-all" draggable="true">
+<div class="flex items-center gap-2 overflow-hidden">
+<span class="material-symbols-outlined text-slate-300 text-xs">drag_indicator</span>
+<span class="text-xs font-bold truncate">M. Silva / J. Torres</span>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<div class="action-buttons flex gap-1 mr-2">
+<button class="text-slate-400 hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
+<button class="text-slate-400 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+</div>
+<span class="text-[10px] text-slate-400 font-bold">#16</span>
+</div>
+</div>
+<div class="pair-card flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border-l-4 border-slate-200 dark:border-slate-700 cursor-move hover:shadow-md transition-all" draggable="true">
+<div class="flex items-center gap-2 overflow-hidden">
+<span class="material-symbols-outlined text-slate-300 text-xs">drag_indicator</span>
+<span class="text-xs font-bold truncate">C. Mendez / P. Ortiz</span>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<div class="action-buttons flex gap-1 mr-2">
+<button class="text-slate-400 hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
+<button class="text-slate-400 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+</div>
+<span class="text-[10px] text-slate-400 font-bold">#24</span>
+</div>
+</div>
+<div class="pair-card flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border-l-4 border-slate-200 dark:border-slate-700 cursor-move hover:shadow-md transition-all" draggable="true">
+<div class="flex items-center gap-2 overflow-hidden">
+<span class="material-symbols-outlined text-slate-300 text-xs">drag_indicator</span>
+<span class="text-xs font-bold truncate">L. Vega / F. Soto</span>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<div class="action-buttons flex gap-1 mr-2">
+<button class="text-slate-400 hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
+<button class="text-slate-400 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+</div>
+<span class="text-[10px] text-slate-400 font-bold">#32</span>
+</div>
+</div>
+</div>
+<button class="mt-4 flex items-center justify-center gap-2 p-3 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg text-slate-400 hover:text-primary hover:border-primary/50 transition-all text-[10px] font-bold uppercase">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                        Añadir Pareja
+                    </button>
+</div>
+<div class="bg-slate-50 dark:bg-background-dark/50 rounded-xl p-4 border border-slate-200 dark:border-slate-800 min-h-[400px] flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-2">
+<span class="bg-primary text-background-dark text-[10px] font-black px-2 py-1 rounded uppercase tracking-tighter">Grupo B</span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">3/4 Parejas</span>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">settings</span>
+</button>
+</div>
+<div class="space-y-3 flex-1">
+<div class="pair-card flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border-l-4 border-primary cursor-move hover:shadow-md transition-all" draggable="true">
+<div class="flex items-center gap-2 overflow-hidden">
+<span class="material-symbols-outlined text-slate-300 text-xs">drag_indicator</span>
+<span class="text-xs font-bold truncate">S. Luna / K. Lara</span>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<div class="action-buttons flex gap-1 mr-2">
+<button class="text-slate-400 hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
+<button class="text-slate-400 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+</div>
+<span class="text-[10px] bg-primary/20 text-primary px-1.5 rounded font-bold">#2</span>
+</div>
+</div>
+<div class="pair-card flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border-l-4 border-slate-200 dark:border-slate-700 cursor-move hover:shadow-md transition-all" draggable="true">
+<div class="flex items-center gap-2 overflow-hidden">
+<span class="material-symbols-outlined text-slate-300 text-xs">drag_indicator</span>
+<span class="text-xs font-bold truncate">R. Flores / G. Díaz</span>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<div class="action-buttons flex gap-1 mr-2">
+<button class="text-slate-400 hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
+<button class="text-slate-400 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+</div>
+<span class="text-[10px] text-slate-400 font-bold">#15</span>
+</div>
+</div>
+<div class="pair-card flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border-l-4 border-slate-200 dark:border-slate-700 cursor-move hover:shadow-md transition-all" draggable="true">
+<div class="flex items-center gap-2 overflow-hidden">
+<span class="material-symbols-outlined text-slate-300 text-xs">drag_indicator</span>
+<span class="text-xs font-bold truncate">H. Peña / J. Rivas</span>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<div class="action-buttons flex gap-1 mr-2">
+<button class="text-slate-400 hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
+<button class="text-slate-400 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+</div>
+<span class="text-[10px] text-slate-400 font-bold">#23</span>
+</div>
+</div>
+<div class="h-14 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-center text-[10px] text-slate-300 font-medium">
+                            SOLTAR AQUÍ
+                        </div>
+</div>
+<button class="mt-4 flex items-center justify-center gap-2 p-3 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg text-slate-400 hover:text-primary hover:border-primary/50 transition-all text-[10px] font-bold uppercase">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                        Añadir Pareja
+                    </button>
+</div>
+<div class="bg-slate-50 dark:bg-background-dark/50 rounded-xl p-4 border border-slate-200 dark:border-slate-800 min-h-[400px] flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-2">
+<span class="bg-primary text-background-dark text-[10px] font-black px-2 py-1 rounded uppercase tracking-tighter">Grupo C</span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">2/4 Parejas</span>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">settings</span>
+</button>
+</div>
+<div class="space-y-3 flex-1">
+<div class="pair-card flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border-l-4 border-primary cursor-move hover:shadow-md transition-all" draggable="true">
+<div class="flex items-center gap-2 overflow-hidden">
+<span class="material-symbols-outlined text-slate-300 text-xs">drag_indicator</span>
+<span class="text-xs font-bold truncate">D. Rios / B. Cruz</span>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<div class="action-buttons flex gap-1 mr-2">
+<button class="text-slate-400 hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
+<button class="text-slate-400 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+</div>
+<span class="text-[10px] bg-primary/20 text-primary px-1.5 rounded font-bold">#3</span>
+</div>
+</div>
+<div class="h-14 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg"></div>
+<div class="h-14 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg"></div>
+</div>
+<button class="mt-4 flex items-center justify-center gap-2 p-3 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg text-slate-400 hover:text-primary hover:border-primary/50 transition-all text-[10px] font-bold uppercase">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                        Añadir Pareja
+                    </button>
+</div>
+<button class="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-4 flex flex-col items-center justify-center gap-4 text-slate-400 hover:border-primary hover:text-primary transition-all group">
+<div class="w-12 h-12 rounded-full border-2 border-dashed border-slate-200 group-hover:border-primary flex items-center justify-center">
+<span class="material-symbols-outlined">add</span>
+</div>
+<span class="text-xs font-bold uppercase tracking-widest">Crear Nuevo Grupo</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-primary/10 px-6 py-4 shadow-2xl z-50">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2 overflow-hidden">
+<div class="inline-block h-8 w-8 rounded-full bg-primary/20 border-2 border-white dark:border-slate-900 flex items-center justify-center text-[10px] font-bold">32</div>
+</div>
+<div class="text-slate-500">
+<span class="text-xs font-medium">32 parejas inscritas, 3 por asignar.</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-6 py-3 rounded-lg border border-slate-200 dark:border-slate-800 font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-sm">history</span>
+                Deshacer Cambios
+            </button>
+<button class="flex items-center gap-2 px-10 py-3 rounded-lg bg-primary text-background-dark font-black text-sm shadow-xl shadow-primary/30 hover:scale-[1.02] transition-transform">
+                CONFIRMAR ESTRUCTURA
+                <span class="material-symbols-outlined">check_circle</span>
+</button>
+</div>
+</div>
+</div>
+<div class="fixed inset-0 -z-10 opacity-5 pointer-events-none">
+<div class="absolute top-0 right-0 w-1/2 h-1/2 bg-primary/20 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-0 left-0 w-1/3 h-1/3 bg-primary/10 blur-[100px] rounded-full"></div>
+</div>
+
+</body></html>
