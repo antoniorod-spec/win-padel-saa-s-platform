@@ -32,10 +32,10 @@ enum ClubStatus {
 }
 
 enum TournamentCategory {
-  A
-  B
-  C
-  D
+  ANUAL
+  OPEN
+  REGULAR
+  EXPRESS
 }
 
 enum TournamentFormat {

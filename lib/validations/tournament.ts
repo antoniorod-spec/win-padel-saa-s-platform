@@ -10,7 +10,7 @@ const baseTournamentSchema = z.object({
   registrationOpensAt: z.string().datetime().or(z.string().min(1)).optional(),
   officialBall: z.string().max(100).optional().nullable(),
   supportWhatsApp: z.string().max(50).optional().nullable(),
-  category: z.enum(["A", "B", "C", "D"]),
+  category: z.enum(["ANUAL", "OPEN", "REGULAR", "EXPRESS"]),
   format: z.enum(["ELIMINATION", "ROUND_ROBIN", "LEAGUE", "EXPRESS"]),
   type: z.enum(["FULL", "BASIC"]).default("FULL"),
   affectsRanking: z.boolean().optional(),

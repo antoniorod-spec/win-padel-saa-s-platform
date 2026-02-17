@@ -27,6 +27,7 @@ import { TrendingUp, TrendingDown, Minus, Trophy, Medal, Award, Zap, Info, Arrow
 import { cn } from "@/lib/utils"
 import { useRankings } from "@/hooks/use-rankings"
 import { ASCENSION_RULES, DESCENT_RULES, POINTS_TABLE } from "@/lib/types"
+import { TOURNAMENT_CLASS_LABELS } from "@/lib/tournament/categories"
 
 function TrendIcon({ trend }: { trend: "up" | "down" | "same" }) {
   if (trend === "up") return <TrendingUp className="h-4 w-4 text-primary" />
@@ -398,13 +399,13 @@ export default function RankingClient() {
           <div className="mt-12">
             <h2 className="mb-4 font-display text-xl font-bold uppercase text-foreground">{t("pointsTableTitle")}</h2>
             <div className="grid gap-4 md:grid-cols-3">
-              {(["A", "B", "C"] as const).map((cat) => (
+              {(["ANUAL", "OPEN", "REGULAR", "EXPRESS"] as const).map((cat) => (
                 <Card key={cat} className="border-border/50">
                   <CardHeader className="pb-2">
                     <CardTitle className="font-display text-lg text-card-foreground">
                       {t("pointsTableCategory", {
                         cat,
-                        label: cat === "A" ? "Major" : cat === "B" ? "Open" : "Express",
+                        label: TOURNAMENT_CLASS_LABELS[cat],
                       })}
                     </CardTitle>
                   </CardHeader>

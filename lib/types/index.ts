@@ -7,7 +7,7 @@
 export type UserRole = "PLAYER" | "CLUB" | "ADMIN"
 export type Sex = "M" | "F"
 export type ClubStatus = "PENDING" | "APPROVED" | "REJECTED"
-export type TournamentCategory = "A" | "B" | "C" | "D"
+export type TournamentCategory = "ANUAL" | "OPEN" | "REGULAR" | "EXPRESS"
 export type TournamentFormat = "ELIMINATION" | "ROUND_ROBIN" | "LEAGUE" | "EXPRESS"
 export type TournamentStatus = "DRAFT" | "OPEN" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED"
 export type Modality = "VARONIL" | "FEMENIL" | "MIXTO"
@@ -166,31 +166,31 @@ export interface GroupStanding {
 // ============================================================
 
 export const POINTS_TABLE = {
-  A: [
+  ANUAL: [
+    { round: "Campeon", roundOrder: 7, points: 2000 },
+    { round: "Subcampeon (Final)", roundOrder: 6, points: 1400 },
+    { round: "Semifinalista", roundOrder: 5, points: 1000 },
+    { round: "Cuartofinalista", roundOrder: 4, points: 600 },
+    { round: "Octavos de final", roundOrder: 3, points: 350 },
+    { round: "Dieciseisavos", roundOrder: 2, points: 200 },
+    { round: "Fase de grupos", roundOrder: 1, points: 100 },
+  ],
+  OPEN: [
     { round: "Campeon", roundOrder: 7, points: 1000 },
-    { round: "Subcampeon (Final)", roundOrder: 6, points: 700 },
+    { round: "Subcampeon", roundOrder: 6, points: 700 },
     { round: "Semifinalista", roundOrder: 5, points: 500 },
     { round: "Cuartofinalista", roundOrder: 4, points: 300 },
-    { round: "Octavos de final", roundOrder: 3, points: 175 },
-    { round: "Dieciseisavos", roundOrder: 2, points: 100 },
+    { round: "Octavos", roundOrder: 3, points: 175 },
     { round: "Fase de grupos", roundOrder: 1, points: 50 },
   ],
-  B: [
-    { round: "Campeon", roundOrder: 7, points: 700 },
-    { round: "Subcampeon", roundOrder: 6, points: 500 },
-    { round: "Semifinalista", roundOrder: 5, points: 350 },
-    { round: "Cuartofinalista", roundOrder: 4, points: 200 },
-    { round: "Octavos", roundOrder: 3, points: 100 },
-    { round: "Fase de grupos", roundOrder: 1, points: 30 },
+  REGULAR: [
+    { round: "Campeon", roundOrder: 7, points: 500 },
+    { round: "Subcampeon", roundOrder: 6, points: 350 },
+    { round: "Semifinalista", roundOrder: 5, points: 225 },
+    { round: "Cuartofinalista", roundOrder: 4, points: 125 },
+    { round: "Fase de grupos", roundOrder: 1, points: 25 },
   ],
-  C: [
-    { round: "Campeon", roundOrder: 7, points: 400 },
-    { round: "Subcampeon", roundOrder: 6, points: 275 },
-    { round: "Semifinalista", roundOrder: 5, points: 175 },
-    { round: "Cuartofinalista", roundOrder: 4, points: 100 },
-    { round: "Fase de grupos", roundOrder: 1, points: 20 },
-  ],
-  D: [
+  EXPRESS: [
     { round: "Campeon", roundOrder: 7, points: 250 },
     { round: "Subcampeon", roundOrder: 6, points: 175 },
     { round: "Semifinalista", roundOrder: 5, points: 120 },

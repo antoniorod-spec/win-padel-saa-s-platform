@@ -22,6 +22,7 @@ import {
 } from "@/hooks/use-tournaments"
 import { Trophy, CalendarDays, Grid3X3, Users, ArrowLeft, UserPlus } from "lucide-react"
 import { TournamentRegistrationStep } from "@/components/club/tournament-registration-step"
+import { TournamentClassBadge } from "@/components/tournament/tournament-class-badge"
 import { cn } from "@/lib/utils"
 import { TournamentBracket } from "@/components/tournament-bracket"
 
@@ -152,7 +153,7 @@ export function TournamentAutomationClient({ tournamentId }: { tournamentId: str
                 {tournament.data?.data?.name ?? "Torneo"}
               </p>
               <div className="mt-1 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                <Badge variant="secondary">Clase {tournament.data?.data?.category ?? "-"}</Badge>
+                <TournamentClassBadge category={tournament.data?.data?.category ?? ""} showPoints />
                 <Badge variant="outline">{tournament.data?.data?.format ?? "-"}</Badge>
                 <Badge variant="outline">{tournament.data?.data?.status ?? "-"}</Badge>
               </div>

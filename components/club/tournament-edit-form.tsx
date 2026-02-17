@@ -12,13 +12,16 @@ import { Switch } from "@/components/ui/switch"
 import {
   TOURNAMENT_CLASS_OPTIONS,
   TOURNAMENT_CLASS_LABELS,
+  TOURNAMENT_CLASS_POINTS,
+  TOURNAMENT_CLASS_BADGE_CLASS,
+  TOURNAMENT_CLASS_ICON,
   COMPETITION_CATEGORIES,
   MODALITY_OPTIONS,
 } from "@/lib/tournament/categories"
 import { useTournament } from "@/hooks/use-tournaments"
 import { updateTournament } from "@/lib/api/tournaments"
 import { useToast } from "@/hooks/use-toast"
-import { ArrowLeft, Loader2, Bot, Megaphone, MapPin, MessageCircle, Link2, Clock } from "lucide-react"
+import { ArrowLeft, Loader2, Bot, Megaphone, MapPin, MessageCircle, Link2, Clock, Trophy, Medal, Target, Zap } from "lucide-react"
 import { Link } from "@/i18n/navigation"
 import { ImageUploadField } from "@/components/club/image-upload-field"
 import { DateRangePicker } from "@/components/ui/date-range-picker"
@@ -49,7 +52,7 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
   const [registrationDeadline, setRegistrationDeadline] = useState("")
-  const [tournamentClass, setTournamentClass] = useState<(typeof TOURNAMENT_CLASS_OPTIONS)[number]>("C")
+  const [tournamentClass, setTournamentClass] = useState<(typeof TOURNAMENT_CLASS_OPTIONS)[number]>("REGULAR")
   const [format, setFormat] = useState<"ELIMINATION" | "ROUND_ROBIN" | "LEAGUE" | "EXPRESS">("ROUND_ROBIN")
   const [type, setType] = useState<"FULL" | "BASIC">("FULL")
   const [inscriptionPrice, setInscriptionPrice] = useState("0")
@@ -94,7 +97,22 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
     setThirdSetTiebreakTo10(r?.thirdSetTiebreakTo10 ?? true)
     setSetTo4Games(r?.gamesPerSet === 4)
     setRulesPdfUrl(tournament.rulesPdfUrl ?? "")
-    setTournamentClass((tournament.category as (typeof TOURNAMENT_CLASS_OPTIONS)[number]) ?? "C")
+    setTournamentClass(
+      (() => {
+        const c = tournament.category
+        const mapped =
+          c === "A"
+            ? "ANUAL"
+            : c === "B"
+              ? "OPEN"
+              : c === "C"
+                ? "REGULAR"
+                : c === "D"
+                  ? "EXPRESS"
+                  : c
+        return (mapped as (typeof TOURNAMENT_CLASS_OPTIONS)[number]) ?? "REGULAR"
+      })()
+    )
     setFormat((tournament.format as "ELIMINATION" | "ROUND_ROBIN" | "LEAGUE" | "EXPRESS") ?? "ROUND_ROBIN")
     setType((tournament.type as "FULL" | "BASIC") ?? "FULL")
     setInscriptionPrice(String(tournament.inscriptionPrice ?? 0))
@@ -235,9 +253,17 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
                 <Select value={tournamentClass} onValueChange={(v: (typeof TOURNAMENT_CLASS_OPTIONS)[number]) => setTournamentClass(v)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {TOURNAMENT_CLASS_OPTIONS.map((opt) => (
-                      <SelectItem key={opt} value={opt}>{TOURNAMENT_CLASS_LABELS[opt]} ({opt})</SelectItem>
-                    ))}
+                    {TOURNAMENT_CLASS_OPTIONS.map((opt) => {
+                      const Icon = { Trophy, Medal, Target, Zap }[TOURNAMENT_CLASS_ICON[opt]]
+                      return (
+                        <SelectItem key={opt} value={opt}>
+                          <span className="flex items-center gap-2">
+                            <Icon className="h-4 w-4" />
+                            {TOURNAMENT_CLASS_LABELS[opt]} ({TOURNAMENT_CLASS_POINTS[opt]} pts)
+                          </span>
+                        </SelectItem>
+                      )
+                    })}
                   </SelectContent>
                 </Select>
               </div>

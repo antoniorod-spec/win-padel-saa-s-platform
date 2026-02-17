@@ -47,13 +47,8 @@ export async function GET(request: NextRequest) {
       const tc = tournamentClass.trim().toUpperCase()
       if (tc === "EXPRESS") {
         where.format = "EXPRESS"
-      } else if (tc === "MAJOR") {
-        // Pragmatic mapping without DB change:
-        // Major = category A
-        where.category = "A"
-      } else if (tc === "REGULAR") {
-        // Regular = category B/C (exclude A); keep it simple.
-        where.category = { in: ["B", "C"] }
+      } else if (["ANUAL", "OPEN", "REGULAR", "EXPRESS"].includes(tc)) {
+        where.category = tc as "ANUAL" | "OPEN" | "REGULAR" | "EXPRESS"
       }
     }
     if (city || state) {
@@ -330,11 +325,9 @@ export async function POST(request: NextRequest) {
         affectsRanking:
           typeof tournamentData.affectsRanking === "boolean"
             ? tournamentData.affectsRanking
-            : tournamentData.category === "D"
+            : tournamentData.type === "BASIC"
               ? false
-              : tournamentData.type === "BASIC"
-                ? false
-                : true,
+              : true,
         resultsValidationStatus: tournamentData.type === "BASIC" ? "PENDING_REVIEW" : "NOT_REQUIRED",
         venue: tournamentData.venue || undefined,
         images: tournamentData.images ?? undefined,

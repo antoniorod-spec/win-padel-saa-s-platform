@@ -16,6 +16,9 @@ import {
   MODALITY_OPTIONS,
   TOURNAMENT_CLASS_OPTIONS,
   TOURNAMENT_CLASS_LABELS,
+  TOURNAMENT_CLASS_POINTS,
+  TOURNAMENT_CLASS_BADGE_CLASS,
+  TOURNAMENT_CLASS_ICON,
 } from "@/lib/tournament/categories"
 import { defaultWeeklySchedule, WeeklyScheduleEditor, DaySchedule } from "@/components/club/weekly-schedule-editor"
 import { ImageUploadField } from "@/components/club/image-upload-field"
@@ -27,9 +30,10 @@ import {
   useTournamentCourts,
 } from "@/hooks/use-tournaments"
 import { createTournament, transitionTournamentStatus, updateTournament } from "@/lib/api/tournaments"
-import { Plus, Trash2, ArrowLeft, ArrowRight, Save, Send, Bot, Megaphone, MapPin, MessageCircle, Link2, Clock } from "lucide-react"
+import { Plus, Trash2, ArrowLeft, ArrowRight, Save, Send, Bot, Megaphone, MapPin, MessageCircle, Link2, Clock, Trophy, Medal, Target, Zap } from "lucide-react"
 import { TournamentRegistrationStep } from "@/components/club/tournament-registration-step"
 import { DateRangePicker } from "@/components/ui/date-range-picker"
+import { Progress } from "@/components/ui/progress"
 
 type WizardStepId = "general" | "categorias" | "canchas" | "registro" | "revision"
 
@@ -50,6 +54,8 @@ type DraftModality = {
   minPairs?: number | null
   maxPairs?: number | null
 }
+
+const TOURNAMENT_CLASS_ICONS = { Trophy, Medal, Target, Zap } as const
 
 function dayKeyToDayOfWeek(key: DaySchedule["day"]): number {
   switch (key) {
@@ -86,7 +92,7 @@ export function NewTournamentWizard() {
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
   const [registrationDeadline, setRegistrationDeadline] = useState("")
-  const [tournamentClass, setTournamentClass] = useState<(typeof TOURNAMENT_CLASS_OPTIONS)[number]>("C")
+  const [tournamentClass, setTournamentClass] = useState<(typeof TOURNAMENT_CLASS_OPTIONS)[number]>("REGULAR")
   const [format, setFormat] = useState<"ELIMINATION" | "ROUND_ROBIN" | "LEAGUE" | "EXPRESS">("ROUND_ROBIN")
   const [type, setType] = useState<"FULL" | "BASIC">("FULL")
   const [inscriptionPrice, setInscriptionPrice] = useState("0")
@@ -332,28 +338,41 @@ export function NewTournamentWizard() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6 px-4 py-6">
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="font-display text-2xl font-black tracking-tight">Crear Nuevo Torneo</h1>
-          <p className="text-sm text-muted-foreground">
+    <div className="mx-auto w-full max-w-6xl space-y-6 px-4 py-4 md:py-6">
+      {/* Cabecera compacta */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h1 className="font-display text-xl font-black tracking-tight md:text-2xl">Crear Nuevo Torneo</h1>
+          <p className="hidden text-sm text-muted-foreground md:block">
             Wizard estilo Stitch: configura categorias, canchas y horarios antes de publicar.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => router.push({ pathname: "/club", query: { section: "torneos" } } as any)}>
+        <div className="flex items-center gap-1 md:gap-2">
+          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => router.push({ pathname: "/club", query: { section: "torneos" } } as any)}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <Button variant="outline" className="hidden md:inline-flex" onClick={() => router.push({ pathname: "/club", query: { section: "torneos" } } as any)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver
           </Button>
-          <Button variant="outline" onClick={handleSaveDraft}>
+          <Button variant="ghost" size="icon" className="md:hidden" onClick={handleSaveDraft}>
+            <Save className="h-5 w-5" />
+          </Button>
+          <Button variant="outline" className="hidden md:inline-flex" onClick={handleSaveDraft}>
             <Save className="mr-2 h-4 w-4" />
             Guardar borrador
           </Button>
         </div>
       </div>
 
-      {/* Stepper */}
-      <Card className="border-border/50">
+      {/* Stepper adaptativo: móvil = progress + texto, desktop = tarjetas */}
+      <div className="md:hidden">
+        <p className="text-sm font-medium text-foreground">
+          Paso {stepIdx + 1} de {steps.length}: {step.label}
+        </p>
+        <Progress value={((stepIdx + 1) / steps.length) * 100} className="mt-2 h-1.5" />
+      </div>
+      <Card className="hidden border-border/50 md:block">
         <CardContent className="p-4">
           <div className="grid grid-cols-4 gap-2">
             {steps.map((s, idx) => {
@@ -385,14 +404,14 @@ export function NewTournamentWizard() {
       </Card>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+        <div className="space-y-6 pb-24 md:pb-0 lg:col-span-2">
           {step.id === "general" ? (
             <Card className="border-border/50">
               <CardHeader>
                 <CardTitle className="font-display text-lg font-black uppercase tracking-wide">Configuración General</CardTitle>
                 <p className="text-sm text-muted-foreground">Paso 1: Define la identidad y logística básica de tu evento.</p>
               </CardHeader>
-              <CardContent className="space-y-12 p-8">
+              <CardContent className="space-y-12 p-4 md:p-8">
                 {/* Tipo de Gestión */}
                 <section>
                   <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6">Tipo de Gestión</h2>
@@ -400,37 +419,41 @@ export function NewTournamentWizard() {
                     <button
                       type="button"
                       onClick={() => setType("FULL")}
-                      className={`relative flex flex-col items-start rounded-xl border-2 p-6 text-left transition-all ${
+                      className={`relative flex flex-row items-start gap-3 rounded-xl border-2 p-4 text-left transition-all md:flex-col md:gap-0 md:p-6 ${
                         type === "FULL" ? "border-primary bg-primary/5" : "border-border bg-muted/20 hover:border-muted-foreground/30"
                       }`}
                     >
                       {type === "FULL" && (
-                        <span className="absolute right-4 top-4 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground uppercase">
+                        <span className="absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-[9px] font-bold text-primary-foreground uppercase md:right-4 md:top-4 md:text-[10px]">
                           Recomendado
                         </span>
                       )}
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${type === "FULL" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
-                        <Bot className="h-6 w-6" />
+                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:mb-4 md:h-12 md:w-12 md:rounded-xl ${type === "FULL" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
+                        <Bot className="h-4 w-4 md:h-6 md:w-6" />
                       </div>
-                      <h3 className="text-base font-bold mb-1">Torneo Inteligente</h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        Gestión total: categorías, inscripciones, cuadros automáticos y rol de juegos en la plataforma.
-                      </p>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-base font-bold mb-0.5 md:mb-1">Torneo Inteligente</h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          Gestión total: categorías, inscripciones, cuadros automáticos y rol de juegos en la plataforma.
+                        </p>
+                      </div>
                     </button>
                     <button
                       type="button"
                       onClick={() => setType("BASIC")}
-                      className={`relative flex flex-col items-start rounded-xl border-2 p-6 text-left transition-all ${
+                      className={`relative flex flex-row items-start gap-3 rounded-xl border-2 p-4 text-left transition-all md:flex-col md:gap-0 md:p-6 ${
                         type === "BASIC" ? "border-primary bg-primary/5" : "border-border bg-muted/20 hover:border-muted-foreground/30"
                       }`}
                     >
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${type === "BASIC" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
-                        <Megaphone className="h-6 w-6" />
+                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:mb-4 md:h-12 md:w-12 md:rounded-xl ${type === "BASIC" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
+                        <Megaphone className="h-4 w-4 md:h-6 md:w-6" />
                       </div>
-                      <h3 className="text-base font-bold mb-1">Sólo Difusión</h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        Aparece en el calendario nacional. La gestión de inscripciones y cuadros es externa (WhatsApp/Link).
-                      </p>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-base font-bold mb-0.5 md:mb-1">Sólo Difusión</h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          Aparece en el calendario nacional. La gestión de inscripciones y cuadros es externa (WhatsApp/Link).
+                        </p>
+                      </div>
                     </button>
                   </div>
                 </section>
@@ -448,9 +471,17 @@ export function NewTournamentWizard() {
                       <Select value={tournamentClass} onValueChange={(v: any) => setTournamentClass(v)}>
                         <SelectTrigger className="h-12"><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          {TOURNAMENT_CLASS_OPTIONS.map((opt) => (
-                            <SelectItem key={opt} value={opt}>{TOURNAMENT_CLASS_LABELS[opt]} ({opt})</SelectItem>
-                          ))}
+                          {TOURNAMENT_CLASS_OPTIONS.map((opt) => {
+                            const Icon = TOURNAMENT_CLASS_ICONS[TOURNAMENT_CLASS_ICON[opt]]
+                            return (
+                              <SelectItem key={opt} value={opt}>
+                                <span className="flex items-center gap-2">
+                                  <Icon className="h-4 w-4" />
+                                  {TOURNAMENT_CLASS_LABELS[opt]} ({TOURNAMENT_CLASS_POINTS[opt]} pts)
+                                </span>
+                              </SelectItem>
+                            )
+                          })}
                         </SelectContent>
                       </Select>
                     </div>
@@ -1040,8 +1071,8 @@ export function NewTournamentWizard() {
             </Card>
           ) : null}
 
-          {/* Nav actions */}
-          <div className="flex items-center justify-between">
+          {/* Nav actions: sticky en móvil, estático en desktop */}
+          <div className="sticky bottom-0 left-0 right-0 z-10 flex items-center justify-between border-t border-border bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:static md:border-0 md:bg-transparent md:p-0">
             <Button type="button" variant="outline" onClick={goBack} disabled={stepIdx === 0}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Atras
@@ -1061,7 +1092,17 @@ export function NewTournamentWizard() {
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary">{TOURNAMENT_CLASS_LABELS[tournamentClass]} ({tournamentClass})</Badge>
+                <Badge className={TOURNAMENT_CLASS_BADGE_CLASS[tournamentClass]}>
+                  {(() => {
+                    const Icon = TOURNAMENT_CLASS_ICONS[TOURNAMENT_CLASS_ICON[tournamentClass]]
+                    return (
+                      <span className="flex items-center gap-1.5">
+                        <Icon className="h-3.5 w-3.5" />
+                        {TOURNAMENT_CLASS_LABELS[tournamentClass]} ({TOURNAMENT_CLASS_POINTS[tournamentClass]} pts)
+                      </span>
+                    )
+                  })()}
+                </Badge>
                 <Badge variant="outline">{format}</Badge>
                 <Badge variant="outline">{type === "FULL" ? "Torneo Inteligente" : "Sólo Difusión"}</Badge>
                 {currentStatus ? <Badge className="bg-primary/10 text-primary">{String(currentStatus)}</Badge> : null}

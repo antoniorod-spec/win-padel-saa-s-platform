@@ -271,7 +271,7 @@ async function main() {
         description: "El torneo mas importante de San Luis Potosi",
         startDate: new Date("2026-03-15"),
         endDate: new Date("2026-03-17"),
-        category: "A",
+        category: "ANUAL",
         format: "ROUND_ROBIN",
         prize: "$50,000 MXN",
         // Demo assets (visual cards + 'Ver cartel' modal)

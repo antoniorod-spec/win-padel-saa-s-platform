@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { TournamentClassBadge } from "@/components/tournament/tournament-class-badge"
 import { Calendar, MapPin, Users, Trophy, ArrowRight } from "lucide-react"
 import { useTournaments } from "@/hooks/use-tournaments"
 
@@ -42,9 +43,7 @@ export function TournamentsPreview() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
-                          {tr("category")} {tour.category}
-                        </Badge>
+                        <TournamentClassBadge category={tour.category} showPoints={false} size="sm" />
                         {isAlmostFull && (
                           <Badge className="bg-destructive/10 text-destructive">
                             {tr("almostFull")}

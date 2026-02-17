@@ -144,10 +144,6 @@ export async function PUT(
 
     const { modalities: nextModalities, ...data } = parsed.data
 
-    if (data.category === "D") {
-      data.affectsRanking = false
-    }
-
     // Allow editing modalities only while DRAFT and before any registrations exist.
     if (nextModalities) {
       if (tournament.status !== "DRAFT") {
