@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma"
+import { getTranslations } from "next-intl/server"
 
 export async function SponsorBannerSection() {
+  const t = await getTranslations("LandingSponsor")
   let settings: {
     homeSponsorBannerEnabled: boolean
     homeSponsorBannerImageUrl: string | null
@@ -32,7 +34,7 @@ export async function SponsorBannerSection() {
   const image = (
     <img
       src={settings.homeSponsorBannerImageUrl}
-      alt={settings.homeSponsorBannerTitle || "Banner patrocinado"}
+      alt={settings.homeSponsorBannerTitle || t("defaultAlt")}
       className="h-auto w-full rounded-xl border border-border object-cover"
     />
   )

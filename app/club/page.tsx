@@ -1,8 +1,10 @@
 "use client"
 
 import { Suspense, useEffect, useMemo, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
+import { useTranslations } from "next-intl"
+import { useRouter } from "@/i18n/navigation"
 import { DashboardShell } from "@/components/dashboard-shell"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -51,37 +53,32 @@ import {
 } from "@/hooks/use-tournaments"
 import { useToast } from "@/hooks/use-toast"
 
-const sectionToLabel: Record<string, string> = {
-  dashboard: "Dashboard",
-  torneos: "Torneos",
-  jugadores: "Jugadores",
-  pagos: "Pagos",
-  noticias: "Noticias",
-  estadisticas: "Estadisticas",
-  perfil: "Perfil Club",
-}
-
-const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/club?section=dashboard" },
-  { label: "Torneos", icon: Trophy, href: "/club?section=torneos" },
-  { label: "Jugadores", icon: Users, href: "/club?section=jugadores" },
-  { label: "Pagos", icon: CreditCard, href: "/club?section=pagos", badge: 15 },
-  { label: "Noticias", icon: Newspaper, href: "/club?section=noticias" },
-  { label: "Estadisticas", icon: BarChart3, href: "/club?section=estadisticas" },
-  { label: "Perfil Club", icon: Building2, href: "/club?section=perfil" },
-]
+const sectionIds = ["dashboard", "torneos", "jugadores", "pagos", "noticias", "estadisticas", "perfil"] as const
+type SectionId = (typeof sectionIds)[number]
 
 const wizardSteps = ["Info Basica", "Categorias", "Formato", "Reglas", "Publicar"]
 const surfaceOptions = ["Cesped Sintetico", "Mondo", "Cemento", "Mixta"]
 const resultStageOptions = ["CHAMPION", "RUNNER_UP", "SEMIFINAL", "QUARTERFINAL", "ROUND_OF_16", "ROUND_OF_32", "GROUP_STAGE"] as const
 
 function ClubDashboardContent() {
+  const t = useTranslations("ClubDashboard")
   const router = useRouter()
   const searchParams = useSearchParams()
   const { data: session } = useSession()
   const { toast } = useToast()
-  const section = (searchParams.get("section") || "dashboard").toLowerCase()
-  const activeItem = sectionToLabel[section] || "Dashboard"
+  const section = (searchParams.get("section") || "dashboard").toLowerCase() as SectionId
+  const activeItemId: SectionId = sectionIds.includes(section) ? section : "dashboard"
+  const activeItemLabel = t(`nav.${activeItemId}`)
+
+  const navItems = [
+    { id: "dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, href: "/club?section=dashboard" },
+    { id: "torneos", label: t("nav.torneos"), icon: Trophy, href: "/club?section=torneos" },
+    { id: "jugadores", label: t("nav.jugadores"), icon: Users, href: "/club?section=jugadores" },
+    { id: "pagos", label: t("nav.pagos"), icon: CreditCard, href: "/club?section=pagos", badge: 15 },
+    { id: "noticias", label: t("nav.noticias"), icon: Newspaper, href: "/club?section=noticias" },
+    { id: "estadisticas", label: t("nav.estadisticas"), icon: BarChart3, href: "/club?section=estadisticas" },
+    { id: "perfil", label: t("nav.perfil"), icon: Building2, href: "/club?section=perfil" },
+  ]
 
   const [wizardStep, setWizardStep] = useState(0)
   const [showWizard, setShowWizard] = useState(false)
@@ -526,9 +523,9 @@ function ClubDashboardContent() {
   return (
     <DashboardShell
       title={session?.user?.name || "Panel de Club"}
-      subtitle="Panel de gestion del club"
+      subtitle={t("subtitle")}
       navItems={navItems}
-      activeItem={activeItem}
+      activeItemId={activeItemId}
       role="club"
     >
       {(section === "dashboard" || section === "torneos") && (
@@ -1089,7 +1086,7 @@ function ClubDashboardContent() {
 
       {["jugadores", "pagos"].includes(section) && (
         <Card className="border-border/50">
-          <CardHeader><CardTitle>{activeItem}</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{activeItemLabel}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
               Esta sección ya responde desde el sidebar y queda lista para conectar tus flujos reales.

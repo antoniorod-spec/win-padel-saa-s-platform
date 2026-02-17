@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
+import { getTranslations } from "next-intl/server"
 import {
   Trophy,
   BarChart3,
@@ -8,49 +9,50 @@ import {
   Shield,
 } from "lucide-react"
 
-const features = [
-  {
-    icon: Calendar,
-    title: "Gestion de Torneos",
-    description: "Crea torneos con wizard paso a paso. Liga, eliminacion directa, round robin o express. Configura categorias, formatos y reglas.",
-  },
-  {
-    icon: BarChart3,
-    title: "Ranking en Tiempo Real",
-    description: "Algoritmo profesional de puntos con mejores 8 resultados en 12 meses. Ascensos y descensos automaticos por rendimiento.",
-  },
-  {
-    icon: Trophy,
-    title: "Brackets Automaticos",
-    description: "Genera cuadros de eliminacion y grupos automaticamente. Cabezas de serie por ranking. Resultados en tiempo real.",
-  },
-  {
-    icon: Users,
-    title: "Perfiles de Jugador",
-    description: "Estadisticas completas, historial de torneos, grafica de evolucion y sistema de reclamacion de categorias.",
-  },
-  {
-    icon: CreditCard,
-    title: "Gestion de Cobros",
-    description: "Inscripciones online, confirmacion de pagos, integracion con pasarelas. Todo el flujo financiero del torneo.",
-  },
-  {
-    icon: Shield,
-    title: "Admin Profesional",
-    description: "Panel completo para clubes y super admin. Metricas, reportes, gestion de jugadores y comite de categorias.",
-  },
-]
+export async function FeaturesSection() {
+  const t = await getTranslations("LandingFeatures")
+  const features = [
+    {
+      icon: Calendar,
+      title: t("f1Title"),
+      description: t("f1Desc"),
+    },
+    {
+      icon: BarChart3,
+      title: t("f2Title"),
+      description: t("f2Desc"),
+    },
+    {
+      icon: Trophy,
+      title: t("f3Title"),
+      description: t("f3Desc"),
+    },
+    {
+      icon: Users,
+      title: t("f4Title"),
+      description: t("f4Desc"),
+    },
+    {
+      icon: CreditCard,
+      title: t("f5Title"),
+      description: t("f5Desc"),
+    },
+    {
+      icon: Shield,
+      title: t("f6Title"),
+      description: t("f6Desc"),
+    },
+  ]
 
-export function FeaturesSection() {
   return (
     <section className="border-t border-border/50 bg-muted/30 py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
         <div className="mx-auto mb-14 max-w-2xl text-center">
           <h2 className="text-balance font-display text-3xl font-bold uppercase text-foreground md:text-4xl">
-            Todo lo que necesitas para el padel competitivo
+            {t("heading")}
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Una plataforma integral que conecta clubes, jugadores y organizadores.
+            {t("subheading")}
           </p>
         </div>
 

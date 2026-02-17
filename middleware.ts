@@ -1,52 +1,99 @@
-import { NextResponse } from "next/server"
+import createMiddleware from "next-intl/middleware"
 import type { NextRequest } from "next/server"
+import { NextResponse } from "next/server"
+import { routing } from "./i18n/routing"
 
-const protectedRoutes: Record<string, string[]> = {
-  "/jugador": ["PLAYER"],
-  "/club": ["CLUB"],
-  "/admin": ["ADMIN"],
+// Important: keep Spanish at `/` regardless of browser language.
+// If localeDetection is enabled, visiting `/` with an English browser gets redirected to `/en`.
+const intlMiddleware = createMiddleware({ ...routing, localeDetection: false })
+
+function startsWithSegment(pathname: string, segment: string) {
+  return pathname === segment || pathname.startsWith(`${segment}/`)
 }
 
-const authRoutes = ["/login", "/registro"]
+function getLocaleFromPathname(pathname: string) {
+  const match = pathname.match(/^\/(es|en)(?=\/|$)/)
+  return (match?.[1] ?? routing.defaultLocale) as (typeof routing.locales)[number]
+}
 
-export function middleware(request: NextRequest) {
+function stripLocalePrefix(pathname: string) {
+  return pathname.replace(/^\/(es|en)(?=\/|$)/, "") || "/"
+}
+
+function localizeInternalPathname(locale: string, internal: keyof typeof routing.pathnames) {
+  const entry = routing.pathnames[internal]
+  const localized = typeof entry === "string" ? entry : entry[locale as "es" | "en"]
+  // localePrefix: 'as-needed' -> default locale has no prefix.
+  if (locale === routing.defaultLocale) return localized
+  if (localized === "/") return `/${locale}`
+  return `/${locale}${localized}`
+}
+
+const protectedRoutes = [
+  // PLAYER
+  "/jugador",
+  "/player",
+  // CLUB
+  "/club",
+  // ADMIN
+  "/admin",
+]
+
+const authRoutes = [
+  "/login",
+  "/registro",
+  "/sign-in",
+  "/sign-up",
+]
+
+export default function middleware(request: NextRequest) {
+  // If someone hits /es/*, canonicalize to no-prefix Spanish URLs.
+  // This prevents bugs like /es/es and avoids duplicate content.
+  if (request.nextUrl.pathname === "/es" || request.nextUrl.pathname.startsWith("/es/")) {
+    const nextUrl = request.nextUrl
+    const stripped = stripLocalePrefix(nextUrl.pathname)
+    const target = new URL(`${stripped}${nextUrl.search}`, nextUrl)
+    return NextResponse.redirect(target)
+  }
+
+  // First, let next-intl handle:
+  // - locale detection/prefixing (only /en/* for non-default)
+  // - rewriting localized pathnames (/en/tournaments -> internal /torneos, etc.)
+  const response = intlMiddleware(request)
+
   const { nextUrl } = request
+  const locale = getLocaleFromPathname(nextUrl.pathname)
+  const pathnameNoLocale = stripLocalePrefix(nextUrl.pathname)
 
-  // Check for session token (NextAuth sets this cookie)
+  // Check for session token (NextAuth sets this cookie).
   const sessionToken =
     request.cookies.get("authjs.session-token")?.value ??
     request.cookies.get("__Secure-authjs.session-token")?.value
-
   const isLoggedIn = !!sessionToken
 
-  // Check if the current path is an auth route (login/register)
-  const isAuthRoute = authRoutes.some((route) => nextUrl.pathname.startsWith(route))
+  const isAuthRoute = authRoutes.some((route) => startsWithSegment(pathnameNoLocale, route))
+  const isProtectedRoute = protectedRoutes.some((route) => startsWithSegment(pathnameNoLocale, route))
 
-  // Redirect logged-in users away from auth pages
+  // Redirect logged-in users away from auth pages.
   if (isAuthRoute && isLoggedIn) {
-    return NextResponse.redirect(new URL("/", nextUrl))
+    // Redirect to the localized home.
+    const home = locale === routing.defaultLocale ? "/" : `/${locale}`
+    return NextResponse.redirect(new URL(home, nextUrl))
   }
 
-  // Check protected routes
-  for (const [route] of Object.entries(protectedRoutes)) {
-    if (nextUrl.pathname.startsWith(route)) {
-      if (!isLoggedIn) {
-        return NextResponse.redirect(new URL("/login", nextUrl))
-      }
-      // Note: Role-based protection is handled at the page/API level
-      // since we can't decode JWT in Edge middleware without crypto
-    }
+  // Redirect anonymous users into localized sign-in.
+  if (isProtectedRoute && !isLoggedIn) {
+    const loginPath = localizeInternalPathname(locale, "/login")
+    return NextResponse.redirect(new URL(loginPath, nextUrl))
   }
 
-  return NextResponse.next()
+  return response
 }
 
 export const config = {
-  matcher: [
-    "/jugador/:path*",
-    "/club/:path*",
-    "/admin/:path*",
-    "/login",
-    "/registro",
-  ],
+  // Match all pathnames except for:
+  // - API routes
+  // - Next.js internals
+  // - static files (containing a dot)
+  matcher: ["/((?!api|_next|.*\\..*).*)"],
 }

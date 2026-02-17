@@ -1,0 +1,514 @@
+{
+  "LocaleSwitcher": {
+    "es": "ES",
+    "en": "EN",
+    "label": "Language"
+  },
+  "Navbar": {
+    "brand": "WhinPadel",
+    "tournaments": "Tournaments",
+    "seeAllTournaments": "See all tournaments",
+    "byCity": "By City",
+    "padelTournaments": "Padel Tournaments",
+    "noCitiesAvailable": "No cities available",
+    "ranking": "Ranking",
+    "clubs": "Clubs",
+    "howItWorks": "How It Works",
+    "toggleTheme": "Toggle theme",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "myProfile": "My profile",
+    "clubPanel": "Club panel",
+    "adminPanel": "Admin panel",
+    "signOut": "Sign out",
+    "menuTitle": "Navigation menu",
+    "tournamentsByCity": "Tournaments by city",
+    "signIn": "Sign in",
+    "signUp": "Sign up"
+  },
+  "AuthLogin": {
+    "backToHome": "Back to home",
+    "title": "Sign in",
+    "subtitle": "Access your account to continue",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@email.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "********",
+    "forgotPassword": "Forgot your password?",
+    "submit": "Sign in",
+    "orContinueWith": "or continue with",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign up",
+    "invalidCredentials": "Incorrect email or password",
+    "genericError": "Couldn't sign in. Please try again."
+  },
+  "AuthRegister": {
+    "backToHome": "Back to home",
+    "title": "Create account",
+    "subtitle": "Join WhinPadel",
+    "playerTab": "Player",
+    "clubTab": "Club",
+    "emailLabel": "Email",
+    "playerEmailPlaceholder": "you@email.com",
+    "clubEmailPlaceholder": "info@yourclub.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Min. 8 characters",
+    "submit": "Create account",
+    "playerNextStep": "You'll complete your profile in the next step",
+    "clubNextStep": "You'll complete your club profile in 5 steps",
+    "orContinueWith": "Or continue with",
+    "google": "Google",
+    "alreadyHaveAccount": "Already have an account?",
+    "signInLink": "Sign in",
+    "registerErrorFallback": "Couldn't sign up",
+    "connectionError": "Connection error. Please try again."
+  },
+  "Footer": {
+    "brand": "WhinPadel",
+    "descriptionLine1": "The professional platform to manage padel tournaments, rankings and clubs.",
+    "descriptionLine2": "Free for the whole community.",
+    "platform": "Platform",
+    "company": "Company",
+    "forClubs": "For Clubs",
+    "tournaments": "Tournaments",
+    "ranking": "Ranking",
+    "clubs": "Clubs",
+    "howItWorks": "How It Works",
+    "about": "About",
+    "sponsors": "Sponsors",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "registerClub": "Register club",
+    "clubPanel": "Club panel",
+    "gettingStarted": "Getting started",
+    "rights": "All rights reserved.",
+    "terms": "Terms of Use",
+    "privacy": "Privacy"
+  },
+  "LandingHero": {
+    "badge": "The #1 platform for competitive padel",
+    "titleLine": "Run tournaments.",
+    "titleHighlight": "Dominate the rankings.",
+    "descriptionLine1": "WhinPadel is the complete SaaS platform for clubs, players and tournament organizers.",
+    "descriptionLine2": "Real-time rankings, automatic brackets and professional management.",
+    "ctaPlayer": "Sign up as Player",
+    "ctaClub": "Register your Club",
+    "statActivePlayers": "Active players",
+    "statTournamentsThisYear": "Tournaments this year",
+    "statPartnerClubs": "Partner clubs"
+  },
+  "LandingFeatures": {
+    "heading": "Everything you need for competitive padel",
+    "subheading": "An all-in-one platform that connects clubs, players and organizers.",
+    "f1Title": "Tournament Management",
+    "f1Desc": "Create tournaments with a step-by-step wizard. League, single elimination, round robin or express. Configure categories, formats and rules.",
+    "f2Title": "Real-Time Ranking",
+    "f2Desc": "Professional points algorithm with best 8 results in the last 12 months. Automatic promotions and relegations by performance.",
+    "f3Title": "Automatic Brackets",
+    "f3Desc": "Generate elimination brackets and group stages automatically. Seeding based on ranking. Live results.",
+    "f4Title": "Player Profiles",
+    "f4Desc": "Full stats, tournament history, progress charts and a category claim workflow.",
+    "f5Title": "Payments Management",
+    "f5Desc": "Online registration, payment confirmation, gateway integrations. Full financial flow for tournaments.",
+    "f6Title": "Professional Admin",
+    "f6Desc": "Complete panels for clubs and super admin. Metrics, reports, player management and the categories committee."
+  },
+  "LandingTournaments": {
+    "heading": "Upcoming Tournaments",
+    "subheading": "Join the best padel tournaments",
+    "viewAll": "View all",
+    "category": "Cat.",
+    "almostFull": "Almost full",
+    "sponsoredBy": "Sponsored by:",
+    "teams": "teams",
+    "ctaRegister": "Register",
+    "viewAllTournaments": "See all tournaments"
+  },
+  "LandingRanking": {
+    "heading": "Ranking by Category",
+    "subheading": "Men's 4th Category",
+    "note": "(Each category has its own ranking)",
+    "allRankings": "All rankings",
+    "noRankings": "No rankings available yet",
+    "viewAllRankings": "See all rankings",
+    "pointsShort": "pts",
+    "playedShort": "GP",
+    "winRateShort": "WR%"
+  },
+  "LandingSponsor": {
+    "defaultAlt": "Sponsored banner"
+  },
+  "AboutPage": {
+    "pill": "Our story",
+    "title1": "We believe padel deserves",
+    "titleHighlight": "professional tools",
+    "intro": "We are players and technology professionals passionate about padel. We built WhinPadel after seeing clubs needing a modern platform to organize tournaments without the usual headaches.",
+    "mvv1Title": "Our mission",
+    "mvv1Desc": "Democratize padel tournament management by providing a professional, free and accessible platform for clubs of all sizes in Latin America and Spain.",
+    "mvv2Title": "Our vision",
+    "mvv2Desc": "Become the reference platform for the competitive padel community, connecting players, clubs and organizers in a unified ecosystem.",
+    "mvv3Title": "Our values",
+    "mvv3Desc": "Transparency in rankings, accessibility for everyone, constant innovation and genuine passion for growing the padel community.",
+    "freeHeading1": "Why is it",
+    "freeHeadingHighlight": "100% free",
+    "freeSubheading": "Not a freemium model with locked features. A conscious decision.",
+    "free1Title": "Padel grows when clubs grow",
+    "free1Desc": "If clubs have better tools, they run more tournaments, attract more players and the sport grows. Everyone wins.",
+    "free2Title": "Cost barriers shouldn't exist",
+    "free2Desc": "A small club with 2 courts deserves the same tools as one with 20. Technology should level the playing field.",
+    "free3Title": "We are sustained by sponsorships",
+    "free3Desc": "Sports brands and companies can sponsor tournaments and get visibility in the platform, so costs don't fall on clubs or players.",
+    "communityHeading": "Committed to the community",
+    "communityP1": "WhinPadel was born from the frustration of organizing tournaments with spreadsheets and WhatsApp. We know it because we lived it as players. That's why we built the platform we always wanted.",
+    "communityP2": "Every feature is designed from real experience organizing and playing tournaments. We're not a software company that decided to do padel; we're padel people who know how to build software.",
+    "statFree": "Free",
+    "statFormats": "Tournament formats",
+    "statCategories": "Ranking categories",
+    "statAvailability": "Platform availability"
+  },
+  "ContactPage": {
+    "title": "Contact",
+    "intro": "Questions, suggestions, or want to register your club? We're here to help.",
+    "infoHeading": "Contact information",
+    "infoSubheading": "We respond within 24 hours. If it's urgent, reach out on WhatsApp.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@email.com",
+    "whatsAppLabel": "WhatsApp",
+    "fastResponse": "Fast response",
+    "locationLabel": "Location",
+    "locationValue": "San Luis Potosi, Mexico",
+    "clubCardTitle": "Are you a club manager?",
+    "clubCardDesc": "Schedule a personalized demo and we'll show you how the platform works in 15 minutes.",
+    "clubCardCta": "Schedule a WhatsApp demo",
+    "sentTitle": "Message sent",
+    "sentDesc": "Thanks for reaching out. We'll reply within 24 hours.",
+    "sendAnother": "Send another message",
+    "formTitle": "Send us a message",
+    "formDesc": "Fill out the form and we'll get back to you soon.",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "Your name",
+    "typeLabel": "Type of request",
+    "typePlaceholder": "Select an option",
+    "typeClub": "I want to register my club",
+    "typePlayer": "I'm a player, I have a question",
+    "typeSponsor": "I'm interested in sponsoring",
+    "typeSupport": "Technical support",
+    "typeOther": "Other",
+    "subjectLabel": "Subject",
+    "subjectPlaceholder": "How can we help?",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Tell us the details...",
+    "submit": "Send message"
+  },
+  "FaqPage": {
+    "pill": "Help center",
+    "title1": "Frequently",
+    "titleHighlight": "asked questions",
+    "intro": "Find quick answers to the most common questions about WhinPadel.",
+    "ctaTitle": "Didn't find your answer?",
+    "ctaDesc": "Write to us and we'll reply within 24 hours.",
+    "goToContact": "Go to contact",
+    "whatsAppDirect": "WhatsApp"
+  },
+  "DashboardShell": {
+    "roleAdmin": "Admin",
+    "roleClub": "Club",
+    "rolePlayer": "Player",
+    "signOut": "Sign out"
+  },
+  "AdminDashboard": {
+    "title": "Admin panel",
+    "subtitle": "Global platform management",
+    "loadingStats": "Loading stats...",
+    "nav": {
+      "dashboard": "Dashboard",
+      "clubs": "Clubs",
+      "players": "Players",
+      "tournaments": "Tournaments",
+      "categoriesCommittee": "Categories committee",
+      "rankingConfig": "Ranking config",
+      "reports": "Reports",
+      "news": "News",
+      "settings": "Settings"
+    },
+    "cards": {
+      "totalClubs": "Total clubs",
+      "activePlayers": "Active players",
+      "activeTournaments": "Active tournaments",
+      "registrations": "Registrations"
+    }
+  },
+  "PlayerDashboard": {
+    "title": "My profile",
+    "loading": "Loading...",
+    "loadingProfile": "Loading profile...",
+    "error": "Error",
+    "cantLoadProfile": "Couldn't load player profile",
+    "incompleteData": "Incomplete data",
+    "nav": {
+      "dashboard": "Dashboard",
+      "myTournaments": "My tournaments",
+      "exploreTournaments": "Explore tournaments",
+      "myRanking": "My ranking",
+      "calendar": "Calendar",
+      "explorePlayers": "Explore players",
+      "news": "News"
+    }
+  },
+  "ClubDashboard": {
+    "subtitle": "Club management panel",
+    "nav": {
+      "dashboard": "Dashboard",
+      "torneos": "Tournaments",
+      "jugadores": "Players",
+      "pagos": "Payments",
+      "noticias": "News",
+      "estadisticas": "Stats",
+      "perfil": "Club profile"
+    }
+  },
+  "TournamentDetail": {
+    "loading": "Loading tournament...",
+    "notFound": "Tournament not found",
+    "basicTournament": "Basic tournament",
+    "registrationOpen": "Registration open",
+    "almostFull": "Almost full",
+    "inProgress": "In progress",
+    "completed": "Completed",
+    "resultsPendingReview": "Results under review",
+    "resultsApproved": "Results approved",
+    "teams": "teams",
+    "totalPrize": "Total prize",
+    "inscriptionPrice": "Registration: ${price} MXN",
+    "viewPoster": "View poster",
+    "posterDialogTitle": "Tournament poster",
+    "registerNow": "Register now",
+    "goToExternalRegistration": "Go to external registration",
+    "importTeams": "Import teams (club)",
+    "generateBrackets": "Generate brackets",
+    "pointsShort": "pts",
+    "tabs": {
+      "bracket": "Bracket",
+      "teams": "Teams",
+      "calendar": "Calendar",
+      "groups": "Groups",
+      "info": "Tournament info"
+    },
+    "noTeamsTitle": "No teams registered yet",
+    "noTeamsSubtitle": "Be the first to register",
+    "table": {
+      "team": "Team",
+      "modality": "Modality",
+      "paymentStatus": "Payment status",
+      "combinedRanking": "Combined ranking"
+    },
+    "payment": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "unpaid": "Unpaid"
+    },
+    "calendar": {
+      "title": "Tournament calendar",
+      "prevMonth": "Previous month",
+      "nextMonth": "Next month",
+      "goToStart": "Go to tournament start",
+      "start": "Start",
+      "legendTournamentDays": "Tournament days",
+      "legendRegistrationDeadline": "Registration deadline",
+      "tooltipTournamentDay": "Tournament day",
+      "tooltipRegistrationDeadline": "Registration deadline",
+      "registrationDeadline": "Registration deadline"
+    }
+  },
+  "TorneosCityPage": {
+    "title": "Padel tournaments in {city}",
+    "subtitle": "Browse available and upcoming tournaments in {city}. For advanced filters, use the main directory.",
+    "viewAll": "View all tournaments",
+    "tournamentsCount": "{count} tournaments",
+    "empty": "There are no tournaments for this city right now.",
+    "statusOpen": "Registration",
+    "statusInProgress": "In progress",
+    "statusCompleted": "Completed",
+    "almostFull": "Almost full",
+    "teamsCount": "{registered}/{max} teams",
+    "viewTournament": "View tournament"
+  },
+  "ClubDetail": {
+    "loading": "Loading club profile...",
+    "notFound": "Club not found.",
+    "courtsCount": "{count} courts",
+    "rating": "rating",
+    "verified": "Verified",
+    "cards": {
+      "facilities": "Facilities",
+      "tournaments": "Tournaments",
+      "community": "Community",
+      "rating": "Rating"
+    },
+    "activeTournamentsCount": "{count} active",
+    "totalTournamentsCount": "{count} total",
+    "playersCount": "{count} players"
+  },
+  "TorneosPage": {
+    "titleBase": "Tournaments | WhinPadel",
+    "titleIn": "Tournaments in",
+    "heroAll": "Tournaments",
+    "heroDesc": "Explore tournaments by city, date, modality and club.",
+    "searchPlaceholder": "Search by tournament or club name...",
+    "view": {
+      "list": "List",
+      "calendar": "Calendar"
+    },
+    "filters": {
+      "title": "Filters",
+      "openButton": "Filters",
+      "viewResults": "View results",
+      "clear": "Clear",
+      "all": "All",
+      "allFeminine": "All",
+      "state": "State",
+      "city": "City",
+      "dates": "Dates",
+      "status": "Tournament status",
+      "tournamentType": "Tournament type",
+      "tournamentTypeHint": "Express = EXPRESS format. Major/Regular are estimated by category (A vs B/C).",
+      "modalityCategories": "Categories (modality)",
+      "modality": "Modality",
+      "format": "Format",
+      "club": "Club",
+      "seoCityLink": "Padel tournaments in {city}"
+    },
+    "statusLabels": {
+      "open": "Registration",
+      "inProgress": "In progress",
+      "upcoming": "Upcoming",
+      "past": "Past"
+    },
+    "loading": "Loading tournaments...",
+    "empty": "No tournaments found with the current filters.",
+    "resultsCount": "{count} tournaments found",
+    "pagination": {
+      "pageOf": "Page {page} of {totalPages}",
+      "prev": "Previous",
+      "next": "Next"
+    },
+    "calendar": {
+      "moreCount": "+{count} more"
+    },
+    "almostFull": "Almost full",
+    "viewPoster": "View poster",
+    "viewTournament": "View tournament",
+    "teamsCount": "{registered}/{max} teams",
+    "viewTournamentsInTitle": "View tournaments in {city}"
+  },
+  "ClubesPage": {
+    "heading": "Clubs Directory",
+    "subheading": "Find clubs by city, surfaces and available amenities.",
+    "searchPlaceholder": "Search club by name...",
+    "view": {
+      "list": "List",
+      "map": "Map"
+    },
+    "filters": {
+      "title": "Filters",
+      "openButton": "Filters",
+      "viewResults": "View results",
+      "clear": "Clear",
+      "all": "All",
+      "allFeminine": "All",
+      "state": "State",
+      "city": "City",
+      "courtType": "Court type",
+      "amenities": "Amenities",
+      "viewTournamentsIn": "View tournaments in {city}"
+    },
+    "map": {
+      "disabledTitle": "Map disabled by admin",
+      "viewTitle": "View map",
+      "disabled": "The map is temporarily disabled by the administrator. The filtered list is still available.",
+      "missingApiKey": "To display the map add `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`. The filtered list is still available.",
+      "loadError": "Couldn't load the map right now.",
+      "loading": "Loading map...",
+      "noCoordinates": "No clubs with coordinates for this filter."
+    },
+    "loading": "Loading clubs...",
+    "resultsCount": "{count} clubs found",
+    "empty": "No clubs found with the current filters.",
+    "pagination": {
+      "pageOf": "Page {page} of {totalPages}",
+      "prev": "Previous",
+      "next": "Next"
+    },
+    "viewProfile": "View profile",
+    "verified": "Verified",
+    "website": "Website",
+    "viewOnGoogleMaps": "View on Google Maps",
+    "card": {
+      "summary": "Summary"
+    },
+    "cta": {
+      "title": "Do you own a club?",
+      "desc": "Join WhinPadel and increase the visibility of your courts and tournaments.",
+      "button": "Register my club"
+    }
+  },
+  "RankingPage": {
+    "headerTitle": "Ranking by category",
+    "headerDesc": "Each category has its own independent ranking. When promoted, points reset to 0.",
+    "tabs": {
+      "men": "Men",
+      "women": "Women",
+      "mixed": "Mixed"
+    },
+    "rulesButton": "Rules",
+    "cityPlaceholder": "City",
+    "allCities": "All cities",
+    "rules": {
+      "ascensionTitle": "Promotion rules",
+      "descentTitle": "Demotion rules",
+      "ascension": {
+        "r1": { "rule": "Win a tournament", "result": "Immediate automatic promotion" },
+        "r2": { "rule": "Reach the final in 2 consecutive tournaments", "result": "Automatic promotion" },
+        "r3": { "rule": "Semifinals in 3 of your last 5 tournaments", "result": "Committee review" },
+        "r4": { "rule": "When promoted", "result": "Points = 0 in the new category" }
+      },
+      "descent": {
+        "r1": { "rule": "Eliminated in the 1st round in 5 consecutive tournaments", "result": "Can request demotion" },
+        "r2": { "rule": "Committee reviews and approves/rejects", "result": "If demoted: Points = 0 in the lower category" }
+      }
+    },
+    "labels": {
+      "ascensionStreak": "Promotion streak",
+      "points": "Points"
+    },
+    "rankingTitle": "Ranking {modality} - {category} category",
+    "rankingCount": "({count} {kind})",
+    "pairs": "pairs",
+    "players": "players",
+    "loading": "Loading rankings...",
+    "emptyTitle": "No ranking data",
+    "emptyDesc": "There are no {kind} registered in {modality} {category} yet.",
+    "table": {
+      "pos": "Pos",
+      "pair": "Team",
+      "player": "Player",
+      "city": "City",
+      "trend": "Trend",
+      "points": "Points"
+    },
+    "streak": "Streak",
+    "pointsTableTitle": "Points table by tournament",
+    "pointsTableCategory": "Category {cat} ({label})",
+    "pointsTableRound": "Round",
+    "pointsTablePts": "Pts",
+    "pointsRounds": {
+      "champion": "Champion",
+      "runnerUp": "Runner-up",
+      "semifinalist": "Semifinalist",
+      "quarterfinalist": "Quarterfinalist",
+      "roundOf16": "Round of 16",
+      "groupStage": "Group stage"
+    }
+  }
+}
+

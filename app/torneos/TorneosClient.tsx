@@ -1,13 +1,15 @@
 "use client"
 
-import Link from "next/link"
 import { Suspense, useEffect, useMemo, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { useLocale, useTranslations } from "next-intl"
+import { getPathname, Link, useRouter } from "@/i18n/navigation"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/landing/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -68,6 +70,21 @@ function isSameDay(a: Date, b: Date) {
 function TorneosPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const locale = useLocale() as "es" | "en"
+  const tr = useTranslations("TorneosPage")
+  const localeTag = locale === "en" ? "en-US" : "es-MX"
+  const basePath = getPathname({ locale, href: "/torneos" })
+
+  const copy = useMemo(
+    () => ({
+      titleBase: tr("titleBase"),
+      titleIn: tr("titleIn"),
+      heroAll: tr("heroAll"),
+      heroDesc: tr("heroDesc"),
+      searchPlaceholder: tr("searchPlaceholder"),
+    }),
+    [tr]
+  )
 
   const viewMode = searchParams.get("view") === "calendar" ? "calendar" : "list"
   const page = Math.max(parseInt(searchParams.get("page") ?? "1", 10) || 1, 1)
@@ -87,6 +104,7 @@ function TorneosPageContent() {
 
   const [searchInput, setSearchInput] = useState(search)
   const [posterModal, setPosterModal] = useState<{ url: string; title: string } | null>(null)
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const { data: filtersData } = useTournamentFiltersOptions()
   const filterPayload = filtersData?.data
@@ -122,7 +140,7 @@ function TorneosPageContent() {
       else next.set(key, value)
     }
     const query = next.toString()
-    router.replace(query ? `/torneos?${query}` : "/torneos", { scroll: false })
+    router.replace((query ? `${basePath}?${query}` : basePath) as any, { scroll: false })
   }
 
   function toggleCsvParam(key: "status" | "modalityCategories", value: string) {
@@ -207,7 +225,7 @@ function TorneosPageContent() {
   const cities = useMemo(() => {
     if (stateKey) return citiesByState[stateKey] ?? []
     const all = Object.values(citiesByState).flat()
-    return Array.from(new Set(all)).sort((a, b) => (cityLabels[a] ?? a).localeCompare(cityLabels[b] ?? b, "es"))
+    return Array.from(new Set(all)).sort((a, b) => (cityLabels[a] ?? a).localeCompare(cityLabels[b] ?? b, locale))
   }, [citiesByState, stateKey, cityLabels])
 
   const selectedStateLabel = stateKey ? stateLabels[stateKey] ?? "" : ""
@@ -216,23 +234,247 @@ function TorneosPageContent() {
 
   // UX only (not SEO): make title feel responsive even though this is a client page.
   useEffect(() => {
-    const base = "Torneos | WhinPadel"
+    const base = copy.titleBase
     if (selectedCityLabel) {
-      document.title = `Torneos en ${selectedCityLabel} | WhinPadel`
+      document.title = `${copy.titleIn} ${selectedCityLabel} | WhinPadel`
       return
     }
     if (selectedStateLabel) {
-      document.title = `Torneos en ${selectedStateLabel} | WhinPadel`
+      document.title = `${copy.titleIn} ${selectedStateLabel} | WhinPadel`
       return
     }
     document.title = base
-  }, [selectedCityLabel, selectedStateLabel])
+  }, [selectedCityLabel, selectedStateLabel, copy])
 
   const heroTitle = selectedCityLabel
-    ? `Torneos en ${selectedCityLabel}`
+    ? `${copy.titleIn} ${selectedCityLabel}`
     : selectedStateLabel
-      ? `Torneos en ${selectedStateLabel}`
-      : "Torneos"
+      ? `${copy.titleIn} ${selectedStateLabel}`
+      : copy.heroAll
+
+  const FiltersPanel = () => (
+    <Card className="border-border/60">
+      <CardContent className="space-y-5 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <h3 className="font-semibold">{tr("filters.title")}</h3>
+          </div>
+          <button
+            type="button"
+            className="text-xs font-semibold text-primary hover:underline"
+            onClick={() => router.replace(basePath as any, { scroll: false })}
+          >
+            {tr("filters.clear")}
+          </button>
+        </div>
+
+        <div className="space-y-2">
+          <Label>{tr("filters.state")}</Label>
+          <Select
+            value={stateKey || "all"}
+            onValueChange={(value) =>
+              updateParams({
+                stateKey: value === "all" ? undefined : value,
+                cityKey: undefined,
+                page: "1",
+              })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{tr("filters.all")}</SelectItem>
+              {states.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {stateLabels[s] ?? s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>{tr("filters.city")}</Label>
+          <Select
+            value={cityKey || "all"}
+            onValueChange={(value) =>
+              updateParams({
+                cityKey: value === "all" ? undefined : value,
+                page: "1",
+              })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{tr("filters.allFeminine")}</SelectItem>
+              {cities.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {cityLabels[c] ?? c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {seoCitySlug && cityKey ? (
+            <Link
+              href={{ pathname: "/torneos/ciudad/[slug]", params: { slug: seoCitySlug } } as any}
+              className="inline-flex text-xs font-semibold text-primary hover:underline"
+            >
+              {tr("filters.seoCityLink", { city: selectedCityLabel })}
+            </Link>
+          ) : null}
+        </div>
+
+        <div className="space-y-2">
+          <Label>{tr("filters.dates")}</Label>
+          <div className="grid gap-2">
+            <Input
+              type="date"
+              value={from}
+              onChange={(e) => updateParams({ from: e.target.value || undefined, page: "1" })}
+            />
+            <Input
+              type="date"
+              value={to}
+              onChange={(e) => updateParams({ to: e.target.value || undefined, page: "1" })}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>{tr("filters.status")}</Label>
+          <div className="grid gap-2">
+            {[
+              { key: "OPEN", label: tr("statusLabels.open") },
+              { key: "IN_PROGRESS", label: tr("statusLabels.inProgress") },
+              { key: "DRAFT", label: tr("statusLabels.upcoming") },
+              { key: "COMPLETED", label: tr("statusLabels.past") },
+            ].map((opt) => (
+              <label key={opt.key} className="flex items-center gap-2 text-sm text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={status.includes(opt.key)}
+                  onChange={() => toggleCsvParam("status", opt.key)}
+                />
+                {opt.label}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>{tr("filters.tournamentType")}</Label>
+          <Select
+            value={tournamentClass || "all"}
+            onValueChange={(v) =>
+              updateParams({
+                tournamentClass: v === "all" ? undefined : v,
+                page: "1",
+              })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{tr("filters.all")}</SelectItem>
+              <SelectItem value="MAJOR">Major</SelectItem>
+              <SelectItem value="REGULAR">Regular</SelectItem>
+              <SelectItem value="EXPRESS">Express</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">{tr("filters.tournamentTypeHint")}</p>
+        </div>
+
+        <div className="space-y-2">
+          <Label>{tr("filters.modalityCategories")}</Label>
+          <div className="grid grid-cols-3 gap-2">
+            {modalityCategoryOptions.slice(0, 12).map((cat) => {
+              const active = modalityCategories.includes(cat)
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => toggleCsvParam("modalityCategories", cat)}
+                  className={cn(
+                    "rounded-md border px-2 py-2 text-xs font-bold uppercase tracking-wide transition-colors",
+                    active
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border/60 bg-background text-muted-foreground hover:border-primary/40"
+                  )}
+                >
+                  {cat}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>{tr("filters.modality")}</Label>
+          <Select
+            value={modality || "all"}
+            onValueChange={(v) => updateParams({ modality: v === "all" ? undefined : v, page: "1" })}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{tr("filters.allFeminine")}</SelectItem>
+              {modalityOptions.map((m) => (
+                <SelectItem key={m} value={m}>
+                  {m}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>{tr("filters.format")}</Label>
+          <Select
+            value={format || "all"}
+            onValueChange={(v) => updateParams({ format: v === "all" ? undefined : v, page: "1" })}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{tr("filters.all")}</SelectItem>
+              {formatOptions.map((f) => (
+                <SelectItem key={f} value={f}>
+                  {f}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>{tr("filters.club")}</Label>
+          <Select
+            value={clubId || "all"}
+            onValueChange={(v) => updateParams({ clubId: v === "all" ? undefined : v, page: "1" })}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{tr("filters.all")}</SelectItem>
+              {clubs.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </CardContent>
+    </Card>
+  )
 
   return (
     <div className="min-h-screen bg-background">
@@ -245,7 +487,7 @@ function TorneosPageContent() {
                 <h1 className="font-display text-3xl font-black uppercase text-card-foreground md:text-4xl">
                   {heroTitle}
                 </h1>
-                <p className="mt-2 text-muted-foreground">Explora torneos por ciudad, fecha, modalidad y club.</p>
+                <p className="mt-2 text-muted-foreground">{copy.heroDesc}</p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
                 <div className="relative min-w-[280px]">
@@ -253,7 +495,7 @@ function TorneosPageContent() {
                   <Input
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
-                    placeholder="Buscar por nombre de torneo o club..."
+                    placeholder={copy.searchPlaceholder}
                     className="pl-9"
                   />
                 </div>
@@ -266,7 +508,7 @@ function TorneosPageContent() {
                     onClick={() => updateParams({ view: "list", page: "1" })}
                   >
                     <List className="h-4 w-4" />
-                    Lista
+                    {tr("view.list")}
                   </Button>
                   <Button
                     type="button"
@@ -285,8 +527,31 @@ function TorneosPageContent() {
                     }
                   >
                     <Calendar className="h-4 w-4" />
-                    Calendario
+                    {tr("view.calendar")}
                   </Button>
+                </div>
+                <div className="lg:hidden">
+                  <Drawer open={filtersOpen} onOpenChange={setFiltersOpen}>
+                    <DrawerTrigger asChild>
+                      <Button variant="outline" className="w-full gap-2 sm:w-auto">
+                        <Filter className="h-4 w-4" />
+                        {tr("filters.openButton")}
+                      </Button>
+                    </DrawerTrigger>
+                    <DrawerContent className="max-h-[85vh]">
+                      <DrawerHeader className="pb-0">
+                        <DrawerTitle>{tr("filters.title")}</DrawerTitle>
+                      </DrawerHeader>
+                      <div className="max-h-[70vh] overflow-auto px-4 pb-4 pt-3">
+                        <FiltersPanel />
+                      </div>
+                      <div className="border-t border-border/60 p-4">
+                        <DrawerClose asChild>
+                          <Button className="w-full">{tr("filters.viewResults")}</Button>
+                        </DrawerClose>
+                      </div>
+                    </DrawerContent>
+                  </Drawer>
                 </div>
               </div>
             </div>
@@ -295,238 +560,18 @@ function TorneosPageContent() {
 
         <section className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
           <div className="grid gap-6 lg:grid-cols-12">
-            <aside className="lg:col-span-3">
-              <Card className="sticky top-20 border-border/60">
-                <CardContent className="space-y-5 p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Filter className="h-4 w-4 text-muted-foreground" />
-                      <h3 className="font-semibold">Filtros</h3>
-                    </div>
-                    <button
-                      type="button"
-                      className="text-xs font-semibold text-primary hover:underline"
-                      onClick={() => router.replace("/torneos", { scroll: false })}
-                    >
-                      Limpiar
-                    </button>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Estado</Label>
-                    <Select
-                      value={stateKey || "all"}
-                      onValueChange={(value) =>
-                        updateParams({
-                          stateKey: value === "all" ? undefined : value,
-                          cityKey: undefined,
-                          page: "1",
-                        })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todos</SelectItem>
-                        {states.map((s) => (
-                          <SelectItem key={s} value={s}>
-                            {stateLabels[s] ?? s}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Ciudad</Label>
-                    <Select
-                      value={cityKey || "all"}
-                      onValueChange={(value) =>
-                        updateParams({
-                          cityKey: value === "all" ? undefined : value,
-                          page: "1",
-                        })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todas</SelectItem>
-                        {cities.map((c) => (
-                          <SelectItem key={c} value={c}>
-                            {cityLabels[c] ?? c}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {seoCitySlug && cityKey ? (
-                      <Link
-                        href={`/torneos/ciudad/${seoCitySlug}`}
-                        className="inline-flex text-xs font-semibold text-primary hover:underline"
-                      >
-                        Torneos de Pádel en {selectedCityLabel}
-                      </Link>
-                    ) : null}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Fechas</Label>
-                    <div className="grid gap-2">
-                      <Input
-                        type="date"
-                        value={from}
-                        onChange={(e) => updateParams({ from: e.target.value || undefined, page: "1" })}
-                      />
-                      <Input
-                        type="date"
-                        value={to}
-                        onChange={(e) => updateParams({ to: e.target.value || undefined, page: "1" })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Status</Label>
-                    <div className="grid gap-2">
-                      {[
-                        { key: "OPEN", label: "Inscripciones" },
-                        { key: "IN_PROGRESS", label: "En curso" },
-                        { key: "DRAFT", label: "Futuros" },
-                        { key: "COMPLETED", label: "Pasados" },
-                      ].map((opt) => (
-                        <label key={opt.key} className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <input
-                            type="checkbox"
-                            checked={status.includes(opt.key)}
-                            onChange={() => toggleCsvParam("status", opt.key)}
-                          />
-                          {opt.label}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Tipo de torneo</Label>
-                    <Select
-                      value={tournamentClass || "all"}
-                      onValueChange={(v) =>
-                        updateParams({
-                          tournamentClass: v === "all" ? undefined : v,
-                          page: "1",
-                        })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todos</SelectItem>
-                        <SelectItem value="MAJOR">Major</SelectItem>
-                        <SelectItem value="REGULAR">Regular</SelectItem>
-                        <SelectItem value="EXPRESS">Express</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">
-                      Express = formato EXPRESS. Major/Regular se estiman por categoría (A vs B/C).
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Categorías (modalidad)</Label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {modalityCategoryOptions.slice(0, 12).map((cat) => {
-                        const active = modalityCategories.includes(cat)
-                        return (
-                          <button
-                            key={cat}
-                            type="button"
-                            onClick={() => toggleCsvParam("modalityCategories", cat)}
-                            className={cn(
-                              "rounded-md border px-2 py-2 text-xs font-bold uppercase tracking-wide transition-colors",
-                              active
-                                ? "border-primary bg-primary/10 text-primary"
-                                : "border-border/60 bg-background text-muted-foreground hover:border-primary/40"
-                            )}
-                          >
-                            {cat}
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Modalidad</Label>
-                    <Select
-                      value={modality || "all"}
-                      onValueChange={(v) => updateParams({ modality: v === "all" ? undefined : v, page: "1" })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todas</SelectItem>
-                        {modalityOptions.map((m) => (
-                          <SelectItem key={m} value={m}>
-                            {m}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Formato</Label>
-                    <Select
-                      value={format || "all"}
-                      onValueChange={(v) => updateParams({ format: v === "all" ? undefined : v, page: "1" })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todos</SelectItem>
-                        {formatOptions.map((f) => (
-                          <SelectItem key={f} value={f}>
-                            {f}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Club</Label>
-                    <Select
-                      value={clubId || "all"}
-                      onValueChange={(v) => updateParams({ clubId: v === "all" ? undefined : v, page: "1" })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todos</SelectItem>
-                        {clubs.map((c) => (
-                          <SelectItem key={c.id} value={c.id}>
-                            {c.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </CardContent>
-              </Card>
+            <aside className="hidden lg:block lg:col-span-3">
+              <div className="sticky top-20">
+                <FiltersPanel />
+              </div>
             </aside>
 
             <div className="space-y-4 lg:col-span-9">
               <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <p>{isLoading ? "Cargando torneos..." : `${total} torneos encontrados`}</p>
+                <p>{isLoading ? tr("loading") : tr("resultsCount", { count: total })}</p>
                 {viewMode === "list" ? (
                   <p>
-                    Página {page} de {totalPages}
+                    {tr("pagination.pageOf", { page, totalPages })}
                   </p>
                 ) : null}
               </div>
@@ -536,7 +581,7 @@ function TorneosPageContent() {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between gap-3">
                       <p className="font-display text-xl font-black uppercase tracking-wide">
-                        {calendarMonth.toLocaleDateString("es-MX", { month: "long", year: "numeric" })}
+                        {calendarMonth.toLocaleDateString(localeTag, { month: "long", year: "numeric" })}
                       </p>
                       <div className="flex items-center gap-2">
                         <Button
@@ -568,7 +613,10 @@ function TorneosPageContent() {
 
                     <div className="mt-4 overflow-hidden rounded-2xl border border-border/60">
                       <div className="grid grid-cols-7 border-b border-border/60 bg-muted/40">
-                        {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((d) => (
+                        {(locale === "en"
+                          ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+                          : ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"]
+                        ).map((d) => (
                           <div key={d} className="py-3 text-center text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                             {d}
                           </div>
@@ -604,7 +652,7 @@ function TorneosPageContent() {
                                   {dayTournaments.slice(0, 2).map((t: any) => (
                                     <Link
                                       key={t.id}
-                                      href={`/torneos/${t.id}`}
+                                      href={{ pathname: "/torneos/[id]", params: { id: String(t.id) } } as any}
                                       className="block rounded bg-primary px-2 py-1 text-[10px] font-black uppercase text-primary-foreground hover:opacity-90"
                                       title={t.name}
                                     >
@@ -613,7 +661,7 @@ function TorneosPageContent() {
                                   ))}
                                   {dayTournaments.length > 2 ? (
                                     <span className="block text-[10px] font-bold text-muted-foreground">
-                                      +{dayTournaments.length - 2} más
+                                      {tr("calendar.moreCount", { count: dayTournaments.length - 2 })}
                                     </span>
                                   ) : null}
                                 </div>
@@ -630,12 +678,12 @@ function TorneosPageContent() {
               {viewMode === "list" ? (
                 isLoading ? (
                   <Card className="border-border/50">
-                    <CardContent className="p-6 text-center text-sm text-muted-foreground">Cargando torneos...</CardContent>
+                    <CardContent className="p-6 text-center text-sm text-muted-foreground">{tr("loading")}</CardContent>
                   </Card>
                 ) : tournaments.length === 0 ? (
                   <Card className="border-border/50">
                     <CardContent className="p-6 text-center text-sm text-muted-foreground">
-                      No se encontraron torneos con los filtros actuales.
+                      {tr("empty")}
                     </CardContent>
                   </Card>
                 ) : (
@@ -673,9 +721,9 @@ function TorneosPageContent() {
                                     {t.type} • {t.format}
                                   </Badge>
                                   {status.length === 0 && t.status === "OPEN" ? (
-                                    <Badge variant="secondary">Inscripciones</Badge>
+                                    <Badge variant="secondary">{tr("statusLabels.open")}</Badge>
                                   ) : null}
-                                  {isAlmostFull ? <Badge className="bg-destructive/10 text-destructive">Casi lleno</Badge> : null}
+                                  {isAlmostFull ? <Badge className="bg-destructive/10 text-destructive">{tr("almostFull")}</Badge> : null}
                                 </div>
                                 <h3 className="mt-2 font-display text-xl font-bold text-card-foreground transition-colors group-hover:text-primary">
                                   {t.name}
@@ -690,15 +738,15 @@ function TorneosPageContent() {
                             <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3.5 w-3.5" />
-                                {new Date(t.startDate).toLocaleDateString()} - {new Date(t.endDate).toLocaleDateString()}
+                                {new Date(t.startDate).toLocaleDateString(localeTag)} - {new Date(t.endDate).toLocaleDateString(localeTag)}
                               </span>
                               <span className="flex items-center gap-1">
                                 <MapPin className="h-3.5 w-3.5" />
                                 {citySlug ? (
                                   <Link
-                                    href={`/torneos/ciudad/${citySlug}`}
+                                    href={{ pathname: "/torneos/ciudad/[slug]", params: { slug: citySlug } } as any}
                                     className="font-semibold text-foreground/80 hover:underline"
-                                    title={`Ver torneos en ${t.city}`}
+                                    title={tr("viewTournamentsInTitle", { city: t.city })}
                                   >
                                     {cityLabel || t.city}
                                   </Link>
@@ -708,7 +756,7 @@ function TorneosPageContent() {
                               </span>
                               <span className="flex items-center gap-1">
                                 <Users className="h-3.5 w-3.5" />
-                                {t.registeredTeams}/{t.maxTeams} parejas
+                                {tr("teamsCount", { registered: t.registeredTeams, max: t.maxTeams })}
                               </span>
                             </div>
 
@@ -736,11 +784,11 @@ function TorneosPageContent() {
                                   disabled={!hasPoster}
                                   onClick={() => setPosterModal({ url: posterUrl, title: `Cartel: ${t.name}` })}
                                 >
-                                  Ver cartel
+                                  {tr("viewPoster")}
                                 </Button>
-                                <Link href={`/torneos/${t.id}`}>
+                                <Link href={{ pathname: "/torneos/[id]", params: { id: String(t.id) } } as any}>
                                   <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                                    Ver Torneo
+                                    {tr("viewTournament")}
                                   </Button>
                                 </Link>
                               </div>
@@ -756,10 +804,10 @@ function TorneosPageContent() {
               {viewMode === "list" ? (
                 <div className="mt-4 flex items-center justify-center gap-2">
                   <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => updateParams({ page: String(page - 1) })}>
-                    Anterior
+                    {tr("pagination.prev")}
                   </Button>
                   <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => updateParams({ page: String(page + 1) })}>
-                    Siguiente
+                    {tr("pagination.next")}
                   </Button>
                 </div>
               ) : null}

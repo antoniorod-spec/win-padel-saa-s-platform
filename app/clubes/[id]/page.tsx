@@ -1,9 +1,10 @@
 "use client"
 
-import Link from "next/link"
 import { useParams } from "next/navigation"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/landing/footer"
+import { useLocale, useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -64,26 +65,26 @@ function toGoogleMapsHref(params: {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(parts.join(", "))}`
 }
 
-function formatCompactNumber(value: number) {
+function formatCompactNumber(value: number, localeTag: string) {
   try {
-    return new Intl.NumberFormat("es-MX", { notation: "compact", maximumFractionDigits: 1 }).format(value)
+    return new Intl.NumberFormat(localeTag, { notation: "compact", maximumFractionDigits: 1 }).format(value)
   } catch {
     return String(value)
   }
 }
 
-function formatNumber(value: number) {
+function formatNumber(value: number, localeTag: string) {
   try {
-    return new Intl.NumberFormat("es-MX").format(value)
+    return new Intl.NumberFormat(localeTag).format(value)
   } catch {
     return String(value)
   }
 }
 
-function formatDate(value: string | Date) {
+function formatDate(value: string | Date, localeTag: string) {
   const d = typeof value === "string" ? new Date(value) : value
   if (Number.isNaN(d.getTime())) return "Fecha no disponible"
-  return d.toLocaleDateString("es-MX", { year: "numeric", month: "short", day: "2-digit" })
+  return d.toLocaleDateString(localeTag, { year: "numeric", month: "short", day: "2-digit" })
 }
 
 function initialsFromName(name: string) {
@@ -97,6 +98,9 @@ function initialsFromName(name: string) {
 }
 
 export default function ClubPublicProfilePage() {
+  const locale = useLocale() as "es" | "en"
+  const t = useTranslations("ClubDetail")
+  const localeTag = locale === "en" ? "en-US" : "es-MX"
   const params = useParams<{ id: string }>()
   const clubId = params?.id
   const { data, isLoading } = useClub(clubId)
@@ -157,13 +161,13 @@ export default function ClubPublicProfilePage() {
       <main>
         {isLoading ? (
           <section className="mx-auto max-w-7xl px-4 py-10 lg:px-8">
-            <p className="text-sm text-muted-foreground">Cargando perfil del club...</p>
+            <p className="text-sm text-muted-foreground">{t("loading")}</p>
           </section>
         ) : null}
 
         {!isLoading && !club ? (
           <section className="mx-auto max-w-7xl px-4 py-10 lg:px-8">
-            <p className="text-sm text-muted-foreground">No se encontro el club.</p>
+            <p className="text-sm text-muted-foreground">{t("notFound")}</p>
           </section>
         ) : null}
 
@@ -207,9 +211,9 @@ export default function ClubPublicProfilePage() {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
-                      <Badge variant="secondary">{club.courts} canchas</Badge>
-                      <Badge variant="outline">{club.rating.toFixed(1)} rating</Badge>
-                      {club.status === "APPROVED" ? <Badge variant="secondary">Verificado</Badge> : null}
+                      <Badge variant="secondary">{t("courtsCount", { count: club.courts })}</Badge>
+                      <Badge variant="outline">{club.rating.toFixed(1)} {t("rating")}</Badge>
+                      {club.status === "APPROVED" ? <Badge variant="secondary">{t("verified")}</Badge> : null}
                     </div>
                   </div>
                 </div>
@@ -221,8 +225,8 @@ export default function ClubPublicProfilePage() {
                         <Building2 className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Instalaciones</p>
-                        <p className="text-lg font-black">{club.courts} canchas</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t("cards.facilities")}</p>
+                        <p className="text-lg font-black">{t("courtsCount", { count: club.courts })}</p>
                       </div>
                     </div>
                   </div>
@@ -232,9 +236,11 @@ export default function ClubPublicProfilePage() {
                         <Trophy className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Torneos</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t("cards.tournaments")}</p>
                         <p className="text-lg font-black">
-                          {activeTournaments.length > 0 ? `${activeTournaments.length} activos` : `${club.totalTournaments} total`}
+                          {activeTournaments.length > 0
+                            ? t("activeTournamentsCount", { count: activeTournaments.length })
+                            : t("totalTournamentsCount", { count: club.totalTournaments })}
                         </p>
                       </div>
                     </div>
@@ -245,8 +251,8 @@ export default function ClubPublicProfilePage() {
                         <Users className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Comunidad</p>
-                        <p className="text-lg font-black">{formatCompactNumber(club.totalHomePlayers ?? 0)} jugadores</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t("cards.community")}</p>
+                        <p className="text-lg font-black">{t("playersCount", { count: formatCompactNumber(club.totalHomePlayers ?? 0, localeTag) })}</p>
                       </div>
                     </div>
                   </div>
@@ -256,7 +262,7 @@ export default function ClubPublicProfilePage() {
                         <Star className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Rating</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t("cards.rating")}</p>
                         <p className="text-lg font-black">{club.rating.toFixed(1)} / 5</p>
                       </div>
                     </div>
@@ -454,7 +460,7 @@ export default function ClubPublicProfilePage() {
                                       <p className="font-semibold">{t.name}</p>
                                       <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                                         <Calendar className="h-3.5 w-3.5" />
-                                        {formatDate(t.startDate)}
+                                        {formatDate(t.startDate, localeTag)}
                                       </p>
                                     </div>
                                     <Badge variant="outline" className="text-[10px]">
@@ -462,7 +468,7 @@ export default function ClubPublicProfilePage() {
                                     </Badge>
                                   </div>
                                   <Link
-                                    href={`/torneos/${t.id}`}
+                                    href={{ pathname: "/torneos/[id]", params: { id: String(t.id) } } as any}
                                     className="mt-3 inline-flex text-xs font-semibold text-primary hover:underline"
                                   >
                                     Ver torneo
@@ -492,14 +498,14 @@ export default function ClubPublicProfilePage() {
                                 <p className="font-semibold">{t.name}</p>
                                 <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                                   <Calendar className="h-3.5 w-3.5" />
-                                  {formatDate(t.startDate)}
+                                  {formatDate(t.startDate, localeTag)}
                                 </p>
                               </div>
                               <div className="flex items-center gap-2">
                                 <Badge variant="outline" className="text-[10px]">
                                   {t.status}
                                 </Badge>
-                                <Link href={`/torneos/${t.id}`}>
+                                <Link href={{ pathname: "/torneos/[id]", params: { id: String(t.id) } } as any}>
                                   <Button size="sm" variant="outline">
                                     Ver info
                                   </Button>
@@ -529,10 +535,10 @@ export default function ClubPublicProfilePage() {
                                   <p className="font-semibold">{t.name}</p>
                                   <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                                     <Calendar className="h-3.5 w-3.5" />
-                                    {formatDate(t.startDate)}
+                                    {formatDate(t.startDate, localeTag)}
                                   </p>
                                 </div>
-                                <Link href={`/torneos/${t.id}`}>
+                                <Link href={{ pathname: "/torneos/[id]", params: { id: String(t.id) } } as any}>
                                   <Button size="sm" variant="outline">
                                     Ver resultados
                                   </Button>
@@ -555,7 +561,7 @@ export default function ClubPublicProfilePage() {
                           </p>
                         </div>
                         <Badge variant="secondary" className="text-xs">
-                          {formatNumber(club.totalHomePlayers ?? ranking.length)} jugadores
+                          {t("playersCount", { count: formatNumber(club.totalHomePlayers ?? ranking.length, localeTag) })}
                         </Badge>
                       </CardHeader>
                       <CardContent>
@@ -621,7 +627,7 @@ export default function ClubPublicProfilePage() {
                                           </div>
                                         </div>
                                       </td>
-                                      <td className="px-4 py-3 font-black text-primary">{formatNumber(p.points)}</td>
+                                      <td className="px-4 py-3 font-black text-primary">{formatNumber(p.points, localeTag)}</td>
                                       <td className="px-4 py-3 text-muted-foreground">
                                         {p.wins}/{p.losses} ({ratio})
                                       </td>
@@ -886,7 +892,7 @@ export default function ClubPublicProfilePage() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm font-black text-primary">{formatNumber(p.points)}</p>
+                            <p className="text-sm font-black text-primary">{formatNumber(p.points, localeTag)}</p>
                             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Puntos</p>
                           </div>
                         </div>

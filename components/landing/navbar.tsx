@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { useTheme } from "next-themes"
 import { useSession, signOut } from "next-auth/react"
+import { useLocale, useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import {
@@ -28,18 +29,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
+import { LocaleSwitcher } from "@/components/locale-switcher"
 
 const navLinks = [
-  { href: "/torneos", label: "Torneos", icon: Calendar },
-  { href: "/ranking", label: "Ranking", icon: BarChart3 },
-  { href: "/clubes", label: "Clubes", icon: Building2 },
-  { href: "/como-funciona", label: "Como Funciona", icon: Zap },
-]
+  { href: "/torneos", labelKey: "tournaments", icon: Calendar },
+  { href: "/ranking", labelKey: "ranking", icon: BarChart3 },
+  { href: "/clubes", labelKey: "clubs", icon: Building2 },
+  { href: "/como-funciona", labelKey: "howItWorks", icon: Zap },
+] as const
 
 export function Navbar() {
+  const t = useTranslations("Navbar")
   const { theme, setTheme } = useTheme()
   const [open, setOpen] = useState(false)
   const { data: session, status } = useSession()
+  const locale = useLocale()
 
   const isLoggedIn = status === "authenticated"
   const userRole = session?.user?.role
@@ -52,7 +56,7 @@ export function Navbar() {
             <Trophy className="h-5 w-5 text-primary-foreground" />
           </div>
           <span className="font-display text-xl font-bold uppercase tracking-tight text-foreground">
-            WhinPadel
+            {t("brand")}
           </span>
         </Link>
 
@@ -61,13 +65,15 @@ export function Navbar() {
             <Link key={link.href} href={link.href}>
               <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
                 <link.icon className="h-4 w-4" />
-                {link.label}
+                {t(link.labelKey)}
               </Button>
             </Link>
           ))}
         </div>
 
         <div className="flex items-center gap-2">
+          <LocaleSwitcher />
+
           <Button
             variant="ghost"
             size="icon"
@@ -76,7 +82,7 @@ export function Navbar() {
           >
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Cambiar tema</span>
+            <span className="sr-only">{t("toggleTheme")}</span>
           </Button>
 
           {isLoggedIn && (
@@ -85,7 +91,7 @@ export function Navbar() {
               <Badge className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary p-0 text-[10px] text-primary-foreground">
                 3
               </Badge>
-              <span className="sr-only">Notificaciones</span>
+              <span className="sr-only">{t("notifications")}</span>
             </Button>
           )}
 
@@ -94,7 +100,7 @@ export function Navbar() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-muted-foreground">
                   <User className="h-4 w-4" />
-                  <span className="sr-only">Perfil</span>
+                  <span className="sr-only">{t("profile")}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
@@ -105,40 +111,40 @@ export function Navbar() {
                 <DropdownMenuSeparator />
                 {userRole === "PLAYER" && (
                   <DropdownMenuItem asChild>
-                    <Link href="/jugador">Mi Perfil</Link>
+                    <Link href="/jugador">{t("myProfile")}</Link>
                   </DropdownMenuItem>
                 )}
                 {userRole === "CLUB" && (
                   <DropdownMenuItem asChild>
-                    <Link href="/club">Panel Club</Link>
+                    <Link href="/club">{t("clubPanel")}</Link>
                   </DropdownMenuItem>
                 )}
                 {userRole === "ADMIN" && (
                   <DropdownMenuItem asChild>
                     <Link href="/admin" className="flex items-center gap-2">
                       <Shield className="h-3.5 w-3.5" />
-                      Panel Admin
+                      {t("adminPanel")}
                     </Link>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={() => signOut({ callbackUrl: "/" })}
+                  onClick={() => signOut({ callbackUrl: `/${locale}` })}
                   className="flex items-center gap-2 text-destructive"
                 >
                   <LogOut className="h-3.5 w-3.5" />
-                  Cerrar Sesion
+                  {t("signOut")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <div className="hidden gap-2 md:flex">
               <Link href="/login">
-                <Button variant="outline" size="sm">Iniciar Sesion</Button>
+                <Button variant="outline" size="sm">{t("signIn")}</Button>
               </Link>
               <Link href="/registro">
                 <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  Registrarse
+                  {t("signUp")}
                 </Button>
               </Link>
             </div>
@@ -151,13 +157,13 @@ export function Navbar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-72">
-              <SheetTitle className="sr-only">Menu de navegacion</SheetTitle>
+              <SheetTitle className="sr-only">{t("menuTitle")}</SheetTitle>
               <div className="mt-8 flex flex-col gap-4">
                 {navLinks.map((link) => (
                   <Link key={link.href} href={link.href} onClick={() => setOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start gap-3">
                       <link.icon className="h-4 w-4" />
-                      {link.label}
+                      {t(link.labelKey)}
                     </Button>
                   </Link>
                 ))}
@@ -168,26 +174,26 @@ export function Navbar() {
                       <Link href="/jugador" onClick={() => setOpen(false)}>
                         <Button variant="ghost" className="w-full justify-start gap-3">
                           <User className="h-4 w-4" />
-                          Mi Perfil
+                          {t("myProfile")}
                         </Button>
                       </Link>
                     )}
                     <Button
                       variant="outline"
                       className="w-full gap-2 text-destructive"
-                      onClick={() => signOut({ callbackUrl: "/" })}
+                      onClick={() => signOut({ callbackUrl: `/${locale}` })}
                     >
                       <LogOut className="h-4 w-4" />
-                      Cerrar Sesion
+                      {t("signOut")}
                     </Button>
                   </>
                 ) : (
                   <>
                     <Link href="/login" onClick={() => setOpen(false)}>
-                      <Button variant="outline" className="w-full">Iniciar Sesion</Button>
+                      <Button variant="outline" className="w-full">{t("signIn")}</Button>
                     </Link>
                     <Link href="/registro" onClick={() => setOpen(false)}>
-                      <Button className="w-full bg-primary text-primary-foreground">Registrarse</Button>
+                      <Button className="w-full bg-primary text-primary-foreground">{t("signUp")}</Button>
                     </Link>
                   </>
                 )}

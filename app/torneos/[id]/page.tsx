@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useParams } from "next/navigation"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/landing/footer"
+import { useLocale, useTranslations } from "next-intl"
 import { TournamentBracket } from "@/components/tournament-bracket"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -58,15 +59,18 @@ function isBetweenInclusive(day: Date, start: Date, end: Date) {
   return d >= s && d <= e
 }
 
-function formatMonthTitle(date: Date) {
+function formatMonthTitle(date: Date, localeTag: string) {
   try {
-    return date.toLocaleDateString("es-MX", { month: "long", year: "numeric" })
+    return date.toLocaleDateString(localeTag, { month: "long", year: "numeric" })
   } catch {
     return `${date.getMonth() + 1}/${date.getFullYear()}`
   }
 }
 
 export default function TournamentPage() {
+  const locale = useLocale() as "es" | "en"
+  const t = useTranslations("TournamentDetail")
+  const localeTag = locale === "en" ? "en-US" : "es-MX"
   const params = useParams()
   const tournamentId = params.id as string
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
@@ -139,7 +143,7 @@ export default function TournamentPage() {
       <div className="min-h-screen bg-background">
         <Navbar />
         <main className="flex items-center justify-center py-16">
-          <p className="text-muted-foreground">Cargando torneo...</p>
+          <p className="text-muted-foreground">{t("loading")}</p>
         </main>
         <Footer />
       </div>
@@ -151,7 +155,7 @@ export default function TournamentPage() {
       <div className="min-h-screen bg-background">
         <Navbar />
         <main className="flex items-center justify-center py-16">
-          <p className="text-muted-foreground">Torneo no encontrado</p>
+          <p className="text-muted-foreground">{t("notFound")}</p>
         </main>
         <Footer />
       </div>
@@ -184,25 +188,25 @@ export default function TournamentPage() {
                 <div className="flex items-center gap-2">
                   <Badge className="bg-primary/10 text-primary">Cat. {tournament.category}</Badge>
                   {tournament.type === "BASIC" ? (
-                    <Badge variant="outline">Torneo Básico</Badge>
+                    <Badge variant="outline">{t("basicTournament")}</Badge>
                   ) : null}
                   {isRegistrationOpen && (
-                    <Badge variant="secondary">Inscripciones abiertas</Badge>
+                    <Badge variant="secondary">{t("registrationOpen")}</Badge>
                   )}
                   {isAlmostFull && (
-                    <Badge className="bg-destructive/10 text-destructive">Casi lleno</Badge>
+                    <Badge className="bg-destructive/10 text-destructive">{t("almostFull")}</Badge>
                   )}
                   {tournament.status === "ACTIVE" && (
-                    <Badge className="bg-chart-4/10 text-chart-4">En curso</Badge>
+                    <Badge className="bg-chart-4/10 text-chart-4">{t("inProgress")}</Badge>
                   )}
                   {tournament.status === "COMPLETED" && (
-                    <Badge className="bg-muted text-muted-foreground">Finalizado</Badge>
+                    <Badge className="bg-muted text-muted-foreground">{t("completed")}</Badge>
                   )}
                   {tournament.resultsValidationStatus === "PENDING_REVIEW" ? (
-                    <Badge variant="outline">Resultados en revisión</Badge>
+                    <Badge variant="outline">{t("resultsPendingReview")}</Badge>
                   ) : null}
                   {tournament.resultsValidationStatus === "APPROVED" ? (
-                    <Badge className="bg-primary/10 text-primary">Resultados validados</Badge>
+                    <Badge className="bg-primary/10 text-primary">{t("resultsApproved")}</Badge>
                   ) : null}
                 </div>
                 <h1 className="mt-3 font-display text-3xl font-black uppercase text-card-foreground md:text-4xl lg:text-5xl">
@@ -212,7 +216,7 @@ export default function TournamentPage() {
                 <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="h-4 w-4 text-primary" />
-                    {new Date(tournament.startDate).toLocaleDateString()} - {new Date(tournament.endDate).toLocaleDateString()}
+                    {new Date(tournament.startDate).toLocaleDateString(localeTag)} - {new Date(tournament.endDate).toLocaleDateString(localeTag)}
                   </span>
                   <span className="flex items-center gap-1.5">
                     <MapPin className="h-4 w-4 text-primary" />
@@ -220,7 +224,7 @@ export default function TournamentPage() {
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Users className="h-4 w-4 text-primary" />
-                    {tournament.registeredTeams}/{tournament.maxTeams} parejas
+                    {tournament.registeredTeams}/{tournament.maxTeams} {t("teams")}
                   </span>
                 </div>
               </div>
@@ -229,13 +233,13 @@ export default function TournamentPage() {
                   <CardContent className="p-4 text-center">
                     {tournament.prize ? (
                       <>
-                        <p className="text-xs font-semibold uppercase text-muted-foreground">Premio Total</p>
+                        <p className="text-xs font-semibold uppercase text-muted-foreground">{t("totalPrize")}</p>
                         <p className="font-display text-2xl font-bold text-primary">{tournament.prize}</p>
                         <Separator className="my-2" />
                       </>
                     ) : null}
                     <p className="text-xs text-muted-foreground">
-                      Inscripción: ${tournament.inscriptionPrice} MXN
+                      {t("inscriptionPrice", { price: tournament.inscriptionPrice })}
                     </p>
                   </CardContent>
                 </Card>
@@ -244,13 +248,13 @@ export default function TournamentPage() {
                   <Dialog open={isPosterOpen} onOpenChange={setIsPosterOpen}>
                     <DialogTrigger asChild>
                       <Button variant="outline" className="w-full">
-                        Ver cartel
+                        {t("viewPoster")}
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-5xl p-0">
                       <div className="bg-black">
                         <DialogHeader className="sr-only">
-                          <DialogTitle>Cartel del torneo</DialogTitle>
+                          <DialogTitle>{t("posterDialogTitle")}</DialogTitle>
                         </DialogHeader>
                         <img
                           src={posterUrl}
@@ -272,7 +276,7 @@ export default function TournamentPage() {
                     onClick={() => setIsRegisterModalOpen(true)}
                   >
                     <Trophy className="h-4 w-4" />
-                    Inscribirme Ahora
+                    {t("registerNow")}
                   </Button>
                 )}
                 {tournament.type === "BASIC" && tournament.externalRegistrationLink ? (
@@ -282,7 +286,7 @@ export default function TournamentPage() {
                       className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
                     >
                       <Trophy className="h-4 w-4" />
-                      Ir a inscripción externa
+                      {t("goToExternalRegistration")}
                     </Button>
                   </a>
                 ) : null}
@@ -291,7 +295,7 @@ export default function TournamentPage() {
                   className="w-full"
                   onClick={() => setIsImportModalOpen(true)}
                 >
-                  Importar parejas (club)
+                  {t("importTeams")}
                 </Button> : null}
                 {tournament.type !== "BASIC" && tournament.modalities?.[0] && (
                   <Button
@@ -304,7 +308,7 @@ export default function TournamentPage() {
                       })
                     }
                   >
-                    Generar cuadros automáticos
+                    {t("generateBrackets")}
                   </Button>
                 )}
               </div>
@@ -316,11 +320,11 @@ export default function TournamentPage() {
         <section className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
           <Tabs defaultValue="teams">
             <TabsList className="mb-6 flex w-full justify-start gap-6 overflow-x-auto rounded-none bg-transparent p-0 border-b border-border/60">
-              {bracket && tournament.type !== "BASIC" ? <TabsTrigger value="bracket">Cuadro / Bracket</TabsTrigger> : null}
-              <TabsTrigger value="teams">Parejas Inscritas</TabsTrigger>
-              <TabsTrigger value="calendar">Calendario</TabsTrigger>
-              <TabsTrigger value="groups">Grupos</TabsTrigger>
-              <TabsTrigger value="info">Info del Torneo</TabsTrigger>
+              {bracket && tournament.type !== "BASIC" ? <TabsTrigger value="bracket">{t("tabs.bracket")}</TabsTrigger> : null}
+              <TabsTrigger value="teams">{t("tabs.teams")}</TabsTrigger>
+              <TabsTrigger value="calendar">{t("tabs.calendar")}</TabsTrigger>
+              <TabsTrigger value="groups">{t("tabs.groups")}</TabsTrigger>
+              <TabsTrigger value="info">{t("tabs.info")}</TabsTrigger>
             </TabsList>
 
             {bracket && (
@@ -343,10 +347,10 @@ export default function TournamentPage() {
                     <div className="flex flex-col items-center justify-center py-16">
                       <Users className="mb-4 h-16 w-16 text-muted-foreground/40" />
                       <p className="text-lg font-medium text-muted-foreground">
-                        No hay parejas inscritas aún
+                          {t("noTeamsTitle")}
                       </p>
                       <p className="mt-1 text-sm text-muted-foreground/70">
-                        Sé el primero en inscribirte
+                          {t("noTeamsSubtitle")}
                       </p>
                     </div>
                   ) : (
@@ -354,10 +358,10 @@ export default function TournamentPage() {
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-16">Seed</TableHead>
-                          <TableHead>Pareja</TableHead>
-                          <TableHead>Modalidad</TableHead>
-                          <TableHead className="text-center">Estado Pago</TableHead>
-                          <TableHead className="text-right">Ranking Combinado</TableHead>
+                            <TableHead>{t("table.team")}</TableHead>
+                            <TableHead>{t("table.modality")}</TableHead>
+                            <TableHead className="text-center">{t("table.paymentStatus")}</TableHead>
+                            <TableHead className="text-right">{t("table.combinedRanking")}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -391,11 +395,15 @@ export default function TournamentPage() {
                                       : "border-destructive text-destructive"
                                 }
                               >
-                                {team.paymentStatus === "PAID" ? "Pagado" : team.paymentStatus === "PENDING" ? "Pendiente" : "No pagado"}
+                                {team.paymentStatus === "PAID"
+                                  ? t("payment.paid")
+                                  : team.paymentStatus === "PENDING"
+                                    ? t("payment.pending")
+                                    : t("payment.unpaid")}
                               </Badge>
                             </TableCell>
                             <TableCell className="text-right font-display font-bold text-primary">
-                              {team.combinedRanking ? `${team.combinedRanking.toLocaleString()} pts` : "-"}
+                              {team.combinedRanking ? `${team.combinedRanking.toLocaleString(localeTag)} ${t("pointsShort")}` : "-"}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -410,9 +418,9 @@ export default function TournamentPage() {
               <Card className="border-border/50">
                 <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <CardTitle className="font-display text-lg text-card-foreground">Calendario del torneo</CardTitle>
+                      <CardTitle className="font-display text-lg text-card-foreground">{t("calendar.title")}</CardTitle>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {new Date(tournament.startDate).toLocaleDateString()} - {new Date(tournament.endDate).toLocaleDateString()}
+                        {new Date(tournament.startDate).toLocaleDateString(localeTag)} - {new Date(tournament.endDate).toLocaleDateString(localeTag)}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -422,7 +430,7 @@ export default function TournamentPage() {
                       variant="outline"
                       onClick={() => setCalendarMonth(addMonths(effectiveMonth, -1))}
                       disabled={monthKey(effectiveMonth) <= monthKey(startOfMonth(tournamentStartDate))}
-                      title="Mes anterior"
+                      title={t("calendar.prevMonth")}
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
@@ -431,9 +439,9 @@ export default function TournamentPage() {
                       variant="outline"
                       onClick={() => setCalendarMonth(startOfMonth(tournamentStartDate))}
                       className="px-4 text-xs font-bold uppercase tracking-wider"
-                      title="Ir al inicio del torneo"
+                      title={t("calendar.goToStart")}
                     >
-                      Inicio
+                      {t("calendar.start")}
                     </Button>
                     <Button
                       type="button"
@@ -441,7 +449,7 @@ export default function TournamentPage() {
                       variant="outline"
                       onClick={() => setCalendarMonth(addMonths(effectiveMonth, 1))}
                       disabled={monthKey(effectiveMonth) >= monthKey(startOfMonth(tournamentEndDate))}
-                      title="Mes siguiente"
+                      title={t("calendar.nextMonth")}
                     >
                       <ChevronRight className="h-4 w-4" />
                     </Button>
@@ -451,17 +459,17 @@ export default function TournamentPage() {
                 <CardContent className="space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <h3 className="font-display text-2xl font-black uppercase tracking-wide text-card-foreground">
-                      {formatMonthTitle(effectiveMonth)}
+                      {formatMonthTitle(effectiveMonth, localeTag)}
                     </h3>
                     <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <span className="h-3 w-3 rounded bg-primary" />
-                        Días de torneo
+                        {t("calendar.legendTournamentDays")}
                       </div>
                       {tournament.registrationDeadline ? (
                         <div className="flex items-center gap-2">
                           <span className="h-3 w-3 rounded bg-slate-900" />
-                          Cierre inscripciones
+                          {t("calendar.legendRegistrationDeadline")}
                         </div>
                       ) : null}
                     </div>
@@ -469,7 +477,10 @@ export default function TournamentPage() {
 
                   <div className="overflow-hidden rounded-2xl border border-border/60 bg-background">
                     <div className="grid grid-cols-7 border-b border-border/60 bg-muted/40">
-                      {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((d) => (
+                      {(locale === "en"
+                        ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+                        : ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"]
+                      ).map((d) => (
                         <div
                           key={d}
                           className="py-3 text-center text-[10px] font-black uppercase tracking-widest text-muted-foreground"
@@ -501,9 +512,9 @@ export default function TournamentPage() {
                                 {cell.date.getDate()}
                               </span>
                               {inTournamentRange ? (
-                                <span className="mt-1 h-2 w-2 rounded bg-primary" title="Día de torneo" />
+                                <span className="mt-1 h-2 w-2 rounded bg-primary" title={t("calendar.tooltipTournamentDay")} />
                               ) : isRegistrationDeadline ? (
-                                <span className="mt-1 h-2 w-2 rounded bg-slate-900" title="Cierre de inscripciones" />
+                                <span className="mt-1 h-2 w-2 rounded bg-slate-900" title={t("calendar.tooltipRegistrationDeadline")} />
                               ) : null}
                             </div>
                             {inTournamentRange ? (
@@ -512,7 +523,7 @@ export default function TournamentPage() {
                               </div>
                             ) : isRegistrationDeadline ? (
                               <div className="mt-2 rounded bg-slate-900 px-2 py-1 text-[10px] font-black uppercase text-white">
-                                Cierre inscripciones
+                                {t("calendar.registrationDeadline")}
                               </div>
                             ) : null}
                           </div>

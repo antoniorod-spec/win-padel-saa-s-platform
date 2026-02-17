@@ -1,8 +1,20 @@
 import { Navbar } from "@/components/landing/navbar"
 import { Footer } from "@/components/landing/footer"
 import { Target, Heart, Globe } from "lucide-react"
+import type { Metadata } from "next"
+import { getLocale, getTranslations } from "next-intl/server"
+import { buildAlternates } from "@/lib/seo/alternates"
 
-export default function NosotrosPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = (await getLocale()) as "es" | "en"
+  return {
+    alternates: buildAlternates({ pathname: "/nosotros", canonicalLocale: locale }),
+  }
+}
+
+export default async function NosotrosPage() {
+  const t = await getTranslations("AboutPage")
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -14,16 +26,14 @@ export default function NosotrosPage() {
             <div className="mx-auto max-w-3xl text-center">
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
                 <Heart className="h-4 w-4" />
-                Nuestra Historia
+                {t("pill")}
               </div>
               <h1 className="font-display text-4xl font-bold uppercase tracking-tight text-secondary-foreground sm:text-5xl">
-                Creemos que el padel merece{" "}
-                <span className="text-primary">herramientas profesionales</span>
+                {t("title1")}{" "}
+                <span className="text-primary">{t("titleHighlight")}</span>
               </h1>
               <p className="mt-6 text-lg leading-relaxed text-secondary-foreground/70">
-                Somos jugadores y profesionales de tecnologia apasionados por el padel. 
-                Creamos WhinPadel porque vimos que los clubes necesitaban una plataforma 
-                moderna para organizar torneos sin las complicaciones de siempre.
+                {t("intro")}
               </p>
             </div>
           </div>
@@ -36,18 +46,18 @@ export default function NosotrosPage() {
               {[
                 {
                   icon: Target,
-                  title: "Nuestra Mision",
-                  desc: "Democratizar la gestion de torneos de padel ofreciendo una plataforma profesional, gratuita y accesible para clubes de todos los tamanos en Latinoamerica y Espana.",
+                  title: t("mvv1Title"),
+                  desc: t("mvv1Desc"),
                 },
                 {
                   icon: Globe,
-                  title: "Nuestra Vision",
-                  desc: "Convertirnos en la plataforma de referencia para la comunidad de padel competitivo, conectando jugadores, clubes y organizadores en un ecosistema unificado.",
+                  title: t("mvv2Title"),
+                  desc: t("mvv2Desc"),
                 },
                 {
                   icon: Heart,
-                  title: "Nuestros Valores",
-                  desc: "Transparencia en los rankings, accesibilidad para todos, innovacion constante y pasion genuina por hacer crecer la comunidad del padel.",
+                  title: t("mvv3Title"),
+                  desc: t("mvv3Desc"),
                 },
               ].map((item) => (
                 <div key={item.title} className="rounded-xl border border-border bg-card p-8 transition-shadow hover:shadow-lg">
@@ -67,28 +77,28 @@ export default function NosotrosPage() {
           <div className="mx-auto max-w-3xl px-4 lg:px-8">
             <div className="text-center">
               <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground">
-                ¿Por que es <span className="text-primary">100% gratis</span>?
+                {t("freeHeading1")} <span className="text-primary">{t("freeHeadingHighlight")}</span>?
               </h2>
               <p className="mt-3 text-muted-foreground">
-                No es un modelo freemium con funciones bloqueadas. Es una decision consciente.
+                {t("freeSubheading")}
               </p>
             </div>
             <div className="mt-12 space-y-6">
               {[
                 {
                   num: "1",
-                  title: "El padel crece cuando los clubes crecen",
-                  desc: "Si los clubes tienen mejores herramientas, organizan mas torneos, atraen mas jugadores y el deporte crece. Todos ganamos.",
+                  title: t("free1Title"),
+                  desc: t("free1Desc"),
                 },
                 {
                   num: "2",
-                  title: "Las barreras de costo no deberian existir",
-                  desc: "Un club pequeno con 2 canchas merece las mismas herramientas que uno con 20. La tecnologia debe ser un igualador, no un diferenciador.",
+                  title: t("free2Title"),
+                  desc: t("free2Desc"),
                 },
                 {
                   num: "3",
-                  title: "Nos sostenemos con patrocinios",
-                  desc: "Marcas deportivas y empresas pueden patrocinar torneos y tener visibilidad en la plataforma. Asi el costo no recae en clubes ni jugadores.",
+                  title: t("free3Title"),
+                  desc: t("free3Desc"),
                 },
               ].map((item) => (
                 <div key={item.num} className="flex gap-4 rounded-lg border border-border bg-card p-6">
@@ -111,25 +121,21 @@ export default function NosotrosPage() {
             <div className="grid items-center gap-12 md:grid-cols-2">
               <div>
                 <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground">
-                  Comprometidos con la comunidad
+                  {t("communityHeading")}
                 </h2>
                 <p className="mt-4 leading-relaxed text-muted-foreground">
-                  WhinPadel nace de la frustracion de organizar torneos con hojas de calculo y 
-                  WhatsApp. Sabemos lo que es porque lo vivimos como jugadores. Por eso construimos 
-                  la plataforma que siempre quisimos tener.
+                  {t("communityP1")}
                 </p>
                 <p className="mt-4 leading-relaxed text-muted-foreground">
-                  Cada funcion que agregamos esta pensada desde la experiencia real de organizar 
-                  y jugar torneos. No somos una empresa de software que decidio hacer algo de padel; 
-                  somos gente de padel que sabe hacer software.
+                  {t("communityP2")}
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { value: "100%", label: "Gratuito" },
-                  { value: "5+", label: "Formatos de torneo" },
-                  { value: "16", label: "Categorias con ranking" },
-                  { value: "24/7", label: "Plataforma disponible" },
+                  { value: "100%", label: t("statFree") },
+                  { value: "5+", label: t("statFormats") },
+                  { value: "16", label: t("statCategories") },
+                  { value: "24/7", label: t("statAvailability") },
                 ].map((stat) => (
                   <div key={stat.label} className="rounded-xl border border-border bg-card p-6 text-center">
                     <div className="font-display text-3xl font-bold text-primary">{stat.value}</div>

@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 import TorneosClient from "./TorneosClient"
+import { getLocale } from "next-intl/server"
+import { buildAlternates } from "@/lib/seo/alternates"
 
 export const dynamic = "force-dynamic"
 
@@ -17,6 +19,7 @@ export async function generateMetadata(
   { searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }
 ): Promise<Metadata> {
   const sp = await searchParams
+  const locale = (await getLocale()) as "es" | "en"
 
   const stateKey = typeof sp.stateKey === "string" ? sp.stateKey : ""
   const cityKey = typeof sp.cityKey === "string" ? sp.cityKey : ""
@@ -31,7 +34,11 @@ export async function generateMetadata(
     return {
       title,
       description: titleCity ? `Explora torneos de pádel en ${titleCity}. Filtra por fechas, modalidad y club.` : undefined,
-      alternates: { canonical: `/torneos/ciudad/${citySlug}` },
+      alternates: buildAlternates({
+        pathname: "/torneos/ciudad/[slug]",
+        params: { slug: citySlug },
+        canonicalLocale: locale,
+      }),
       robots: { index: false, follow: true },
     }
   }
@@ -40,7 +47,7 @@ export async function generateMetadata(
     return {
       title: "Torneos de Pádel | WhinPadel",
       description: "Explora torneos de pádel por ciudad, fecha, modalidad y club.",
-      alternates: { canonical: "/torneos" },
+      alternates: buildAlternates({ pathname: "/torneos", canonicalLocale: locale }),
       robots: { index: false, follow: true },
     }
   }
@@ -48,7 +55,7 @@ export async function generateMetadata(
   return {
     title: "Torneos de Pádel | WhinPadel",
     description: "Explora torneos de pádel por ciudad, fecha, modalidad y club.",
-    alternates: { canonical: "/torneos" },
+    alternates: buildAlternates({ pathname: "/torneos", canonicalLocale: locale }),
   }
 }
 

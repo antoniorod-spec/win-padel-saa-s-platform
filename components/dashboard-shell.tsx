@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { useTheme } from "next-themes"
 import { signOut } from "next-auth/react"
+import { useLocale, useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
@@ -21,6 +22,7 @@ import {
 } from "lucide-react"
 
 interface NavItem {
+  id: string
   label: string
   icon: LucideIcon
   href: string
@@ -32,7 +34,7 @@ interface DashboardShellProps {
   title: string
   subtitle?: string
   navItems: NavItem[]
-  activeItem: string
+  activeItemId: string
   role: "admin" | "club" | "jugador"
 }
 
@@ -41,13 +43,15 @@ export function DashboardShell({
   title,
   subtitle,
   navItems,
-  activeItem,
+  activeItemId,
   role,
 }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { theme, setTheme } = useTheme()
+  const locale = useLocale() as "es" | "en"
+  const t = useTranslations("DashboardShell")
 
-  const roleLabel = role === "admin" ? "Administrador" : role === "club" ? "Club" : "Jugador"
+  const roleLabel = role === "admin" ? t("roleAdmin") : role === "club" ? t("roleClub") : t("rolePlayer")
   const roleColor = role === "admin" ? "bg-destructive/20 text-destructive" : role === "club" ? "bg-secondary text-secondary-foreground" : "bg-primary/20 text-primary"
 
   return (
@@ -83,12 +87,12 @@ export function DashboardShell({
         <ScrollArea className="flex-1 px-3">
           <nav className="flex flex-col gap-1 py-2">
             {navItems.map((item) => (
-              <Link key={item.label} href={item.href}>
+              <Link key={item.id} href={item.href as any}>
                 <Button
                   variant="ghost"
                   className={cn(
                     "w-full justify-start gap-3 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                    activeItem === item.label && "bg-sidebar-accent text-sidebar-primary font-semibold"
+                    activeItemId === item.id && "bg-sidebar-accent text-sidebar-primary font-semibold"
                   )}
                 >
                   <item.icon className="h-4 w-4" />
@@ -108,10 +112,10 @@ export function DashboardShell({
           <Button
             variant="ghost"
             className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-sidebar-foreground"
-            onClick={() => signOut({ callbackUrl: "/" })}
+            onClick={() => signOut({ callbackUrl: locale === "en" ? "/en" : "/" })}
           >
             <LogOut className="h-4 w-4" />
-            Cerrar Sesion
+            {t("signOut")}
           </Button>
         </div>
       </aside>

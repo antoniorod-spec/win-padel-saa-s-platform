@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
-import Link from "next/link"
+import { useLocale, useTranslations } from "next-intl"
+import { Link, useRouter } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -13,7 +13,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Trophy, User, Building2, Loader2, ArrowLeft } from "lucide-react"
 
 export default function RegisterPage() {
+  const t = useTranslations("AuthRegister")
   const router = useRouter()
+  const locale = useLocale()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
@@ -44,7 +46,7 @@ export default function RegisterPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error ?? "Error al registrarse")
+        setError(data.error ?? t("registerErrorFallback"))
         return
       }
 
@@ -55,12 +57,12 @@ export default function RegisterPage() {
         redirect: false,
       })
       if (login?.error) {
-        router.push("/login?registered=true")
+        router.push({ pathname: "/login", query: { registered: "true" } })
         return
       }
       router.push("/onboarding/player")
     } catch {
-      setError("Error de conexion. Intenta de nuevo.")
+      setError(t("connectionError"))
     } finally {
       setLoading(false)
     }
@@ -85,7 +87,7 @@ export default function RegisterPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error ?? "Error al registrarse")
+        setError(data.error ?? t("registerErrorFallback"))
         return
       }
 
@@ -96,12 +98,12 @@ export default function RegisterPage() {
         redirect: false,
       })
       if (login?.error) {
-        router.push("/login?registered=true&type=club")
+        router.push({ pathname: "/login", query: { registered: "true", type: "club" } })
         return
       }
       router.push("/onboarding/club")
     } catch {
-      setError("Error de conexion. Intenta de nuevo.")
+      setError(t("connectionError"))
     } finally {
       setLoading(false)
     }
@@ -116,7 +118,7 @@ export default function RegisterPage() {
         className="absolute left-4 top-4 z-20 flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Volver al inicio
+        {t("backToHome")}
       </Link>
 
       <Card className="relative z-10 w-full max-w-md border-border/50 bg-card/95 shadow-2xl backdrop-blur-sm">
@@ -125,8 +127,8 @@ export default function RegisterPage() {
             <Trophy className="h-8 w-8 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Crear cuenta</h1>
-            <p className="text-sm text-muted-foreground">Unete a WhinPadel</p>
+            <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+            <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
           </div>
         </CardHeader>
 
@@ -135,22 +137,22 @@ export default function RegisterPage() {
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="player" className="gap-2">
                 <User className="h-4 w-4" />
-                Jugador
+                {t("playerTab")}
               </TabsTrigger>
               <TabsTrigger value="club" className="gap-2">
                 <Building2 className="h-4 w-4" />
-                Club
+                {t("clubTab")}
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="player" className="mt-6">
               <form className="flex flex-col gap-4" onSubmit={handlePlayerRegister}>
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="player-email">Correo Electronico</Label>
+                  <Label htmlFor="player-email">{t("emailLabel")}</Label>
                   <Input
                     id="player-email"
                     type="email"
-                    placeholder="tu@email.com"
+                    placeholder={t("playerEmailPlaceholder")}
                     className="bg-background"
                     value={playerEmail}
                     onChange={(e) => setPlayerEmail(e.target.value)}
@@ -158,11 +160,11 @@ export default function RegisterPage() {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="player-pass">Contrasena</Label>
+                  <Label htmlFor="player-pass">{t("passwordLabel")}</Label>
                   <Input
                     id="player-pass"
                     type="password"
-                    placeholder="Min. 8 caracteres"
+                    placeholder={t("passwordPlaceholder")}
                     className="bg-background"
                     value={playerPassword}
                     onChange={(e) => setPlayerPassword(e.target.value)}
@@ -175,11 +177,11 @@ export default function RegisterPage() {
 
                 <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Crear Cuenta
+                  {t("submit")}
                 </Button>
 
                 <p className="text-center text-xs text-muted-foreground">
-                  Completaras tu perfil en el siguiente paso
+                  {t("playerNextStep")}
                 </p>
               </form>
             </TabsContent>
@@ -187,11 +189,11 @@ export default function RegisterPage() {
             <TabsContent value="club" className="mt-6">
               <form className="flex flex-col gap-4" onSubmit={handleClubRegister}>
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="club-email">Correo Electronico</Label>
+                  <Label htmlFor="club-email">{t("emailLabel")}</Label>
                   <Input
                     id="club-email"
                     type="email"
-                    placeholder="info@tuclub.mx"
+                    placeholder={t("clubEmailPlaceholder")}
                     className="bg-background"
                     value={clubEmail}
                     onChange={(e) => setClubEmail(e.target.value)}
@@ -199,11 +201,11 @@ export default function RegisterPage() {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="club-pass">Contrasena</Label>
+                  <Label htmlFor="club-pass">{t("passwordLabel")}</Label>
                   <Input
                     id="club-pass"
                     type="password"
-                    placeholder="Min. 8 caracteres"
+                    placeholder={t("passwordPlaceholder")}
                     className="bg-background"
                     value={clubPassword}
                     onChange={(e) => setClubPassword(e.target.value)}
@@ -216,11 +218,11 @@ export default function RegisterPage() {
 
                 <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Crear Cuenta
+                  {t("submit")}
                 </Button>
 
                 <p className="text-center text-xs text-muted-foreground">
-                  Completaras el perfil de tu club en 5 pasos
+                  {t("clubNextStep")}
                 </p>
               </form>
             </TabsContent>
@@ -231,14 +233,14 @@ export default function RegisterPage() {
               <Separator />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">O continua con</span>
+              <span className="bg-card px-2 text-muted-foreground">{t("orContinueWith")}</span>
             </div>
           </div>
 
           <Button
             variant="outline"
             className="w-full gap-2"
-            onClick={() => signIn("google", { callbackUrl: "/onboarding" })}
+            onClick={() => signIn("google", { callbackUrl: `/${locale}/onboarding` })}
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path
@@ -258,13 +260,13 @@ export default function RegisterPage() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            Google
+            {t("google")}
           </Button>
 
           <div className="text-center text-sm">
-            <span className="text-muted-foreground">Ya tienes cuenta? </span>
+            <span className="text-muted-foreground">{t("alreadyHaveAccount")} </span>
             <Link href="/login" className="font-medium text-primary hover:underline">
-              Inicia sesion
+              {t("signInLink")}
             </Link>
           </div>
         </CardContent>

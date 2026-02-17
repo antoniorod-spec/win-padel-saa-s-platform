@@ -22,26 +22,27 @@ import {
   Zap,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { Link, useRouter } from "@/i18n/navigation"
 import { usePlayer, usePlayerStats, usePlayerMatches } from "@/hooks/use-player"
 import { useTournaments } from "@/hooks/use-tournaments"
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-
-const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/jugador" },
-  { label: "Mis Torneos", icon: Trophy, href: "/jugador" },
-  { label: "Explorar Torneos", icon: Search, href: "/torneos" },
-  { label: "Mi Ranking", icon: BarChart3, href: "/jugador" },
-  { label: "Calendario", icon: Calendar, href: "/jugador" },
-  { label: "Explorar Jugadores", icon: User, href: "/ranking" },
-  { label: "Noticias", icon: Newspaper, href: "/jugador" },
-]
 
 export default function PlayerDashboard() {
+  const t = useTranslations("PlayerDashboard")
   const { data: session, status } = useSession()
   const router = useRouter()
   const [playerId, setPlayerId] = useState<string | undefined>(undefined)
+
+  const navItems = [
+    { id: "dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, href: "/jugador" },
+    { id: "myTournaments", label: t("nav.myTournaments"), icon: Trophy, href: "/jugador" },
+    { id: "exploreTournaments", label: t("nav.exploreTournaments"), icon: Search, href: "/torneos" },
+    { id: "myRanking", label: t("nav.myRanking"), icon: BarChart3, href: "/jugador" },
+    { id: "calendar", label: t("nav.calendar"), icon: Calendar, href: "/jugador" },
+    { id: "explorePlayers", label: t("nav.explorePlayers"), icon: User, href: "/ranking" },
+    { id: "news", label: t("nav.news"), icon: Newspaper, href: "/jugador" },
+  ]
 
   // Get playerId from userId
   useEffect(() => {
@@ -86,14 +87,14 @@ export default function PlayerDashboard() {
   if (status === "loading" || playerLoading) {
     return (
       <DashboardShell
-        title="Mi Perfil"
-        subtitle="Cargando..."
+        title={t("title")}
+        subtitle={t("loading")}
         navItems={navItems}
-        activeItem="Dashboard"
+        activeItemId="dashboard"
         role="jugador"
       >
         <div className="flex items-center justify-center h-64">
-          <div className="text-muted-foreground">Cargando perfil...</div>
+          <div className="text-muted-foreground">{t("loadingProfile")}</div>
         </div>
       </DashboardShell>
     )
@@ -102,14 +103,14 @@ export default function PlayerDashboard() {
   if (!playerData || !statsData) {
     return (
       <DashboardShell
-        title="Mi Perfil"
-        subtitle="Error"
+        title={t("title")}
+        subtitle={t("error")}
         navItems={navItems}
-        activeItem="Dashboard"
+        activeItemId="dashboard"
         role="jugador"
       >
         <div className="flex items-center justify-center h-64">
-          <div className="text-muted-foreground">No se pudo cargar el perfil del jugador</div>
+          <div className="text-muted-foreground">{t("cantLoadProfile")}</div>
         </div>
       </DashboardShell>
     )
@@ -121,14 +122,14 @@ export default function PlayerDashboard() {
   if (!player || !stats) {
     return (
       <DashboardShell
-        title="Mi Perfil"
-        subtitle="Error"
+        title={t("title")}
+        subtitle={t("error")}
         navItems={navItems}
-        activeItem="Dashboard"
+        activeItemId="dashboard"
         role="jugador"
       >
         <div className="flex items-center justify-center h-64">
-          <div className="text-muted-foreground">Datos incompletos</div>
+          <div className="text-muted-foreground">{t("incompleteData")}</div>
         </div>
       </DashboardShell>
     )
@@ -145,10 +146,10 @@ export default function PlayerDashboard() {
 
   return (
     <DashboardShell
-      title="Mi Perfil"
+      title={t("title")}
       subtitle={`${player.fullName} - ${player.city}`}
       navItems={navItems}
-      activeItem="Dashboard"
+      activeItemId="dashboard"
       role="jugador"
     >
       {/* Profile header */}
@@ -434,7 +435,7 @@ export default function PlayerDashboard() {
                     <span className="font-display text-sm font-bold text-primary">
                       ${t.inscriptionPrice}
                     </span>
-                    <Link href={`/torneos/${t.id}`}>
+                    <Link href={{ pathname: "/torneos/[id]", params: { id: String(t.id) } } as any}>
                       <Button size="sm" className="bg-primary text-primary-foreground">
                         Ver Detalles
                       </Button>

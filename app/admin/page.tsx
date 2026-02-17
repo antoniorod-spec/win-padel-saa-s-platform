@@ -26,6 +26,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useEffect, useState } from "react"
+import { useTranslations } from "next-intl"
 import { 
   useAdminStats, 
   usePendingClubs, 
@@ -39,25 +40,26 @@ import {
 import { ASCENSION_RULES, DESCENT_RULES } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 
-const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
-  { label: "Clubes", icon: Building2, href: "/admin" },
-  { label: "Jugadores", icon: Users, href: "/admin" },
-  { label: "Torneos", icon: Trophy, href: "/admin" },
-  { label: "Comite Categorias", icon: AlertTriangle, href: "/admin" },
-  { label: "Ranking Config", icon: BarChart3, href: "/admin" },
-  { label: "Reportes", icon: FileText, href: "/admin" },
-  { label: "Noticias", icon: Newspaper, href: "/admin" },
-  { label: "Configuracion", icon: Settings, href: "/admin" },
-]
-
 export default function AdminDashboard() {
+  const t = useTranslations("AdminDashboard")
   const { toast } = useToast()
   const { data: statsData, isLoading: statsLoading } = useAdminStats()
   const { data: clubsData } = usePendingClubs()
   const { data: categoryReviewsData } = useCategoryReviews("PENDING")
   const { data: rankingStatsData } = useRankingStats()
   const { data: siteBannerData } = useSiteBannerSettings()
+
+  const navItems = [
+    { id: "dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, href: "/admin" },
+    { id: "clubs", label: t("nav.clubs"), icon: Building2, href: "/admin" },
+    { id: "players", label: t("nav.players"), icon: Users, href: "/admin" },
+    { id: "tournaments", label: t("nav.tournaments"), icon: Trophy, href: "/admin" },
+    { id: "categoriesCommittee", label: t("nav.categoriesCommittee"), icon: AlertTriangle, href: "/admin" },
+    { id: "rankingConfig", label: t("nav.rankingConfig"), icon: BarChart3, href: "/admin" },
+    { id: "reports", label: t("nav.reports"), icon: FileText, href: "/admin" },
+    { id: "news", label: t("nav.news"), icon: Newspaper, href: "/admin" },
+    { id: "settings", label: t("nav.settings"), icon: Settings, href: "/admin" },
+  ]
   
   const approveClubMutation = useApproveClub()
   const reviewCategoryMutation = useReviewCategoryChange()
@@ -187,14 +189,14 @@ export default function AdminDashboard() {
   if (statsLoading) {
     return (
       <DashboardShell
-        title="Panel de Administracion"
-        subtitle="Gestion global de la plataforma WhinPadel"
+        title={t("title")}
+        subtitle={t("subtitle")}
         navItems={navItems}
-        activeItem="Dashboard"
+        activeItemId="dashboard"
         role="admin"
       >
         <div className="flex items-center justify-center h-64">
-          <p className="text-muted-foreground">Cargando estadísticas...</p>
+          <p className="text-muted-foreground">{t("loadingStats")}</p>
         </div>
       </DashboardShell>
     )
@@ -202,31 +204,31 @@ export default function AdminDashboard() {
 
   return (
     <DashboardShell
-      title="Panel de Administracion"
-      subtitle="Gestion global de la plataforma WhinPadel"
+      title={t("title")}
+      subtitle={t("subtitle")}
       navItems={navItems}
-      activeItem="Dashboard"
+      activeItemId="dashboard"
       role="admin"
     >
       {/* Stats row */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard 
-          title="Total Clubes" 
+          title={t("cards.totalClubs")}
           value={stats?.totalClubs || 0} 
           icon={Building2} 
         />
         <StatCard 
-          title="Jugadores Activos" 
+          title={t("cards.activePlayers")}
           value={(stats?.activePlayers || 0).toLocaleString()} 
           icon={Users} 
         />
         <StatCard 
-          title="Torneos Activos" 
+          title={t("cards.activeTournaments")}
           value={stats?.activeTournaments || 0} 
           icon={Trophy} 
         />
         <StatCard 
-          title="Inscripciones" 
+          title={t("cards.registrations")}
           value={(stats?.totalRegistrations || 0).toLocaleString()} 
           icon={BarChart3} 
         />

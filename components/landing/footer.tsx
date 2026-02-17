@@ -1,7 +1,12 @@
+"use client"
+
 import { Trophy } from "lucide-react"
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 
 export function Footer() {
+  const t = useTranslations("Footer")
+
   return (
     <footer className="border-t border-border bg-card">
       <div className="mx-auto max-w-7xl px-4 py-12 lg:px-8">
@@ -11,11 +16,10 @@ export function Footer() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                 <Trophy className="h-4 w-4 text-primary-foreground" />
               </div>
-              <span className="font-display text-lg font-bold uppercase text-card-foreground">WhinPadel</span>
+              <span className="font-display text-lg font-bold uppercase text-card-foreground">{t("brand")}</span>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              La plataforma profesional para gestion de torneos de padel, rankings y clubes.
-              100% gratuita para toda la comunidad.
+              {t("descriptionLine1")} {t("descriptionLine2")}
             </p>
             <div className="mt-4 flex items-center gap-3">
               <a
@@ -40,39 +44,44 @@ export function Footer() {
             </div>
           </div>
           <div>
-            <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-card-foreground">Plataforma</h4>
+            <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-card-foreground">{t("platform")}</h4>
             <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <Link href="/torneos" className="transition-colors hover:text-primary">Torneos</Link>
-              <Link href="/ranking" className="transition-colors hover:text-primary">Ranking</Link>
-              <Link href="/clubes" className="transition-colors hover:text-primary">Clubes</Link>
-              <Link href="/como-funciona" className="transition-colors hover:text-primary">Como Funciona</Link>
+              <Link href="/torneos" className="transition-colors hover:text-primary">{t("tournaments")}</Link>
+              <Link href="/ranking" className="transition-colors hover:text-primary">{t("ranking")}</Link>
+              <Link href="/clubes" className="transition-colors hover:text-primary">{t("clubs")}</Link>
+              <Link href="/como-funciona" className="transition-colors hover:text-primary">{t("howItWorks")}</Link>
             </nav>
           </div>
           <div>
-            <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-card-foreground">Empresa</h4>
+            <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-card-foreground">{t("company")}</h4>
             <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <Link href="/nosotros" className="transition-colors hover:text-primary">Nosotros</Link>
-              <Link href="/patrocinadores" className="transition-colors hover:text-primary">Patrocinadores</Link>
-              <Link href="/contacto" className="transition-colors hover:text-primary">Contacto</Link>
-              <Link href="/faq" className="transition-colors hover:text-primary">Preguntas Frecuentes</Link>
+              <Link href="/nosotros" className="transition-colors hover:text-primary">{t("about")}</Link>
+              <Link href="/patrocinadores" className="transition-colors hover:text-primary">{t("sponsors")}</Link>
+              <Link href="/contacto" className="transition-colors hover:text-primary">{t("contact")}</Link>
+              <Link href="/faq" className="transition-colors hover:text-primary">{t("faq")}</Link>
             </nav>
           </div>
           <div>
-            <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-card-foreground">Para Clubes</h4>
+            <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-card-foreground">{t("forClubs")}</h4>
             <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <Link href="/registro?role=club" className="transition-colors hover:text-primary">Registrar Club</Link>
-              <Link href="/club" className="transition-colors hover:text-primary">Panel de Club</Link>
-              <Link href="/como-funciona" className="transition-colors hover:text-primary">Guia de Inicio</Link>
+              <Link
+                href={{ pathname: "/registro", query: { role: "club" } }}
+                className="transition-colors hover:text-primary"
+              >
+                {t("registerClub")}
+              </Link>
+              <Link href="/club" className="transition-colors hover:text-primary">{t("clubPanel")}</Link>
+              <Link href="/como-funciona" className="transition-colors hover:text-primary">{t("gettingStarted")}</Link>
             </nav>
           </div>
         </div>
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 sm:flex-row">
           <p className="text-xs text-muted-foreground">
-            &copy; 2026 WhinPadel. Todos los derechos reservados.
+            &copy; 2026 WhinPadel. {t("rights")}
           </p>
           <div className="flex gap-4 text-xs text-muted-foreground">
-            <Link href="/terminos" className="transition-colors hover:text-primary">Terminos de Uso</Link>
-            <Link href="/privacidad" className="transition-colors hover:text-primary">Privacidad</Link>
+            <Link href="/terminos" className="transition-colors hover:text-primary">{t("terms")}</Link>
+            <Link href="/privacidad" className="transition-colors hover:text-primary">{t("privacy")}</Link>
           </div>
         </div>
       </div>

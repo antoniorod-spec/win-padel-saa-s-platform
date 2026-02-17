@@ -1,6 +1,7 @@
 "use client"
 
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -9,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { useRankings } from "@/hooks/use-rankings"
 
 export function RankingPreview() {
+  const t = useTranslations("LandingRanking")
   const { data: rankingsData } = useRankings("VARONIL", "4ta")
   const players = rankingsData?.data || []
   const top5 = players.slice(0, 5)
@@ -19,16 +21,16 @@ export function RankingPreview() {
         <div className="mb-10 flex items-end justify-between">
           <div>
             <h2 className="font-display text-3xl font-bold uppercase text-foreground md:text-4xl">
-              Ranking por Categoria
+              {t("heading")}
             </h2>
             <p className="mt-2 text-muted-foreground">
-              Varonil 4ta Categoria
-              <span className="ml-2 text-xs text-muted-foreground/70">(Cada categoria tiene ranking independiente)</span>
+              {t("subheading")}
+              <span className="ml-2 text-xs text-muted-foreground/70">{t("note")}</span>
             </p>
           </div>
           <Link href="/ranking" className="hidden md:block">
             <Button variant="ghost" className="gap-2 text-primary hover:text-primary/80">
-              Todos los rankings
+              {t("allRankings")}
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
@@ -79,7 +81,7 @@ export function RankingPreview() {
                           <span>{winRate}%</span>
                         </div>
                         <Badge className="bg-primary/10 font-display text-lg font-bold text-primary">
-                          {player.points.toLocaleString()} pts
+                          {player.points.toLocaleString()} {t("pointsShort")}
                         </Badge>
                       </div>
                     </CardContent>
@@ -111,8 +113,14 @@ export function RankingPreview() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-muted-foreground">{player.played}PJ {winRate}%V</span>
-                        <span className="font-display font-bold text-primary">{player.points.toLocaleString()} pts</span>
+                        <span className="text-xs text-muted-foreground">
+                          {player.played}
+                          {t("playedShort")} {winRate}
+                          {t("winRateShort")}
+                        </span>
+                        <span className="font-display font-bold text-primary">
+                          {player.points.toLocaleString()} {t("pointsShort")}
+                        </span>
                         {player.trend === "up" ? (
                           <TrendingUp className="h-3.5 w-3.5 text-primary" />
                         ) : player.trend === "down" ? (
@@ -129,14 +137,14 @@ export function RankingPreview() {
           </>
         ) : (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">No hay rankings disponibles aún</p>
+            <p className="text-muted-foreground">{t("noRankings")}</p>
           </div>
         )}
 
         <div className="mt-6 text-center md:hidden">
           <Link href="/ranking">
             <Button variant="outline" className="gap-2">
-              Ver todos los rankings
+              {t("viewAllRankings")}
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>

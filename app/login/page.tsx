@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { signIn, useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { useRouter, Link } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator"
 import { Trophy, Loader2, ArrowLeft } from "lucide-react"
 
 export default function LoginPage() {
+  const t = useTranslations("AuthLogin")
   const router = useRouter()
   const { data: session, status } = useSession()
   const [email, setEmail] = useState("")
@@ -78,12 +79,12 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        setError("Correo o contrasena incorrectos")
+        setError(t("invalidCredentials"))
         setLoading(false)
       }
       // La redirección se maneja en el useEffect
     } catch {
-      setError("Error al iniciar sesion. Intenta de nuevo.")
+      setError(t("genericError"))
       setLoading(false)
     }
   }
@@ -111,7 +112,7 @@ export default function LoginPage() {
         className="absolute left-4 top-4 z-20 flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Volver al inicio
+        {t("backToHome")}
       </Link>
 
       <Card className="relative z-10 w-full max-w-md border-border/50 bg-card">
@@ -122,8 +123,8 @@ export default function LoginPage() {
             </div>
             <span className="font-display text-2xl font-bold uppercase text-card-foreground">WhinPadel</span>
           </Link>
-          <h1 className="font-display text-xl font-bold text-card-foreground">Iniciar Sesion</h1>
-          <p className="text-sm text-muted-foreground">Ingresa a tu cuenta para continuar</p>
+          <h1 className="font-display text-xl font-bold text-card-foreground">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </CardHeader>
         <CardContent className="px-8 pb-8">
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -133,11 +134,11 @@ export default function LoginPage() {
               </div>
             )}
             <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Correo electronico</Label>
+              <Label htmlFor="email">{t("emailLabel")}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="tu@email.com"
+                placeholder={t("emailPlaceholder")}
                 className="bg-background"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -146,13 +147,13 @@ export default function LoginPage() {
             </div>
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Contrasena</Label>
-                <Link href="#" className="text-xs text-primary hover:underline">Olvidaste tu contrasena?</Link>
+                <Label htmlFor="password">{t("passwordLabel")}</Label>
+                <a href="#" className="text-xs text-primary hover:underline">{t("forgotPassword")}</a>
               </div>
               <Input
                 id="password"
                 type="password"
-                placeholder="********"
+                placeholder={t("passwordPlaceholder")}
                 className="bg-background"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -165,13 +166,13 @@ export default function LoginPage() {
               disabled={loading}
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Iniciar Sesion
+              {t("submit")}
             </Button>
           </form>
 
           <div className="my-6 flex items-center gap-3">
             <Separator className="flex-1" />
-            <span className="text-xs text-muted-foreground">o continua con</span>
+            <span className="text-xs text-muted-foreground">{t("orContinueWith")}</span>
             <Separator className="flex-1" />
           </div>
 
@@ -181,9 +182,9 @@ export default function LoginPage() {
           </Button>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            No tienes cuenta?{" "}
+            {t("noAccount")}{" "}
             <Link href="/registro" className="font-semibold text-primary hover:underline">
-              Registrate
+              {t("signUpLink")}
             </Link>
           </p>
         </CardContent>

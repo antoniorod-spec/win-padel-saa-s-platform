@@ -1,11 +1,14 @@
 "use client"
 
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Trophy, ArrowRight, Users, Calendar, BarChart3 } from "lucide-react"
 
 export function HeroSection() {
+  const t = useTranslations("LandingHero")
+
   return (
     <section className="relative overflow-hidden">
       {/* Background pattern */}
@@ -16,29 +19,28 @@ export function HeroSection() {
         <div className="mx-auto max-w-3xl text-center">
           <Badge variant="outline" className="mb-6 border-primary/30 bg-primary/5 px-4 py-1.5 text-primary">
             <Trophy className="mr-2 h-3.5 w-3.5" />
-            La plataforma #1 para padel competitivo
+            {t("badge")}
           </Badge>
 
           <h1 className="text-balance font-display text-4xl font-black uppercase leading-tight tracking-tight text-foreground md:text-6xl lg:text-7xl">
-            Gestiona torneos.{" "}
-            <span className="text-primary">Domina el ranking.</span>
+            {t("titleLine")}{" "}
+            <span className="text-primary">{t("titleHighlight")}</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
-            WhinPadel es la plataforma SaaS completa para clubes, jugadores y organizadores de torneos de padel.
-            Rankings en tiempo real, brackets automaticos y gestion profesional.
+            {t("descriptionLine1")} {t("descriptionLine2")}
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link href="/registro">
               <Button size="lg" className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90 sm:w-auto">
-                Registrate como Jugador
+                {t("ctaPlayer")}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link href="/registro?role=club">
+            <Link href={{ pathname: "/registro", query: { role: "club" } }}>
               <Button size="lg" variant="outline" className="w-full gap-2 sm:w-auto">
-                Registra tu Club
+                {t("ctaClub")}
               </Button>
             </Link>
           </div>
@@ -46,9 +48,9 @@ export function HeroSection() {
           {/* Stats */}
           <div className="mt-16 grid grid-cols-3 gap-4 md:gap-8">
             {[
-              { icon: Users, value: "4,280+", label: "Jugadores activos" },
-              { icon: Calendar, value: "156", label: "Torneos este ano" },
-              { icon: BarChart3, value: "23", label: "Clubes asociados" },
+              { icon: Users, value: "4,280+", label: t("statActivePlayers") },
+              { icon: Calendar, value: "156", label: t("statTournamentsThisYear") },
+              { icon: BarChart3, value: "23", label: t("statPartnerClubs") },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
