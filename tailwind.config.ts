@@ -15,6 +15,12 @@ const config: Config = {
         display: ['var(--font-oswald)', 'system-ui', 'sans-serif'],
       },
       colors: {
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        'background-light': '#f8fafc',
+        'background-dark': '#0f172a',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
@@ -24,10 +30,6 @@ const config: Config = {
         popover: {
           DEFAULT: 'hsl(var(--popover))',
           foreground: 'hsl(var(--popover-foreground))',
-        },
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',

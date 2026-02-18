@@ -28,7 +28,7 @@ export async function POST(
       )
     }
 
-    const { tournamentModalityId, player1, player2 } = parsed.data
+    const { tournamentModalityId, player1, player2, paymentStatus: reqPaymentStatus } = parsed.data
 
     const tournament = await prisma.tournament.findUnique({
       where: { id },
@@ -56,9 +56,36 @@ export async function POST(
       )
     }
 
-    const regCount = await prisma.tournamentRegistration.count({
-      where: { tournamentModalityId },
-    })
+    // Ejecutar en paralelo: conteo + resolución de ambos jugadores (caso típico: por ID)
+    const resolveP1 = isPlayerById(player1)
+      ? prisma.player.findUnique({ where: { id: player1.playerId }, select: { id: true } })
+      : findPlayerByPhone(player1.phone).then((ex) =>
+          ex ? Promise.resolve(ex.id) : findOrCreatePlayerByPhone({
+            phone: player1.phone,
+            firstName: player1.firstName,
+            lastName: player1.lastName,
+            email: player1.email || undefined,
+            sourceClubId: tournament.clubId,
+          })
+        )
+    const resolveP2 = isPlayerById(player2)
+      ? prisma.player.findUnique({ where: { id: player2.playerId }, select: { id: true } })
+      : findPlayerByPhone(player2.phone).then((ex) =>
+          ex ? Promise.resolve(ex.id) : findOrCreatePlayerByPhone({
+            phone: player2.phone,
+            firstName: player2.firstName,
+            lastName: player2.lastName,
+            email: player2.email || undefined,
+            sourceClubId: tournament.clubId,
+          })
+        )
+
+    const [regCount, p1Res, p2Res] = await Promise.all([
+      prisma.tournamentRegistration.count({ where: { tournamentModalityId } }),
+      resolveP1,
+      resolveP2,
+    ])
+
     const maxAllowed = modality.maxPairs ?? tournament.maxTeams
     if (regCount >= maxAllowed) {
       return NextResponse.json(
@@ -67,63 +94,20 @@ export async function POST(
       )
     }
 
-    let player1Id: string
-    let player2Id: string
+    const player1Id = isPlayerById(player1) ? (p1Res as { id: string } | null)?.id : (p1Res as string | null)
+    const player2Id = isPlayerById(player2) ? (p2Res as { id: string } | null)?.id : (p2Res as string | null)
 
-    if (isPlayerById(player1)) {
-      const p1 = await prisma.player.findUnique({ where: { id: player1.playerId } })
-      if (!p1) {
-        return NextResponse.json({ success: false, error: "Jugador 1 no encontrado" }, { status: 400 })
-      }
-      player1Id = p1.id
-    } else {
-      const existing = await findPlayerByPhone(player1.phone)
-      if (existing) {
-        player1Id = existing.id
-      } else {
-        const created = await findOrCreatePlayerByPhone({
-          phone: player1.phone,
-          firstName: player1.firstName,
-          lastName: player1.lastName,
-          email: player1.email || undefined,
-          sourceClubId: tournament.clubId,
-        })
-        if (!created) {
-          return NextResponse.json(
-            { success: false, error: "No se pudo crear o encontrar jugador 1 (teléfono inválido)" },
-            { status: 400 }
-          )
-        }
-        player1Id = created
-      }
+    if (!player1Id) {
+      return NextResponse.json(
+        { success: false, error: isPlayerById(player1) ? "Jugador 1 no encontrado" : "No se pudo crear o encontrar jugador 1 (teléfono inválido)" },
+        { status: 400 }
+      )
     }
-
-    if (isPlayerById(player2)) {
-      const p2 = await prisma.player.findUnique({ where: { id: player2.playerId } })
-      if (!p2) {
-        return NextResponse.json({ success: false, error: "Jugador 2 no encontrado" }, { status: 400 })
-      }
-      player2Id = p2.id
-    } else {
-      const existing = await findPlayerByPhone(player2.phone)
-      if (existing) {
-        player2Id = existing.id
-      } else {
-        const created = await findOrCreatePlayerByPhone({
-          phone: player2.phone,
-          firstName: player2.firstName,
-          lastName: player2.lastName,
-          email: player2.email || undefined,
-          sourceClubId: tournament.clubId,
-        })
-        if (!created) {
-          return NextResponse.json(
-            { success: false, error: "No se pudo crear o encontrar jugador 2 (teléfono inválido)" },
-            { status: 400 }
-          )
-        }
-        player2Id = created
-      }
+    if (!player2Id) {
+      return NextResponse.json(
+        { success: false, error: isPlayerById(player2) ? "Jugador 2 no encontrado" : "No se pudo crear o encontrar jugador 2 (teléfono inválido)" },
+        { status: 400 }
+      )
     }
 
     if (player1Id === player2Id) {
@@ -133,19 +117,42 @@ export async function POST(
       )
     }
 
-    const existingReg = await prisma.tournamentRegistration.findFirst({
+    // Una sola consulta: pareja duplicada o jugador ya inscrito en la categoría
+    const conflicting = await prisma.tournamentRegistration.findFirst({
       where: {
         tournamentModalityId,
         OR: [
           { player1Id, player2Id },
           { player1Id: player2Id, player2Id: player1Id },
+          { player1Id },
+          { player2Id: player1Id },
+          { player1Id: player2Id },
+          { player2Id },
         ],
       },
+      include: {
+        player1: { select: { firstName: true, lastName: true } },
+        player2: { select: { firstName: true, lastName: true } },
+      },
     })
-    if (existingReg) {
+    if (conflicting) {
+      const samePair =
+        (conflicting.player1Id === player1Id && conflicting.player2Id === player2Id) ||
+        (conflicting.player1Id === player2Id && conflicting.player2Id === player1Id)
+      if (samePair) {
+        return NextResponse.json(
+          { success: false, error: "Esta pareja ya esta inscrita en esta modalidad" },
+          { status: 409 }
+        )
+      }
+      const dupP1 = conflicting.player1Id === player1Id || conflicting.player1Id === player2Id
+      const dupPlayer = dupP1 ? conflicting.player1 : conflicting.player2
       return NextResponse.json(
-        { success: false, error: "Esta pareja ya esta inscrita en esta modalidad" },
-        { status: 409 }
+        {
+          success: false,
+          error: `${dupPlayer.firstName} ${dupPlayer.lastName} ya está inscrito en esta categoría con otra pareja. Un jugador solo puede tener una pareja por categoría.`,
+        },
+        { status: 400 }
       )
     }
 
@@ -155,7 +162,7 @@ export async function POST(
         player1Id,
         player2Id,
         paymentAmount: tournament.inscriptionPrice,
-        paymentStatus: "CONFIRMED",
+        paymentStatus: reqPaymentStatus === "PENDING" ? "PENDING" : "CONFIRMED",
       },
       include: {
         player1: { select: { id: true, firstName: true, lastName: true } },
@@ -163,10 +170,28 @@ export async function POST(
       },
     })
 
+    const p1 = registration.player1
+    const p2 = registration.player2
+    const teamForCache = {
+      registrationId: registration.id,
+      tournamentModalityId,
+      seed: registration.seed,
+      player1: `${p1.firstName} ${p1.lastName}`,
+      player2: `${p2.firstName} ${p2.lastName}`,
+      player1Id: p1.id,
+      player2Id: p2.id,
+      combinedRanking: 0,
+      modality: modality.modality,
+      category: modality.category,
+      paymentStatus: registration.paymentStatus,
+      registeredAt: registration.registeredAt,
+    }
+
     return NextResponse.json(
       {
         success: true,
         data: registration,
+        team: teamForCache,
         message: "Pareja inscrita correctamente.",
       },
       { status: 201 }

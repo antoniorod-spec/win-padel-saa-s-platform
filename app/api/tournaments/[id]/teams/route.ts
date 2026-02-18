@@ -27,7 +27,7 @@ export async function GET(
           include: { rankings: true },
         },
         tournamentModality: {
-          select: { modality: true, category: true },
+          select: { id: true, modality: true, category: true },
         },
       },
       orderBy: { seed: "asc" },
@@ -42,6 +42,7 @@ export async function GET(
 
         return {
           registrationId: r.id,
+          tournamentModalityId: r.tournamentModality.id,
           seed: r.seed,
           player1: `${r.player1.firstName} ${r.player1.lastName}`,
           player2: `${r.player2.firstName} ${r.player2.lastName}`,
@@ -51,6 +52,7 @@ export async function GET(
           modality: r.tournamentModality.modality,
           category: r.tournamentModality.category,
           paymentStatus: r.paymentStatus,
+          registeredAt: r.registeredAt,
         }
       }),
     })

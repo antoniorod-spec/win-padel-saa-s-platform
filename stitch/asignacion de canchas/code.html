@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Programación Horaria y Gestión de Canchas - Ranking Padel MX</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;family=Oswald:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00C853",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#102218",
+                        "conflict-red": "#ef4444",
+                    },
+                    fontFamily: {
+                        "display": ["Oswald", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        h1, h2, h3, .font-display {
+            font-family: "Oswald", sans-serif;
+        }
+        .bg-overlay {
+            background-image: linear-gradient(rgba(246, 248, 247, 0.96), rgba(246, 248, 247, 0.96)), url(https://lh3.googleusercontent.com/aida-public/AB6AXuCkhfqr7xugSkKw2pIyEV2CDFO3rKyEWh8JTBMe6Q8hPJncQJt6XRMBCkDYgafbs126KFH08H4G7FtxzecpcY3qD4ctpu_CFMOUWHTIZ2SdmtvOcxf3SZVT054L-DIoB1CW-HiesWZx2ELcUCRvRaAM0FBuphX0QQKSB56eMSJc2iLeWGo2-_UpfaJ3_MSe44Ge0Ae3IdWY0mnfsn7oPIwS887YaaMk3HrwJKZcoekKZl4PFttxAN0B0THyFA50GTabKm-KrwL1XvU);
+            background-size: cover;
+            background-position: center;
+        }
+        .grid-header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: white;
+        }
+        .time-sidebar {
+            position: sticky;
+            left: 0;
+            z-index: 20;
+            background: white;
+        }
+        .match-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 200, 83, 0.2);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-background-light text-[#111814] min-h-screen flex flex-col bg-overlay">
+<header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#dbe6e0] px-6 py-3">
+<div class="max-w-[1600px] mx-auto flex items-center justify-between gap-4">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="size-10 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined font-bold">calendar_month</span>
+</div>
+<div>
+<h1 class="text-xl font-bold leading-tight uppercase tracking-tight">Ranking Padel MX</h1>
+<p class="text-[10px] text-[#618972] font-bold tracking-widest uppercase">Programación Horaria</p>
+</div>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-sm font-semibold text-[#618972] hover:text-primary transition-colors" href="#">Torneos</a>
+<a class="text-sm font-semibold text-[#618972] hover:text-primary transition-colors" href="#">Cuadros</a>
+<a class="text-sm font-semibold text-primary border-b-2 border-primary pb-1" href="#">Rol de Juegos</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex flex-col items-end">
+<span class="text-[10px] font-bold text-primary uppercase tracking-wider">Torneo Activo</span>
+<span class="text-sm font-bold font-display uppercase tracking-wide">Primavera 2024</span>
+</div>
+<select class="bg-[#f0f4f2] border-none rounded-lg text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-primary/50 cursor-pointer">
+<option>Varonil 3ra Fuerza</option>
+<option>Varonil 2da Fuerza</option>
+<option>Femenil Open</option>
+</select>
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden border-2 border-primary/10">
+<img alt="Perfil" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKO7NeRFSiRdOfJgY99SsBPEj5qY7UIA5J0N5aVQcKiNz4aXEm1hmSH2geVIHo3xIfdL0GM3KuZnoreyfszN0WEpePKVpZqJ8Wr_FIvd9avseyNC7c-g8pOG92JwpkPbhG_neuTil0ba-HR2DEFN4gRnc0yYF_VBgrJ02KmSXRygcgw7rT0SVC_E4Hy8a1gFVMEMxZfPBxmyiAPuWsQ9kzonOpmukhhcqywbZV9II1LT28tc6sJ4nKS-09twtGHPZANtrE6sJKrzE"/>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-1 flex overflow-hidden">
+<aside class="w-80 bg-white border-r border-[#dbe6e0] flex flex-col shadow-sm z-10">
+<div class="p-6 border-b border-[#f0f4f2]">
+<h3 class="font-bold text-[#111814] flex items-center gap-2 uppercase tracking-wide">
+<span class="material-symbols-outlined text-primary">pending_actions</span>
+                Pendientes de Asignar
+            </h3>
+<p class="text-xs text-[#618972] mt-1 font-medium">Partidos por programar en cancha</p>
+</div>
+<div class="p-4 bg-[#f9fafb]">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-xs text-[#618972]">filter_alt</span>
+<input class="w-full text-xs border-[#dbe6e0] rounded-lg pl-8 py-1.5 focus:ring-primary" placeholder="Filtrar por fase o pareja..." type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+<div class="bg-white border-l-4 border-l-amber-400 border-y border-r border-[#dbe6e0] rounded-r-lg p-3 shadow-sm cursor-grab active:cursor-grabbing hover:border-primary transition-all group">
+<div class="flex justify-between items-start mb-2">
+<span class="bg-[#f0f4f2] text-[#618972] text-[9px] font-bold px-1.5 py-0.5 rounded">CUARTOS - VAR 3RA</span>
+<span class="material-symbols-outlined text-[#618972] text-sm group-hover:text-primary">drag_indicator</span>
+</div>
+<div class="space-y-1">
+<p class="text-xs font-bold text-[#111814]">G. Belasteguín / J.M. Díaz</p>
+<p class="text-xs text-[#618972] font-medium italic">vs</p>
+<p class="text-xs font-bold text-[#111814]">Clasificado Grupo H</p>
+</div>
+<div class="mt-2 pt-2 border-t border-[#f0f4f2] flex items-center gap-2">
+<span class="text-[9px] font-bold text-amber-600 bg-amber-50 px-1 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">timer</span> 90m aprox.
+                    </span>
+</div>
+</div>
+<div class="bg-white border-l-4 border-l-primary border-y border-r border-[#dbe6e0] rounded-r-lg p-3 shadow-sm cursor-grab hover:border-primary transition-all group">
+<div class="flex justify-between items-start mb-2">
+<span class="bg-[#f0f4f2] text-[#618972] text-[9px] font-bold px-1.5 py-0.5 rounded">SEMIS - VAR 3RA</span>
+<span class="material-symbols-outlined text-[#618972] text-sm group-hover:text-primary">drag_indicator</span>
+</div>
+<div class="space-y-1">
+<p class="text-xs font-bold text-[#111814]">A. Galán / J. Lebrón</p>
+<p class="text-xs text-[#618972] font-medium italic">vs</p>
+<p class="text-xs font-bold text-[#111814]">Ganador QF 2</p>
+</div>
+</div>
+<div class="bg-white border-l-4 border-l-primary border-y border-r border-[#dbe6e0] rounded-r-lg p-3 shadow-sm cursor-grab hover:border-primary transition-all group">
+<div class="flex justify-between items-start mb-2">
+<span class="bg-[#f0f4f2] text-[#618972] text-[9px] font-bold px-1.5 py-0.5 rounded">CUARTOS - VAR 3RA</span>
+<span class="material-symbols-outlined text-[#618972] text-sm group-hover:text-primary">drag_indicator</span>
+</div>
+<div class="space-y-1">
+<p class="text-xs font-bold text-[#111814]">F. Navarro / M. Di Nenno</p>
+<p class="text-xs text-[#618972] font-medium italic">vs</p>
+<p class="text-xs font-bold text-[#111814]">M. Yanguas / J. Nieto</p>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-[#dbe6e0] bg-[#f9fafb]">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[11px] font-bold text-[#618972] uppercase">Resumen</span>
+<span class="text-[11px] font-black text-primary">12 PARTIDOS</span>
+</div>
+<div class="space-y-1.5">
+<div class="w-full bg-[#dbe6e0] h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[45%]"></div>
+</div>
+<p class="text-[10px] text-[#618972] text-right font-medium">45% Programado</p>
+</div>
+</div>
+</aside>
+<section class="flex-1 flex flex-col overflow-hidden">
+<div class="px-8 py-4 bg-white border-b border-[#dbe6e0] flex items-center justify-between">
+<div class="flex items-center gap-4">
+<h2 class="text-xl font-bold font-display uppercase tracking-tight text-[#111814]">Sábado 23 de Marzo</h2>
+<div class="flex gap-2">
+<button class="size-8 rounded-lg border border-[#dbe6e0] flex items-center justify-center hover:bg-[#f0f4f2] transition-colors"><span class="material-symbols-outlined text-sm">chevron_left</span></button>
+<button class="size-8 rounded-lg border border-[#dbe6e0] flex items-center justify-center hover:bg-[#f0f4f2] transition-colors"><span class="material-symbols-outlined text-sm">chevron_right</span></button>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 bg-[#f0f4f2] hover:bg-[#dbe6e0] px-4 py-2 rounded-xl text-xs font-bold transition-all">
+<span class="material-symbols-outlined text-sm text-[#618972]">bolt</span>
+                    Auto-Programar
+                </button>
+<button class="flex items-center gap-2 bg-white border border-[#dbe6e0] px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#f0f4f2] transition-all">
+<span class="material-symbols-outlined text-sm">save</span>
+                    Guardar Cambios
+                </button>
+<button class="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-xl text-xs font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
+<span class="material-symbols-outlined text-sm">publish</span>
+                    Publicar Horarios
+                </button>
+</div>
+</div>
+<div class="flex-1 overflow-auto custom-scrollbar bg-[#f8fafc]">
+<div class="inline-block min-w-full">
+<div class="grid grid-cols-[100px_repeat(5,minmax(250px,1fr))] grid-header border-b border-[#dbe6e0] shadow-sm">
+<div class="p-4 bg-white border-r border-[#dbe6e0]"></div>
+<div class="p-4 bg-white text-center border-r border-[#dbe6e0]">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Cancha 1</p>
+<p class="text-xs font-bold text-[#111814]">PISTA CENTRAL</p>
+</div>
+<div class="p-4 bg-white text-center border-r border-[#dbe6e0]">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Cancha 2</p>
+<p class="text-xs font-bold text-[#111814]">PISTA EXTERIOR A</p>
+</div>
+<div class="p-4 bg-white text-center border-r border-[#dbe6e0]">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Cancha 3</p>
+<p class="text-xs font-bold text-[#111814]">PISTA EXTERIOR B</p>
+</div>
+<div class="p-4 bg-white text-center border-r border-[#dbe6e0]">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Cancha 4</p>
+<p class="text-xs font-bold text-[#111814]">PISTA MURO</p>
+</div>
+<div class="p-4 bg-white text-center">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Cancha 5</p>
+<p class="text-xs font-bold text-[#111814]">PISTA JUNIOR</p>
+</div>
+</div>
+<div class="flex flex-col">
+<div class="grid grid-cols-[100px_repeat(5,minmax(250px,1fr))] border-b border-[#f0f4f2]">
+<div class="time-sidebar p-4 flex flex-col items-center justify-center border-r border-[#dbe6e0] bg-white">
+<span class="text-sm font-bold text-[#111814]">08:00</span>
+<span class="text-[9px] text-[#618972] font-bold">60 MIN</span>
+</div>
+<div class="p-2 border-r border-[#f0f4f2] min-h-[140px] bg-white/40">
+<div class="h-full bg-white border border-[#dbe6e0] rounded-lg p-3 shadow-sm flex flex-col justify-between group cursor-pointer hover:border-primary transition-all">
+<div class="flex justify-between">
+<span class="text-[9px] font-black text-primary uppercase">Fase Grupos</span>
+<span class="material-symbols-outlined text-xs text-[#dbe6e0] group-hover:text-primary">more_vert</span>
+</div>
+<div>
+<p class="text-xs font-bold">R. Coello / A. Tapia</p>
+<p class="text-[10px] text-[#618972] font-medium my-0.5">vs</p>
+<p class="text-xs font-bold">L. Campagnolo / J. Garrido</p>
+</div>
+<div class="mt-2 flex items-center justify-between">
+<span class="text-[9px] font-bold text-primary">VAR 1RA</span>
+<span class="material-symbols-outlined text-xs text-primary">check_circle</span>
+</div>
+</div>
+</div>
+<div class="p-2 border-r border-[#f0f4f2] min-h-[140px] bg-white/40"></div>
+<div class="p-2 border-r border-[#f0f4f2] min-h-[140px] bg-white/40">
+<div class="h-full bg-white border border-[#dbe6e0] rounded-lg p-3 shadow-sm flex flex-col justify-between group opacity-80">
+<div class="flex justify-between">
+<span class="text-[9px] font-black text-[#618972] uppercase">Clínica</span>
+</div>
+<p class="text-xs font-bold text-center text-[#618972]">Reservado Academia</p>
+<div></div>
+</div>
+</div>
+<div class="p-2 border-r border-[#f0f4f2] min-h-[140px] bg-white/40"></div>
+<div class="p-2 min-h-[140px] bg-white/40"></div>
+</div>
+<div class="grid grid-cols-[100px_repeat(5,minmax(250px,1fr))] border-b border-[#f0f4f2]">
+<div class="time-sidebar p-4 flex flex-col items-center justify-center border-r border-[#dbe6e0] bg-white">
+<span class="text-sm font-bold text-[#111814]">09:30</span>
+<span class="text-[9px] text-[#618972] font-bold">90 MIN</span>
+</div>
+<div class="p-2 border-r border-[#f0f4f2] min-h-[140px] bg-white/40">
+<div class="h-full bg-red-50 border-2 border-red-500 rounded-lg p-3 shadow-sm flex flex-col justify-between group cursor-pointer transition-all">
+<div class="flex justify-between">
+<span class="text-[9px] font-black text-red-600 uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">warning</span> Conflicto
+                                    </span>
+<span class="material-symbols-outlined text-xs text-red-400">info</span>
+</div>
+<div>
+<p class="text-xs font-bold text-red-900">P. Lima / F. Stupaczuk</p>
+<p class="text-[10px] text-red-600 font-medium my-0.5 italic">vs</p>
+<p class="text-xs font-bold text-red-900">S. Gutiérrez / M. Rico</p>
+</div>
+<div class="mt-1 p-1.5 bg-red-100 rounded text-[9px] text-red-700 font-bold leading-tight">
+                                    P. Lima jugó hace 15 min. (Min. 60m req)
+                                </div>
+</div>
+</div>
+<div class="p-2 border-r border-[#f0f4f2] min-h-[140px] bg-white/40">
+<div class="h-full bg-white border border-[#dbe6e0] rounded-lg p-3 shadow-sm flex flex-col justify-between group cursor-pointer hover:border-primary transition-all">
+<div class="flex justify-between">
+<span class="text-[9px] font-black text-primary uppercase tracking-tighter">OCTAVOS - FEM OPEN</span>
+</div>
+<div>
+<p class="text-xs font-bold">A. Salazar / G. Triay</p>
+<p class="text-[10px] text-[#618972] font-medium my-0.5">vs</p>
+<p class="text-xs font-bold">P. Josemaría / A. Sánchez</p>
+</div>
+<div class="mt-2 flex items-center justify-between">
+<span class="text-[9px] font-bold text-primary">M. DRAW</span>
+<span class="material-symbols-outlined text-xs text-primary/40">drag_handle</span>
+</div>
+</div>
+</div>
+<div class="p-2 border-r border-[#f0f4f2] min-h-[140px] bg-white/40"></div>
+<div class="p-2 border-r border-[#f0f4f2] min-h-[140px] bg-white/40"></div>
+<div class="p-2 min-h-[140px] bg-white/40"></div>
+</div>
+<div class="grid grid-cols-[100px_repeat(5,minmax(250px,1fr))] border-b border-[#f0f4f2]">
+<div class="time-sidebar p-4 flex flex-col items-center justify-center border-r border-[#dbe6e0] bg-white">
+<span class="text-sm font-bold text-[#111814]">11:00</span>
+<span class="text-[9px] text-[#618972] font-bold">90 MIN</span>
+</div>
+<div class="p-2 border-r border-[#f0f4f2] min-h-[140px] bg-[#f9fafb] border-dashed border-2 border-[#dbe6e0] m-2 rounded-xl flex items-center justify-center group hover:bg-white hover:border-primary transition-all cursor-pointer">
+<div class="text-center">
+<span class="material-symbols-outlined text-primary/40 text-2xl">add_circle</span>
+<p class="text-[10px] font-bold text-[#618972] uppercase mt-1">Arrastrar aquí</p>
+</div>
+</div>
+<div class="p-2 border-r border-[#f0f4f2] min-h-[140px] bg-white/40"></div>
+<div class="p-2 border-r border-[#f0f4f2] min-h-[140px] bg-white/40"></div>
+<div class="p-2 border-r border-[#f0f4f2] min-h-[140px] bg-white/40"></div>
+<div class="p-2 min-h-[140px] bg-white/40"></div>
+</div>
+<div class="grid grid-cols-[100px_repeat(5,minmax(250px,1fr))] border-b border-[#f0f4f2] opacity-50">
+<div class="time-sidebar p-4 flex flex-col items-center justify-center border-r border-[#dbe6e0] bg-white">
+<span class="text-sm font-bold text-[#111814]">12:30</span>
+<span class="text-[9px] text-[#618972] font-bold">90 MIN</span>
+</div>
+<div class="col-span-5 bg-stripes-gray h-32 flex items-center justify-center">
+<span class="text-xs font-bold text-[#618972] uppercase tracking-[0.5em]">Continuar scroll para ver más horarios (hasta 22:00)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-white border-t border-[#dbe6e0] px-8 py-4 z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
+<div class="max-w-[1600px] mx-auto flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex flex-col">
+<span class="text-[10px] font-black text-[#618972] uppercase tracking-wider">Validación del Sistema</span>
+<div class="flex items-center gap-2 text-red-500 font-bold text-xs mt-0.5">
+<span class="material-symbols-outlined text-sm">report</span>
+                    1 Conflicto de descanso detectado
+                </div>
+</div>
+<div class="h-8 w-px bg-[#dbe6e0]"></div>
+<div class="flex gap-6">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-[#618972] uppercase">Partidos</span>
+<span class="text-sm font-black">24 / 48</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-[#618972] uppercase">Ocupación Canchas</span>
+<span class="text-sm font-black">68%</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 mr-4">
+<div class="size-2 rounded-full bg-primary animate-pulse"></div>
+<span class="text-xs font-medium text-[#618972]">Auto-guardado activo</span>
+</div>
+<button class="px-6 py-2.5 rounded-xl bg-primary text-white text-xs font-black shadow-lg shadow-primary/30 hover:scale-[1.02] transition-all uppercase tracking-wide">
+                Finalizar Programación
+            </button>
+</div>
+</div>
+</footer>
+
+</body></html>

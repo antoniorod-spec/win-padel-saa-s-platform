@@ -13,7 +13,9 @@ import {
   fetchTeams,
   generateBracket,
   fetchTournamentFiltersOptions,
+  validateImportTournamentFile,
   importTournamentFile,
+  importValidatedRows,
   submitTournamentResultsManual,
   importTournamentResultsFile,
   fetchTournamentResultSubmissions,
@@ -185,7 +187,18 @@ export function useRegisterTeamManual() {
       tournamentId: string
       data: Parameters<typeof registerTeamManual>[1]
     }) => registerTeamManual(tournamentId, data),
-    onSuccess: (_, { tournamentId }) => {
+    onSuccess: (res, { tournamentId }) => {
+      // Actualización inmediata: añadir pareja al caché sin esperar refetch
+      const team = (res as { success?: boolean; team?: unknown })?.team
+      if (team) {
+        queryClient.setQueriesData(
+          { queryKey: ["tournament", tournamentId, "teams"] },
+          (prev: { data?: unknown[] } | undefined) => {
+            if (!prev?.data || !Array.isArray(prev.data)) return prev
+            return { ...prev, data: [...prev.data, team] }
+          }
+        )
+      }
       queryClient.invalidateQueries({ queryKey: ["tournament", tournamentId, "teams"] })
       queryClient.invalidateQueries({ queryKey: ["tournament", tournamentId] })
     },
@@ -329,6 +342,31 @@ export function useGenerateMirrorBracket() {
       generateMirrorBracket(params.tournamentId, params.modalityId),
     onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ["tournament", vars.tournamentId, "bracket", vars.modalityId] })
+    },
+  })
+}
+
+export function useValidateImportTournamentFile() {
+  return useMutation({
+    mutationFn: (params: {
+      tournamentId: string
+      tournamentModalityId?: string
+      file: File
+    }) => validateImportTournamentFile(params),
+  })
+}
+
+export function useImportValidatedRows() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (params: {
+      tournamentId: string
+      rows: Array<{ player1Id: string; player2Id: string; tournamentModalityId: string }>
+    }) => importValidatedRows(params),
+    onSuccess: (_, { tournamentId }) => {
+      queryClient.invalidateQueries({ queryKey: ["tournament", tournamentId, "teams"] })
+      queryClient.invalidateQueries({ queryKey: ["tournament", tournamentId] })
     },
   })
 }

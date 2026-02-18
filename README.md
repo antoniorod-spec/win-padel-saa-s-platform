@@ -104,11 +104,11 @@ Sistema completo para la gestión de torneos de pádel y ranking de jugadores en
 
 | Rol | Email | Password |
 |-----|-------|----------|
-| Admin | `admin@winpadel.com` | `admin123456` |
+| Admin | `admin@whinpadel.com` | `admin123456` |
 | Club | `info@advantagepadel.mx` | `club123456` |
 | Club | `info@mariettapadel.mx` | `club123456` |
-| Jugador | `carlos.m@example.com` | `player123456` |
-| Jugador | `ana.r@example.com` | `player123456` |
+| Jugador | `ricardo.solis@email.com` | `player123456` |
+| Jugador | `maria.diaz@email.com` | `player123456` |
 
 ## 📊 Scripts Disponibles
 
@@ -191,8 +191,27 @@ Al ascender, los puntos se resetean a 0 en la nueva categoría.
 
 1. Haz push de tu código a GitHub
 2. Importa el proyecto en Vercel
-3. Configura las variables de entorno en Vercel (las mismas del `.env`)
+3. **Configura las variables de entorno** en Vercel (Settings → Environment Variables):
+   - `DATABASE_URL` y `DIRECT_URL` (Supabase)
+   - `AUTH_SECRET` (mínimo 32 caracteres aleatorios)
+   - **`AUTH_URL`** = tu URL de producción, ej: `https://tu-proyecto.vercel.app` (sin barra final)
+   - `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` (si usas Google OAuth)
+   - `NEXT_PUBLIC_SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` (para uploads)
 4. Vercel detectará Next.js automáticamente y lo desplegará
+
+### ⚠️ Login en producción: ejecutar el seed
+
+El seed **no se ejecuta automáticamente** en el deploy. Para que los usuarios demo (clubs, admin) funcionen en producción:
+
+```bash
+# 1. Descargar variables de producción de Vercel
+vercel env pull .env.production --environment=production
+
+# 2. Ejecutar el seed contra la BD de producción
+ENV_FILE=.env.production npm run db:seed
+```
+
+Si usas la **misma base de datos** para local y producción, el seed que ejecutes localmente ya actualiza producción. Asegúrate de que `AUTH_URL` en Vercel esté configurado correctamente.
 
 ## 📝 Licencia
 

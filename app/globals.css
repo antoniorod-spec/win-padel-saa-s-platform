@@ -6,6 +6,13 @@
   .text-balance {
     text-wrap: balance;
   }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 @layer base {
@@ -80,11 +87,24 @@
   }
 }
 
+/* Override Next.js dev tools portal positioning */
+nextjs-portal {
+  top: 7px !important;
+}
+
 @layer base {
   * {
     @apply border-border;
   }
+  html,
   body {
     @apply bg-background text-foreground;
+  }
+  html {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
   }
 }

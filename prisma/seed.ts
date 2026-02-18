@@ -4,8 +4,8 @@ import pg from "pg"
 import bcrypt from "bcryptjs"
 import dotenv from "dotenv"
 
-// Load environment variables
-dotenv.config()
+// Load environment variables (use ENV_FILE for production: ENV_FILE=.env.production npm run db:seed)
+dotenv.config({ path: process.env.ENV_FILE || ".env" })
 
 // External demo covers (long images) provided by user.
 // photos[0] is used as the "cover" in /clubes and /clubes/[id].
@@ -48,7 +48,7 @@ async function main() {
 
   const clubUser1 = await prisma.user.upsert({
     where: { email: "info@advantagepadel.mx" },
-    update: {},
+    update: { passwordHash: clubPassword },
     create: {
       email: "info@advantagepadel.mx",
       passwordHash: clubPassword,
@@ -81,7 +81,7 @@ async function main() {
 
   const clubUser2 = await prisma.user.upsert({
     where: { email: "info@mariettapadel.mx" },
-    update: {},
+    update: { passwordHash: clubPassword },
     create: {
       email: "info@mariettapadel.mx",
       passwordHash: clubPassword,
@@ -114,7 +114,7 @@ async function main() {
 
   const clubUser3 = await prisma.user.upsert({
     where: { email: "info@lomagolf.mx" },
-    update: {},
+    update: { passwordHash: clubPassword },
     create: {
       email: "info@lomagolf.mx",
       passwordHash: clubPassword,

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WhinPadel Admin - Configuración de Categorías Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00C853",
+                        "background-light": "#F8FAFC",
+                        "brand-dark": "#0F172A",
+                    },
+                    fontFamily: {
+                        "display": ["Oswald", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.5rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            input, textarea, select {
+                @apply border-slate-200 focus:ring-primary focus:border-primary rounded-lg transition-all;
+            }
+            label {
+                @apply text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block;
+            }
+        }
+        .step-active { @apply text-primary border-primary bg-primary/5; }
+        .step-inactive { @apply text-slate-300 border-slate-100 bg-white; }
+        .step-completed { @apply text-white border-primary bg-primary; }
+        .toggle-checkbox:checked {
+            @apply right-0 border-primary bg-primary;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            @apply bg-primary/20;
+        }
+        h1, h2, h3, h4 { font-family: 'Oswald', sans-serif; }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background-light text-slate-900 min-h-screen pb-24">
+<nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white text-xl">sports_tennis</span>
+</div>
+<span class="text-xl font-bold tracking-tight text-brand-dark font-display uppercase">WhinPadel <span class="text-primary font-display">Admin</span></span>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center hover:bg-slate-50 rounded-full transition-colors relative">
+<span class="material-symbols-outlined text-slate-600">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+</button>
+<div class="flex items-center gap-3 pl-2 border-l border-slate-200">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-bold text-slate-900">Admin Club</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider">Club Pro</p>
+</div>
+<div class="h-9 w-9 rounded-full overflow-hidden border-2 border-slate-100">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDliBU6sVjDHNvL1FPv-xAWOzITg08lmEomYYi9LjNqVlI3aiNIcQykEH1CuCRd5Cb0nCpw-62-iVEjcJ3URq7ohXaS5fEjIQS0avr9fMNxcQHuAwAQNjkb6bbCsRrV7QmGh29fnW8f2LY--E1xerIeEIelevQ0W3GsqGJk7wJj8OxQJ2iSfrIiLf1uNnaeQOU2IRSL3LRLe-6gn9D73yXZzKdWczYkAJy96EmAika3St5tCsXkExmOHbECFnkoEYf3Qr1CLWS72RM"/>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-6 py-8">
+<div class="mb-10 overflow-x-auto">
+<div class="flex items-center justify-between min-w-[600px] px-2">
+<div class="flex items-center gap-3 group">
+<div class="w-10 h-10 rounded-full flex items-center justify-center border-2 step-completed font-bold shadow-sm">
+<span class="material-symbols-outlined text-xl">check</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-400 leading-none">General</p>
+<p class="text-[10px] text-slate-400 uppercase tracking-tighter mt-1">Configurado</p>
+</div>
+</div>
+<div class="h-px bg-primary flex-1 mx-4"></div>
+<div class="flex items-center gap-3 group">
+<div class="w-10 h-10 rounded-full flex items-center justify-center border-2 step-active font-bold shadow-md shadow-primary/10">2</div>
+<div>
+<p class="text-sm font-bold text-primary leading-none">Categorías</p>
+<p class="text-[10px] text-primary uppercase tracking-tighter mt-1">Niveles &amp; Ramas</p>
+</div>
+</div>
+<div class="h-px bg-slate-200 flex-1 mx-4"></div>
+<div class="flex items-center gap-3 group">
+<div class="w-10 h-10 rounded-full flex items-center justify-center border-2 step-inactive font-bold">3</div>
+<div>
+<p class="text-sm font-bold text-slate-400 leading-none">Logística</p>
+<p class="text-[10px] text-slate-400 uppercase tracking-tighter mt-1">Canchas &amp; Horas</p>
+</div>
+</div>
+<div class="h-px bg-slate-200 flex-1 mx-4"></div>
+<div class="flex items-center gap-3 group">
+<div class="w-10 h-10 rounded-full flex items-center justify-center border-2 step-inactive font-bold">4</div>
+<div>
+<p class="text-sm font-bold text-slate-400 leading-none">Revisión</p>
+<p class="text-[10px] text-slate-400 uppercase tracking-tighter mt-1">Confirmar</p>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<div class="lg:col-span-8 space-y-6">
+<div class="flex items-center justify-between">
+<div>
+<h1 class="text-3xl font-bold text-brand-dark uppercase tracking-tight">Gestión de Categorías</h1>
+<p class="text-slate-500 text-sm">Define las ramas, niveles y cupos para cada grupo de competencia.</p>
+</div>
+<button class="bg-primary hover:bg-[#00B049] text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95">
+<span class="material-symbols-outlined">add_circle</span>
+                    Agregar Categoría
+                </button>
+</div>
+<div class="space-y-4">
+<div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:border-primary/30 transition-all relative group">
+<div class="flex flex-wrap items-start justify-between gap-4">
+<div class="flex gap-4 items-center">
+<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl">male</span>
+</div>
+<div>
+<h3 class="text-xl font-bold text-slate-900 uppercase">Varonil 1ra Fuerza</h3>
+<p class="text-xs text-slate-400 font-medium">Nivel Avanzado / Expertos</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+<div>
+<label>Precio / Pareja</label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-slate-400 text-sm">$</span>
+<input class="w-full h-10 pl-7 pr-3 text-sm font-semibold bg-slate-50 border-none" type="number" value="1200"/>
+</div>
+</div>
+<div>
+<label>Cupo Máx (Parejas)</label>
+<input class="w-full h-10 px-3 text-sm font-semibold bg-slate-50 border-none" type="number" value="16"/>
+</div>
+<div>
+<label>Formato de Grupos</label>
+<select class="w-full h-10 px-3 text-sm font-semibold bg-slate-50 border-none appearance-none">
+<option>3 parejas</option>
+<option selected="">4 parejas</option>
+</select>
+</div>
+<div class="flex flex-col justify-end pb-1.5">
+<div class="flex items-center gap-3">
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="cons-1" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-200 cursor-pointer" for="cons-1"></label>
+</div>
+<span class="text-xs font-bold text-slate-600">Consolación</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:border-primary/30 transition-all relative">
+<div class="flex flex-wrap items-start justify-between gap-4">
+<div class="flex gap-4 items-center">
+<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl">male</span>
+</div>
+<div>
+<h3 class="text-xl font-bold text-slate-900 uppercase">Varonil 3ra Fuerza</h3>
+<p class="text-xs text-slate-400 font-medium">Nivel Intermedio</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+<div>
+<label>Precio / Pareja</label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-slate-400 text-sm">$</span>
+<input class="w-full h-10 pl-7 pr-3 text-sm font-semibold bg-slate-50 border-none" type="number" value="1200"/>
+</div>
+</div>
+<div>
+<label>Cupo Máx (Parejas)</label>
+<input class="w-full h-10 px-3 text-sm font-semibold bg-slate-50 border-none" type="number" value="24"/>
+</div>
+<div>
+<label>Formato de Grupos</label>
+<select class="w-full h-10 px-3 text-sm font-semibold bg-slate-50 border-none appearance-none">
+<option selected="">3 parejas</option>
+<option>4 parejas</option>
+</select>
+</div>
+<div class="flex flex-col justify-end pb-1.5">
+<div class="flex items-center gap-3">
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="cons-2" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-200 cursor-pointer" for="cons-2"></label>
+</div>
+<span class="text-xs font-bold text-slate-600">Consolación</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:border-primary/30 transition-all relative">
+<div class="flex flex-wrap items-start justify-between gap-4">
+<div class="flex gap-4 items-center">
+<div class="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center text-pink-500">
+<span class="material-symbols-outlined text-2xl">female</span>
+</div>
+<div>
+<h3 class="text-xl font-bold text-slate-900 uppercase">Femenil B</h3>
+<p class="text-xs text-slate-400 font-medium">Nivel Principiante / Intermedio</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+<div>
+<label>Precio / Pareja</label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-slate-400 text-sm">$</span>
+<input class="w-full h-10 pl-7 pr-3 text-sm font-semibold bg-slate-50 border-none" type="number" value="1200"/>
+</div>
+</div>
+<div>
+<label>Cupo Máx (Parejas)</label>
+<input class="w-full h-10 px-3 text-sm font-semibold bg-slate-50 border-none" type="number" value="12"/>
+</div>
+<div>
+<label>Formato de Grupos</label>
+<select class="w-full h-10 px-3 text-sm font-semibold bg-slate-50 border-none appearance-none">
+<option selected="">3 parejas</option>
+<option>4 parejas</option>
+</select>
+</div>
+<div class="flex flex-col justify-end pb-1.5">
+<div class="flex items-center gap-3">
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="cons-3" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-200 cursor-pointer" for="cons-3"></label>
+</div>
+<span class="text-xs font-bold text-slate-600">Consolación</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4 sticky top-24 space-y-6">
+<div class="bg-white rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100">
+<div class="p-6 border-b border-slate-50 bg-slate-50/50">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-xl">insights</span>
+<h2 class="text-lg font-bold text-brand-dark uppercase">Simulador de Cuadro</h2>
+</div>
+<p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-none">Cálculo dinámico basado en cupos</p>
+</div>
+<div class="p-6 space-y-6">
+<div class="grid grid-cols-2 gap-4">
+<div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+<p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Total Parejas</p>
+<p class="text-2xl font-bold text-brand-dark">52</p>
+</div>
+<div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+<p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Total Grupos</p>
+<p class="text-2xl font-bold text-brand-dark">16</p>
+</div>
+</div>
+<div class="space-y-4">
+<h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Estructura Estimada</h4>
+<div class="flex items-center justify-between text-sm">
+<span class="text-slate-600 font-medium">Fase de Grupos</span>
+<span class="bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] font-bold">ACTIVO</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<span class="text-slate-600 font-medium">Octavos de Final</span>
+<span class="text-slate-400 font-bold text-[10px]">16 PAREJAS</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<span class="text-slate-600 font-medium">Cuartos de Final</span>
+<span class="text-slate-400 font-bold text-[10px]">8 PAREJAS</span>
+</div>
+<div class="flex items-center justify-between text-sm font-bold">
+<span class="text-brand-dark font-display uppercase tracking-tight">Gran Final</span>
+<span class="text-primary">DOM 17 OCT</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-2xl shadow-lg shadow-slate-200/50 overflow-hidden border border-slate-100">
+<div class="p-6 border-b border-slate-50">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-yellow-500 text-xl">military_tech</span>
+<h2 class="text-lg font-bold text-brand-dark uppercase">Premios por Categoría</h2>
+</div>
+</div>
+<div class="p-6 space-y-4">
+<div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+<div>
+<p class="text-xs font-bold text-slate-900">Varonil 1ra</p>
+<p class="text-[10px] text-slate-500 italic">Efectivo + Trofeo</p>
+</div>
+<p class="font-bold text-primary">$20,000</p>
+</div>
+<div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+<div>
+<p class="text-xs font-bold text-slate-900">Varonil 3ra</p>
+<p class="text-[10px] text-slate-500 italic">Especie + Trofeo</p>
+</div>
+<p class="font-bold text-primary">$15,000</p>
+</div>
+<div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+<div>
+<p class="text-xs font-bold text-slate-900">Femenil B</p>
+<p class="text-[10px] text-slate-500 italic">Especie + Trofeo</p>
+</div>
+<p class="font-bold text-primary">$15,000</p>
+</div>
+<div class="pt-2 border-t border-slate-100 flex justify-between items-center">
+<span class="text-xs font-bold text-slate-400 uppercase">Total Bolsa</span>
+<span class="text-lg font-bold text-brand-dark">$50,000 MXN</span>
+</div>
+</div>
+</div>
+<div class="bg-brand-dark rounded-2xl p-6 text-white relative overflow-hidden">
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-primary text-xl">bolt</span>
+<h4 class="font-bold text-sm uppercase font-display">Tip Pro</h4>
+</div>
+<p class="text-xs text-slate-400 leading-relaxed">
+                        Los grupos de <span class="text-white font-bold italic">3 parejas</span> aseguran al menos 2 partidos por jugador, ideal para torneos rápidos o de fin de semana.
+                    </p>
+</div>
+<div class="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl"></div>
+</div>
+</div>
+</div>
+</main>
+<footer class="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md border-t border-slate-200 p-4 z-50">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<button class="px-6 py-2.5 text-slate-500 hover:text-slate-800 font-bold transition-colors uppercase text-sm">
+            Guardar Borrador
+        </button>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-all text-sm uppercase">
+<span class="material-symbols-outlined text-lg">chevron_left</span>
+                Anterior
+            </button>
+<button class="flex items-center gap-2 px-10 py-2.5 rounded-xl bg-primary hover:bg-[#00B049] text-white font-bold shadow-lg shadow-primary/25 transition-all transform active:scale-95 text-sm uppercase">
+                Siguiente Paso
+                <span class="material-symbols-outlined text-lg">chevron_right</span>
+</button>
+</div>
+</div>
+</footer>
+
+</body></html>

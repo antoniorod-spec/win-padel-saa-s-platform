@@ -132,9 +132,9 @@ const modalityLabels: Record<string, string> = {
 }
 
 const categoriesByModality: Record<string, string[]> = {
-  VARONIL: ["1ra", "2da", "3ra", "4ta", "5ta", "6ta"],
-  FEMENIL: ["1ra", "2da", "3ra", "4ta", "5ta", "6ta"],
-  MIXTO: ["1ra", "2da", "3ra", "4ta", "5ta", "6ta"],
+  VARONIL: ["1ra", "2da", "3ra", "4ta", "5ta", "6ta", "Senior", "10U", "12U", "14U", "16U", "18U"],
+  FEMENIL: ["1ra", "2da", "3ra", "4ta", "5ta", "6ta", "Senior", "10U", "12U", "14U", "16U", "18U"],
+  MIXTO: ["A", "B", "C", "D"],
 }
 
 export default function RankingClient() {
@@ -190,7 +190,8 @@ export default function RankingClient() {
 
   const handleModalityChange = (val: string) => {
     setModality(val)
-    setCategory("4ta")
+    const cats = categoriesByModality[val]
+    setCategory(cats?.[0] ?? "4ta")
   }
 
   const top3 = players.slice(0, 3)

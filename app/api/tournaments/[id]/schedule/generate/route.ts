@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { scheduleGroupMatches } from "@/lib/tournament/schedule-matches"
+import { generateSlots } from "@/lib/tournament/generate-slots"
 
 export async function POST(
   _request: NextRequest,
@@ -19,6 +20,17 @@ export async function POST(
     if (!tournament) return NextResponse.json({ success: false, error: "Torneo no encontrado" }, { status: 404 })
     if (session!.user.role !== "ADMIN" && tournament.club.userId !== session!.user.id) {
       return NextResponse.json({ success: false, error: "No autorizado" }, { status: 403 })
+    }
+
+    // Si no hay slots disponibles, generar primero
+    const availableSlots = await prisma.matchSlot.count({
+      where: {
+        status: "AVAILABLE",
+        court: { tournamentId: id },
+      },
+    })
+    if (availableSlots === 0) {
+      await generateSlots(id)
     }
 
     const result = await scheduleGroupMatches(id)

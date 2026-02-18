@@ -90,6 +90,18 @@ export async function generateSlots(tournamentId: string): Promise<SlotCounts> {
     }
   }
 
+  if (createRows.length === 0) {
+    const hasAvailabilities = tournament.courts.some((c) => c.availabilities.length > 0)
+    if (!hasAvailabilities) {
+      throw new Error(
+        "Las canchas no tienen horarios configurados. Ve al paso de canchas, define los horarios de cada cancha y haz clic en «Guardar horarios»."
+      )
+    }
+    throw new Error(
+      "No se generaron slots: los horarios de las canchas no cubren las fechas del torneo. Revisa que los días de la semana coincidan."
+    )
+  }
+
   // Chunk insert to avoid huge single queries.
   const CHUNK = 1000
   for (let i = 0; i < createRows.length; i += CHUNK) {

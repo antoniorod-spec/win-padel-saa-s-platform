@@ -106,15 +106,30 @@ export async function findOrCreatePlayerByPhone(
 
 /**
  * Busca un Player existente por teléfono. No crea ninguno.
+ * Busca en Player y en ImportedPlayer (vinculado a Player).
  */
 export async function findPlayerByPhone(phone: string): Promise<{ id: string; firstName: string; lastName: string } | null> {
   const normalized = normalizePhone(phone)
   if (!normalized) return null
+
   const player = await prisma.player.findFirst({
     where: { phone: normalized },
     select: { id: true, firstName: true, lastName: true },
   })
-  return player
+  if (player) return player
+
+  const imported = await prisma.importedPlayer.findFirst({
+    where: { phone: normalized },
+    select: { linkedPlayerId: true, firstName: true, lastName: true },
+  })
+  if (imported?.linkedPlayerId) {
+    const linked = await prisma.player.findUnique({
+      where: { id: imported.linkedPlayerId },
+      select: { id: true, firstName: true, lastName: true },
+    })
+    return linked
+  }
+  return null
 }
 
 export async function ensureLinkedPlayer(importedPlayerId: string) {

@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { registerPlayerCompleteSchema, registerClubCompleteSchema } from "@/lib/validations/auth"
 import { reconcileImportedPlayerWithRegistered } from "@/lib/services/imported-roster-service"
+import { normalizePhone } from "@/lib/utils/file-parser"
 
 export async function POST(request: NextRequest) {
   try {
@@ -106,7 +107,7 @@ export async function POST(request: NextRequest) {
       maybeSet("postalCode", clean(postalCode))
       maybeSet("country", clean(country))
       maybeSet("age", typeof age === "number" ? age : undefined)
-      maybeSet("phone", clean(phone))
+      maybeSet("phone", normalizePhone(clean(phone)) || clean(phone))
       maybeSet("birthDate", optionalDate(birthDate))
       maybeSet("documentType", clean(documentType))
       maybeSet("documentNumber", clean(documentNumber))

@@ -34,7 +34,6 @@ import {
   BarChart3,
   Plus,
   Check,
-  CreditCard,
   Building2,
   Car,
   Lock,
@@ -74,7 +73,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-const sectionIds = ["dashboard", "torneos", "jugadores", "pagos", "noticias", "estadisticas", "perfil"] as const
+const sectionIds = ["dashboard", "torneos", "jugadores", "noticias", "estadisticas", "perfil"] as const
 type SectionId = (typeof sectionIds)[number]
 
 const surfaceOptions = ["Cesped Sintetico", "Mondo", "Cemento", "Mixta"]
@@ -94,7 +93,6 @@ function ClubDashboardContent() {
     { id: "dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, href: "/club?section=dashboard" },
     { id: "torneos", label: t("nav.torneos"), icon: Trophy, href: "/club?section=torneos" },
     { id: "jugadores", label: t("nav.jugadores"), icon: Users, href: "/club?section=jugadores" },
-    { id: "pagos", label: t("nav.pagos"), icon: CreditCard, href: "/club?section=pagos", badge: 15 },
     { id: "noticias", label: t("nav.noticias"), icon: Newspaper, href: "/club?section=noticias" },
     { id: "estadisticas", label: t("nav.estadisticas"), icon: BarChart3, href: "/club?section=estadisticas" },
     { id: "perfil", label: t("nav.perfil"), icon: Building2, href: "/club?section=perfil" },
@@ -1045,7 +1043,7 @@ function ClubDashboardContent() {
         </Card>
       )}
 
-      {["jugadores", "pagos"].includes(section) && (
+      {section === "jugadores" && (
         <Card className="border-border/50">
           <CardHeader><CardTitle>{activeItemLabel}</CardTitle></CardHeader>
           <CardContent>

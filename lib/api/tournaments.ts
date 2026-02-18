@@ -96,6 +96,7 @@ interface TeamInfo {
   modality: string
   category: string
   paymentStatus: string
+  registeredAt?: string
 }
 
 interface TournamentResultSubmission {
@@ -172,6 +173,7 @@ export async function registerTeamManual(tournamentId: string, data: {
   tournamentModalityId: string
   player1: RegisterManualPlayer
   player2: RegisterManualPlayer
+  paymentStatus?: "PENDING" | "CONFIRMED"
 }) {
   return api.post(`/tournaments/${tournamentId}/register-manual`, data)
 }
@@ -348,6 +350,25 @@ export async function transitionTournamentStatus(tournamentId: string, status: s
   return api.patch(`/tournaments/${tournamentId}/status`, { status })
 }
 
+export async function validateImportTournamentFile(params: {
+  tournamentId: string
+  tournamentModalityId?: string
+  file: File
+}) {
+  const formData = new FormData()
+  formData.append("file", params.file)
+  if (params.tournamentModalityId) {
+    formData.append("tournamentModalityId", params.tournamentModalityId)
+  }
+
+  const response = await fetch(`/api/tournaments/${params.tournamentId}/import/validate`, {
+    method: "POST",
+    body: formData,
+  })
+
+  return response.json()
+}
+
 export async function importTournamentFile(params: {
   tournamentId: string
   tournamentModalityId?: string
@@ -367,6 +388,15 @@ export async function importTournamentFile(params: {
   })
 
   return response.json()
+}
+
+export async function importValidatedRows(params: {
+  tournamentId: string
+  rows: Array<{ player1Id: string; player2Id: string; tournamentModalityId: string }>
+}) {
+  return api.post(`/tournaments/${params.tournamentId}/import/confirmed`, {
+    rows: params.rows,
+  })
 }
 
 export async function submitTournamentResultsManual(params: {

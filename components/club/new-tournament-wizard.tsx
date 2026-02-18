@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "@/i18n/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
 import {
-  COMPETITION_CATEGORIES,
+  getCategoriesForModality,
+  getCategoryLabel,
   MODALITY_OPTIONS,
   TOURNAMENT_CLASS_OPTIONS,
   TOURNAMENT_CLASS_LABELS,
@@ -20,19 +21,15 @@ import {
   TOURNAMENT_CLASS_BADGE_CLASS,
   TOURNAMENT_CLASS_ICON,
 } from "@/lib/tournament/categories"
-import { defaultWeeklySchedule, WeeklyScheduleEditor, DaySchedule } from "@/components/club/weekly-schedule-editor"
-import { ImageUploadField } from "@/components/club/image-upload-field"
-import {
-  useCreateTournamentCourt,
-  useDeleteTournamentCourt,
-  useSetTournamentCourtAvailability,
-  useTournament,
-  useTournamentCourts,
-} from "@/hooks/use-tournaments"
+import { CourtsAndSchedulesStep, type CourtsAndSchedulesStepHandle } from "@/components/club/courts"
+import { TournamentPosterUpload } from "@/components/club/tournament-poster-upload"
+import { WizardSidebar } from "@/components/club/wizard-sidebar"
+import { useTournament, useTournamentCourts, useTournamentTeams } from "@/hooks/use-tournaments"
 import { createTournament, transitionTournamentStatus, updateTournament } from "@/lib/api/tournaments"
-import { Plus, Trash2, ArrowLeft, ArrowRight, Save, Send, Bot, Megaphone, MapPin, MessageCircle, Link2, Clock, Trophy, Medal, Target, Zap } from "lucide-react"
+import { Plus, Trash2, ArrowLeft, ArrowRight, Save, Send, Bot, Megaphone, MapPin, MessageCircle, Link2, Clock, Trophy, Medal, Target, Zap, Mars, Venus, Users, Lock } from "lucide-react"
 import { TournamentRegistrationStep } from "@/components/club/tournament-registration-step"
 import { DateRangePicker } from "@/components/ui/date-range-picker"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
 
 type WizardStepId = "general" | "categorias" | "canchas" | "registro" | "revision"
@@ -57,33 +54,35 @@ type DraftModality = {
 
 const TOURNAMENT_CLASS_ICONS = { Trophy, Medal, Target, Zap } as const
 
-function dayKeyToDayOfWeek(key: DaySchedule["day"]): number {
-  switch (key) {
-    case "SUNDAY":
-      return 0
-    case "MONDAY":
-      return 1
-    case "TUESDAY":
-      return 2
-    case "WEDNESDAY":
-      return 3
-    case "THURSDAY":
-      return 4
-    case "FRIDAY":
-      return 5
-    case "SATURDAY":
-      return 6
-  }
+function mapCategoryToClass(c: string): (typeof TOURNAMENT_CLASS_OPTIONS)[number] {
+  const mapped =
+    c === "A"
+      ? "ANUAL"
+      : c === "B"
+        ? "OPEN"
+        : c === "C"
+          ? "REGULAR"
+          : c === "D"
+            ? "EXPRESS"
+            : c
+  return (mapped as (typeof TOURNAMENT_CLASS_OPTIONS)[number]) ?? "REGULAR"
 }
 
-export function NewTournamentWizard() {
+export interface NewTournamentWizardProps {
+  /** Si se proporciona, el wizard carga el torneo existente para editar (solo DRAFT) */
+  initialTournamentId?: string
+}
+
+export function NewTournamentWizard({ initialTournamentId }: NewTournamentWizardProps) {
   const router = useRouter()
   const { toast } = useToast()
 
   const [stepIdx, setStepIdx] = useState(0)
   const step = steps[stepIdx]
 
-  const [tournamentId, setTournamentId] = useState<string>("")
+  const [tournamentId, setTournamentId] = useState<string>(initialTournamentId ?? "")
+  const [capacityTotal, setCapacityTotal] = useState(0)
+  const [capacityRequired, setCapacityRequired] = useState(0)
 
   // Step 1: General
   const [name, setName] = useState("")
@@ -113,40 +112,109 @@ export function NewTournamentWizard() {
   // Step 2: Categorias (TournamentModality[])
   const [modalities, setModalities] = useState<DraftModality[]>([])
 
-  // Step 3: Canchas y horarios
-  const [weeklySchedule, setWeeklySchedule] = useState<DaySchedule[]>(defaultWeeklySchedule())
-  const [newCourtName, setNewCourtName] = useState("")
-  const [newCourtVenue, setNewCourtVenue] = useState("")
-  const [newCourtIndoor, setNewCourtIndoor] = useState(false)
-
   const tournamentQuery = useTournament(tournamentId || undefined)
   const courtsQuery = useTournamentCourts(tournamentId || undefined)
-  const createCourt = useCreateTournamentCourt()
-  const deleteCourt = useDeleteTournamentCourt()
-  const setAvailability = useSetTournamentCourtAvailability()
+  const teamsQuery = useTournamentTeams(tournamentId || undefined)
+  const hasLoadedInitialData = useRef(false)
+  const courtsStepRef = useRef<CourtsAndSchedulesStepHandle>(null)
+  const teams = (teamsQuery.data?.data ?? []) as Array<{ player1: string; player2: string }>
+  const pairCount = teams.length
+  const lastPairs = teams.slice(-3)
+
+  // Cargar datos del torneo cuando editamos un draft existente (solo una vez)
+  useEffect(() => {
+    if (!initialTournamentId || !tournamentQuery.data?.data || hasLoadedInitialData.current) return
+    hasLoadedInitialData.current = true
+    const t = tournamentQuery.data.data as unknown as Record<string, unknown>
+    setName(String(t.name ?? ""))
+    setDescription(String(t.description ?? ""))
+    setVenue(String(t.venue ?? ""))
+    setStartDate(t.startDate ? new Date(t.startDate as string).toISOString().slice(0, 10) : "")
+    setEndDate(t.endDate ? new Date(t.endDate as string).toISOString().slice(0, 10) : "")
+    setRegistrationDeadline(
+      t.registrationDeadline ? new Date(t.registrationDeadline as string).toISOString().slice(0, 16) : ""
+    )
+    setRegistrationOpensAt(
+      t.registrationOpensAt ? new Date(t.registrationOpensAt as string).toISOString().slice(0, 16) : ""
+    )
+    setOfficialBall(String(t.officialBall ?? ""))
+    setSupportWhatsApp(String(t.supportWhatsApp ?? ""))
+    setExternalRegistrationLink(String(t.externalRegistrationLink ?? ""))
+    const r = (t.rules ?? {}) as { goldenPoint?: boolean; thirdSetTiebreakTo10?: boolean; gamesPerSet?: number }
+    setGoldenPoint(r?.goldenPoint ?? true)
+    setThirdSetTiebreakTo10(r?.thirdSetTiebreakTo10 ?? true)
+    setSetTo4Games(r?.gamesPerSet === 4)
+    setRulesPdfUrl(String(t.rulesPdfUrl ?? ""))
+    setTournamentClass(mapCategoryToClass(String(t.category ?? "REGULAR")))
+    setFormat((t.format as "ELIMINATION" | "ROUND_ROBIN" | "LEAGUE" | "EXPRESS") ?? "ROUND_ROBIN")
+    setType((t.type as "FULL" | "BASIC") ?? "FULL")
+    setInscriptionPrice(String(t.inscriptionPrice ?? 0))
+    setMaxTeams(String(t.maxTeams ?? 64))
+    setMatchDurationMinutes(String(t.matchDurationMinutes ?? 70))
+    setPrize(String(t.prize ?? ""))
+    setPosterUrl(String(t.posterUrl ?? ""))
+    const mods = (t.modalities ?? []) as Array<{
+      modality: string
+      category: string
+      prizeType?: string | null
+      prizeAmount?: number | null
+      prizeDescription?: string | null
+      minPairs?: number | null
+      maxPairs?: number | null
+    }>
+    setModalities(
+      mods.map((m) => ({
+        modality: m.modality as (typeof MODALITY_OPTIONS)[number],
+        category: m.category,
+        prizeType: (m.prizeType as "CASH" | "GIFT") ?? undefined,
+        prizeAmount: m.prizeAmount ?? undefined,
+        prizeDescription: m.prizeDescription ?? undefined,
+        minPairs: m.minPairs ?? undefined,
+        maxPairs: m.maxPairs ?? undefined,
+      }))
+    )
+  }, [initialTournamentId, tournamentQuery.data?.data])
 
   const requiredHoursHint = useMemo(() => {
     return null as null | { required: number; available: number }
   }, [])
 
+  // Auto-corregir categorías duplicadas: si hay duplicados, cambiar las filas duplicadas a la primera opción disponible
+  useEffect(() => {
+    const seen = new Map<string, number[]>()
+    modalities.forEach((m, i) => {
+      const key = `${m.modality}::${m.category}`
+      const list = seen.get(key) ?? []
+      list.push(i)
+      seen.set(key, list)
+    })
+    const toFix: number[] = []
+    for (const [, indices] of seen) {
+      if (indices.length > 1) toFix.push(...indices.slice(1))
+    }
+    if (toFix.length === 0) return
+    setModalities((prev) => {
+      let changed = false
+      const next = prev.map((m, idx) => {
+        if (!toFix.includes(idx)) return m
+        const usedByOthers = new Set(
+          prev.filter((_, j) => j !== idx).map((o) => `${o.modality}::${o.category}`)
+        )
+        const opts = MODALITY_OPTIONS.filter((opt) => !usedByOthers.has(`${opt}::${m.category}`))
+        if (opts.length > 0 && opts[0] !== m.modality) {
+          changed = true
+          return { ...m, modality: opts[0] }
+        }
+        return m
+      })
+      return changed ? next : prev
+    })
+  }, [modalities])
+
   const currentStatus = tournamentQuery.data?.data?.status ?? (tournamentId ? "DRAFT" : "")
 
-  function buildAvailabilitiesFromWeeklySchedule(schedule: DaySchedule[]) {
-    const items: Array<{ dayOfWeek: number; startTime: string; endTime: string }> = []
-    for (const day of schedule) {
-      if (day.closed) continue
-      const dayOfWeek = dayKeyToDayOfWeek(day.day)
-      for (const slot of day.slots) {
-        const startTime = slot.start
-        const endTime = slot.end
-        if (!startTime || !endTime) continue
-        items.push({ dayOfWeek, startTime, endTime })
-      }
-    }
-    return items
-  }
-
-  async function ensureDraftSynced() {
+  async function ensureDraftSynced(modalitiesOverride?: DraftModality[]) {
+    const mods = modalitiesOverride ?? modalities
     const payload: Record<string, unknown> = {
       name,
       description,
@@ -186,7 +254,12 @@ export function NewTournamentWizard() {
         thirdSetTiebreakTo10,
         gamesPerSet: setTo4Games ? 4 : 6,
       },
-      modalities: modalities.map((m) => ({
+    }
+
+    // Only include modalities when there are no registrations to avoid API rejection
+    const hasRegistrations = pairCount > 0
+    if (!hasRegistrations) {
+      payload.modalities = mods.map((m) => ({
         modality: m.modality,
         category: m.category,
         prizeType: m.prizeType ?? undefined,
@@ -194,7 +267,7 @@ export function NewTournamentWizard() {
         prizeDescription: m.prizeDescription ?? undefined,
         minPairs: type === "FULL" ? (m.minPairs ?? undefined) : undefined,
         maxPairs: type === "FULL" ? (m.maxPairs ?? undefined) : undefined,
-      })),
+      }))
     }
 
     if (!tournamentId) {
@@ -226,6 +299,8 @@ export function NewTournamentWizard() {
             prizeType: m.prizeType ?? undefined,
             prizeAmount: m.prizeAmount ?? undefined,
             prizeDescription: m.prizeDescription ?? undefined,
+            minPairs: m.minPairs ?? undefined,
+            maxPairs: m.maxPairs ?? undefined,
           }))
           .filter((m) => m.category.length > 0)
         if (clean.length === 0) throw new Error("Agrega al menos una categoria/modalidad (requerido para ranking, premios y filtros)")
@@ -237,8 +312,11 @@ export function NewTournamentWizard() {
           seen.add(key)
         }
         setModalities(clean)
+        await ensureDraftSynced(clean)
+      }
 
-        await ensureDraftSynced()
+      if (step.id === "canchas" && courtsStepRef.current) {
+        await courtsStepRef.current.saveAll()
       }
 
       setStepIdx((i) => Math.min(steps.length - 1, i + 1))
@@ -268,56 +346,6 @@ export function NewTournamentWizard() {
     }
   }
 
-  async function handleCreateCourt() {
-    try {
-      const id = await ensureDraftSynced()
-      if (!newCourtName.trim() || !newCourtVenue.trim()) throw new Error("Nombre y sede son requeridos")
-      await createCourt.mutateAsync({
-        tournamentId: id,
-        data: { name: newCourtName.trim(), venue: newCourtVenue.trim(), isIndoor: newCourtIndoor },
-      })
-      setNewCourtName("")
-      setNewCourtVenue("")
-      setNewCourtIndoor(false)
-      toast({ title: "Cancha creada" })
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: err instanceof Error ? err.message : "No se pudo crear la cancha",
-        variant: "destructive",
-      })
-    }
-  }
-
-  async function handleApplyScheduleToAllCourts() {
-    try {
-      if (!tournamentId) throw new Error("Primero guarda el torneo (paso 2)")
-      const courts = courtsQuery.data?.data ?? []
-      if (courts.length === 0) throw new Error("Crea al menos 1 cancha")
-
-      const availabilities = buildAvailabilitiesFromWeeklySchedule(weeklySchedule)
-      if (availabilities.length === 0) throw new Error("Configura al menos un horario")
-
-      await Promise.all(
-        courts.map((c: any) =>
-          setAvailability.mutateAsync({
-            tournamentId,
-            courtId: c.id,
-            availabilities,
-          })
-        )
-      )
-
-      toast({ title: "Horarios aplicados a todas las canchas" })
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: err instanceof Error ? err.message : "No se pudieron aplicar los horarios",
-        variant: "destructive",
-      })
-    }
-  }
-
   async function handlePublish() {
     try {
       const id = await ensureDraftSynced()
@@ -337,8 +365,25 @@ export function NewTournamentWizard() {
     }
   }
 
+  const step1Progress = (() => {
+    const fields = [
+      !!name?.trim(),
+      !!startDate,
+      !!endDate,
+      !!venue?.trim(),
+      !!tournamentClass,
+      !!format,
+      inscriptionPrice !== undefined && inscriptionPrice !== null && String(inscriptionPrice).length > 0,
+      !!officialBall,
+      !!posterUrl,
+      !!matchDurationMinutes,
+    ]
+    const filled = fields.filter(Boolean).length
+    return Math.min(100, (filled / 10) * 100)
+  })()
+
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6 px-4 py-4 md:py-6">
+    <div className="mx-auto w-full max-w-6xl space-y-6 px-4 py-4 md:py-6 font-sans scrollbar-hide">
       {/* Cabecera compacta */}
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
@@ -365,46 +410,48 @@ export function NewTournamentWizard() {
         </div>
       </div>
 
-      {/* Stepper adaptativo: móvil = progress + texto, desktop = tarjetas */}
+      {/* Stepper: línea gris fina conectando círculos numéricos (referencia WhinPadel Admin) */}
       <div className="md:hidden">
         <p className="text-sm font-medium text-foreground">
           Paso {stepIdx + 1} de {steps.length}: {step.label}
         </p>
         <Progress value={((stepIdx + 1) / steps.length) * 100} className="mt-2 h-1.5" />
       </div>
-      <Card className="hidden border-border/50 md:block">
-        <CardContent className="p-4">
-          <div className="grid grid-cols-4 gap-2">
-            {steps.map((s, idx) => {
-              const active = idx === stepIdx
-              const done = idx < stepIdx
-              return (
-                <div key={s.id} className="flex items-center gap-3 rounded-lg border border-border/40 p-3">
+      <div className="hidden md:block overflow-x-auto">
+        <div className="flex items-center justify-between min-w-[600px] px-2">
+          {steps.map((s, idx) => {
+            const active = idx === stepIdx
+            const done = idx < stepIdx
+            const stepActive = active || done
+            return (
+              <div key={s.id} className="flex items-center flex-1 last:flex-none">
+                <div className="flex items-center gap-3 group">
                   <div
                     className={
-                      "flex h-8 w-8 items-center justify-center rounded-full text-xs font-black " +
-                      (done || active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")
+                      "w-10 h-10 rounded-full flex items-center justify-center border-2 font-bold shadow-sm transition-colors " +
+                      (stepActive ? "border-primary bg-primary text-primary-foreground" : "border-slate-200 bg-white text-slate-400")
                     }
                   >
                     {idx + 1}
                   </div>
-                  <div className="min-w-0">
-                    <p className={"truncate text-sm font-bold " + (active ? "text-foreground" : "text-muted-foreground")}>
+                  <div>
+                    <p className={"text-sm font-bold leading-none " + (stepActive ? "text-primary" : "text-slate-400")}>
                       {s.label}
                     </p>
-                    {active ? (
-                      <p className="truncate text-xs text-muted-foreground">Paso {stepIdx + 1} de {steps.length}</p>
-                    ) : null}
+                    <p className="text-[10px] text-slate-400 uppercase tracking-tighter mt-1">
+                      {idx === 0 ? "Configuración" : idx === 1 ? "Niveles & Ramas" : idx === 2 ? "Canchas & Horas" : idx === 3 ? "Registro" : "Confirmar"}
+                    </p>
                   </div>
                 </div>
-              )
-            })}
-          </div>
-        </CardContent>
-      </Card>
+                {idx < steps.length - 1 && <div className="h-px bg-slate-200 flex-1 mx-4" />}
+              </div>
+            )
+          })}
+        </div>
+      </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 pb-24 md:pb-0 lg:col-span-2">
+      <div className="flex flex-col lg:flex-row gap-6 lg:items-start">
+        <div className="flex-1 min-w-0 space-y-6 pb-32 md:pb-40">
           {step.id === "general" ? (
             <Card className="border-border/50">
               <CardHeader>
@@ -420,20 +467,20 @@ export function NewTournamentWizard() {
                       type="button"
                       onClick={() => setType("FULL")}
                       className={`relative flex flex-row items-start gap-3 rounded-xl border-2 p-4 text-left transition-all md:flex-col md:gap-0 md:p-6 ${
-                        type === "FULL" ? "border-primary bg-primary/5" : "border-border bg-muted/20 hover:border-muted-foreground/30"
+                        type === "FULL" ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50/50"
                       }`}
                     >
                       {type === "FULL" && (
-                        <span className="absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-[9px] font-bold text-primary-foreground uppercase md:right-4 md:top-4 md:text-[10px]">
+                        <span className="absolute right-2 top-2 rounded-full bg-emerald-500 text-white px-2.5 py-0.5 text-[9px] font-bold uppercase shadow-sm md:right-4 md:top-4 md:text-[10px]">
                           Recomendado
                         </span>
                       )}
-                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:mb-4 md:h-12 md:w-12 md:rounded-xl ${type === "FULL" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
+                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl md:mb-4 md:h-12 md:w-12 ${type === "FULL" ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-400"}`}>
                         <Bot className="h-4 w-4 md:h-6 md:w-6" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-base font-bold mb-0.5 md:mb-1">Torneo Inteligente</h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
+                        <h3 className="text-base font-bold mb-0.5 md:mb-1 text-slate-900">Torneo Inteligente</h3>
+                        <p className="text-xs text-slate-500 leading-relaxed">
                           Gestión total: categorías, inscripciones, cuadros automáticos y rol de juegos en la plataforma.
                         </p>
                       </div>
@@ -442,15 +489,15 @@ export function NewTournamentWizard() {
                       type="button"
                       onClick={() => setType("BASIC")}
                       className={`relative flex flex-row items-start gap-3 rounded-xl border-2 p-4 text-left transition-all md:flex-col md:gap-0 md:p-6 ${
-                        type === "BASIC" ? "border-primary bg-primary/5" : "border-border bg-muted/20 hover:border-muted-foreground/30"
+                        type === "BASIC" ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50/50"
                       }`}
                     >
-                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:mb-4 md:h-12 md:w-12 md:rounded-xl ${type === "BASIC" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
+                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl md:mb-4 md:h-12 md:w-12 ${type === "BASIC" ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-400"}`}>
                         <Megaphone className="h-4 w-4 md:h-6 md:w-6" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-base font-bold mb-0.5 md:mb-1">Sólo Difusión</h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
+                        <h3 className="text-base font-bold mb-0.5 md:mb-1 text-slate-900">Solo Difusión</h3>
+                        <p className="text-xs text-slate-500 leading-relaxed">
                           Aparece en el calendario nacional. La gestión de inscripciones y cuadros es externa (WhatsApp/Link).
                         </p>
                       </div>
@@ -686,15 +733,11 @@ export function NewTournamentWizard() {
                 {/* Cartel del Torneo */}
                 <section>
                   <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6">Cartel del Torneo</h2>
-                  <div className="border-2 border-dashed border-border rounded-2xl p-8 bg-muted/20">
-                    <ImageUploadField
-                      label="Haz clic o arrastra el cartel aquí"
-                      endpoint="/api/uploads/club/tournament-poster"
-                      value={posterUrl ? [posterUrl] : []}
-                      onChange={(urls) => setPosterUrl(urls[0] || "")}
-                    />
-                    <p className="text-xs text-muted-foreground mt-2">Formatos aceptados: JPG, PNG (Max. 5MB). Relación sugerida: 4:5</p>
-                  </div>
+                  <TournamentPosterUpload
+                    endpoint="/api/uploads/club/tournament-poster"
+                    value={posterUrl}
+                    onChange={setPosterUrl}
+                  />
                 </section>
               </CardContent>
             </Card>
@@ -713,6 +756,7 @@ export function NewTournamentWizard() {
                   <Button
                     type="button"
                     className="bg-primary text-primary-foreground"
+                    disabled={pairCount > 0}
                     onClick={() =>
                       setModalities((prev) => [...prev, { modality: "VARONIL", category: "4ta" }])
                     }
@@ -723,6 +767,14 @@ export function NewTournamentWizard() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
+                {pairCount > 0 && (
+                  <Alert className="border-amber-500/50 bg-amber-50 text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
+                    <Lock className="h-4 w-4 !text-amber-600" />
+                    <AlertDescription>
+                      Las categorías no se pueden modificar porque ya hay <strong>{pairCount}</strong> {pairCount === 1 ? "pareja inscrita" : "parejas inscritas"}. Para editarlas, primero elimina las inscripciones desde el paso de Registro.
+                    </AlertDescription>
+                  </Alert>
+                )}
                 {type === "BASIC" ? (
                   <div className="rounded-lg border border-border/50 bg-muted/20 p-4 text-sm text-muted-foreground">
                     Las categorías son necesarias para asignar puntos al ranking, publicar premios y poder filtrar torneos. No se generan grupos, calendarios ni resultados desde la plataforma.
@@ -735,59 +787,106 @@ export function NewTournamentWizard() {
                         No hay categorías. Haz clic en &quot;Añadir categoría&quot; para agregar al menos una (requerido para ranking, premios y filtros).
                       </div>
                     ) : null}
-                    {modalities.map((m, idx) => (
-                      <div key={`${m.modality}-${idx}`} className="rounded-lg border border-border/50 p-4">
-                        <div className="flex flex-col gap-3 md:flex-row md:items-end">
-                          <div className="grid flex-1 gap-3 md:grid-cols-2">
-                            <div className="space-y-2">
-                              <Label>Modalidad</Label>
-                              <Select
-                                value={m.modality}
-                                onValueChange={(v: any) =>
-                                  setModalities((prev) => prev.map((it, i) => (i === idx ? { ...it, modality: v } : it)))
-                                }
-                              >
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                  {MODALITY_OPTIONS.map((opt) => (
-                                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                    <div className="space-y-4">
+                    {modalities.map((m, idx) => {
+                      const usedByOthers = new Set(
+                        modalities.filter((_, j) => j !== idx).map((o) => `${o.modality}::${o.category}`)
+                      )
+                      const modalityOptions = MODALITY_OPTIONS.filter(
+                        (opt) => !usedByOthers.has(`${opt}::${m.category}`)
+                      )
+                      const categoryOptions = getCategoriesForModality(m.modality).filter(
+                        (opt) => !usedByOthers.has(`${m.modality}::${opt}`)
+                      )
+                      const isDuplicate =
+                        modalities.filter((o) => `${o.modality}::${o.category}` === `${m.modality}::${m.category}`)
+                          .length > 1
+                      const ModalityIcon =
+                        m.modality === "VARONIL" ? Mars : m.modality === "FEMENIL" ? Venus : Users
+                      const iconClass =
+                        m.modality === "VARONIL"
+                          ? "bg-primary/10 text-primary"
+                          : m.modality === "FEMENIL"
+                            ? "bg-pink-100 text-pink-500"
+                            : "bg-purple-100 text-purple-500"
+                      return (
+                      <div
+                        key={`${m.modality}-${m.category}-${idx}`}
+                        className="rounded-2xl p-6 shadow-sm border border-slate-200 hover:border-primary/30 transition-all bg-white"
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-4">
+                          <div className="flex gap-4 items-center flex-wrap">
+                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${iconClass}`}>
+                              <ModalityIcon className="h-6 w-6" />
                             </div>
-
-                            <div className="space-y-2">
-                              <Label>Categoria</Label>
-                              <Select
-                                value={m.category}
-                                onValueChange={(v) =>
-                                  setModalities((prev) => prev.map((it, i) => (i === idx ? { ...it, category: v } : it)))
-                                }
-                              >
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                  {COMPETITION_CATEGORIES.map((opt) => (
-                                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                              <div>
+                                <h3 className="text-xl font-bold text-slate-900 uppercase">
+                                  {m.modality} {m.category}
+                                </h3>
+                                <p className="text-xs text-slate-400 font-medium">Modalidad y categoría</p>
+                              </div>
+                              <div className="flex gap-2">
+                                <Select
+                                  disabled={pairCount > 0}
+                                  value={
+                                    modalityOptions.includes(m.modality)
+                                      ? m.modality
+                                      : modalityOptions[0] ?? m.modality
+                                  }
+                                  onValueChange={(v: (typeof MODALITY_OPTIONS)[number]) => {
+                                    const cats = getCategoriesForModality(v)
+                                    const current = modalities[idx]
+                                    const validCat = (cats as readonly string[]).includes(current.category) ? current.category : cats[0]
+                                    setModalities((prev) => prev.map((item, i) =>
+                                      i === idx ? { ...item, modality: v, category: validCat } : item
+                                    ))
+                                  }}
+                                >
+                                  <SelectTrigger className="h-9 w-[130px] bg-slate-50 border-none"><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                    {modalityOptions.map((opt) => (
+                                      <SelectItem key={opt} value={opt}>{getCategoryLabel(opt)}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <Select
+                                  disabled={pairCount > 0}
+                                  value={
+                                    (categoryOptions as readonly string[]).includes(m.category)
+                                      ? m.category
+                                      : categoryOptions[0] ?? m.category
+                                  }
+                                  onValueChange={(v) =>
+                                    setModalities((prev) => prev.map((it, i) => (i === idx ? { ...it, category: v } : it)))
+                                  }
+                                >
+                                  <SelectTrigger className="h-9 min-w-[120px] bg-slate-50 border-none"><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                    {categoryOptions.map((opt) => (
+                                      <SelectItem key={opt} value={opt}>
+                                        {getCategoryLabel(opt)}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
                             </div>
                           </div>
-
                           <Button
                             type="button"
-                            variant="outline"
-                            className="md:mb-1"
+                            variant="ghost"
+                            size="icon"
+                            className="text-slate-400 hover:text-red-500 transition-colors"
                             onClick={() => setModalities((prev) => prev.filter((_, i) => i !== idx))}
-                            disabled={modalities.length <= 1}
+                            disabled={modalities.length <= 1 || pairCount > 0}
                           >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Quitar
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
-                        <div className="mt-4 grid gap-3 border-t border-border/50 pt-4 md:grid-cols-3">
+                        <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-6">
                           <div className="space-y-2">
-                            <Label className="text-xs">Premio (tipo)</Label>
+                            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Premio (tipo)</Label>
                             <Select
                               value={m.prizeType ?? "none"}
                               onValueChange={(v) =>
@@ -805,7 +904,7 @@ export function NewTournamentWizard() {
                                 )
                               }
                             >
-                              <SelectTrigger><SelectValue placeholder="Sin premio" /></SelectTrigger>
+                              <SelectTrigger className="h-10 bg-slate-50 border-none"><SelectValue placeholder="Sin premio" /></SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="none">Sin premio</SelectItem>
                                 <SelectItem value="CASH">Efectivo</SelectItem>
@@ -815,11 +914,12 @@ export function NewTournamentWizard() {
                           </div>
                           {m.prizeType === "CASH" ? (
                             <div className="space-y-2">
-                              <Label className="text-xs">Monto (MXN)</Label>
+                              <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Monto (MXN)</Label>
                               <Input
                                 type="number"
                                 min={0}
                                 step={0.01}
+                                className="h-10 bg-slate-50 border-none"
                                 value={m.prizeAmount ?? ""}
                                 onChange={(e) =>
                                   setModalities((prev) =>
@@ -835,10 +935,11 @@ export function NewTournamentWizard() {
                           {type === "FULL" ? (
                             <>
                               <div className="space-y-2">
-                                <Label className="text-xs">Mín. parejas para abrir</Label>
+                                <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Mín. parejas para abrir</Label>
                                 <Input
                                   type="number"
                                   min={2}
+                                  className="h-10 bg-slate-50 border-none"
                                   placeholder="6"
                                   value={m.minPairs ?? ""}
                                   onChange={(e) =>
@@ -851,13 +952,14 @@ export function NewTournamentWizard() {
                                     )
                                   }
                                 />
-                                <p className="text-xs text-muted-foreground">Vacío = usar 6</p>
+                                <p className="text-[10px] text-slate-500">Vacío = usar 6</p>
                               </div>
                               <div className="space-y-2">
-                                <Label className="text-xs">Máx. parejas</Label>
+                                <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Máx. parejas (Cupo Máx)</Label>
                                 <Input
                                   type="number"
                                   min={2}
+                                  className="h-10 bg-slate-50 border-none"
                                   placeholder={maxTeams}
                                   value={m.maxPairs ?? ""}
                                   onChange={(e) =>
@@ -870,14 +972,15 @@ export function NewTournamentWizard() {
                                     )
                                   }
                                 />
-                                <p className="text-xs text-muted-foreground">Vacío = usar {maxTeams}</p>
+                                <p className="text-[10px] text-slate-500">Vacío = usar {maxTeams}</p>
                               </div>
                             </>
                           ) : null}
                           {m.prizeType === "GIFT" ? (
                             <div className="space-y-2 md:col-span-2">
-                              <Label className="text-xs">Descripcion (ej: 2 palas X, paleteros)</Label>
+                              <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Descripcion (ej: 2 palas X, paleteros)</Label>
                               <Input
+                                className="h-10 bg-slate-50 border-none"
                                 value={m.prizeDescription ?? ""}
                                 onChange={(e) =>
                                   setModalities((prev) =>
@@ -889,10 +992,17 @@ export function NewTournamentWizard() {
                             </div>
                           ) : null}
                         </div>
+                        {isDuplicate && (
+                          <p className="mt-3 text-sm text-destructive">
+                            Esta combinación ya existe en otra categoría. Cambia modalidad o categoría.
+                          </p>
+                        )}
                       </div>
-                    ))}
-                    <p className="text-xs text-muted-foreground">
-                      Infantil y Senior se manejan como categoria dentro de la modalidad (ej: Mixto Senior).
+                    )
+                    })}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-4">
+                      Mixto usa categorías A/B/C/D. Varonil/Femenil usan 1ra-6ta, Senior e Infantil/Juvenil (10U-18U).
                     </p>
                   </>
                 )}
@@ -901,85 +1011,27 @@ export function NewTournamentWizard() {
           ) : null}
 
           {step.id === "canchas" ? (
-            <div className="space-y-6">
-              <Card className="border-border/50">
-                <CardHeader>
-                  <CardTitle className="font-display text-lg font-black uppercase tracking-wide">Canchas</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {!tournamentId ? (
-                    <div className="rounded-lg border border-border/50 bg-muted/20 p-4 text-sm text-muted-foreground">
-                      Primero define las categorias (paso 2) para crear el borrador del torneo.
-                    </div>
-                  ) : null}
-
-                  <div className="grid gap-3 md:grid-cols-3">
-                    <div className="space-y-2">
-                      <Label>Nombre</Label>
-                      <Input value={newCourtName} onChange={(e) => setNewCourtName(e.target.value)} placeholder="Cancha 1" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Sede</Label>
-                      <Input value={newCourtVenue} onChange={(e) => setNewCourtVenue(e.target.value)} placeholder="Panoramica / Central" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Indoor</Label>
-                      <div className="flex h-10 items-center gap-3 rounded-md border border-input px-3">
-                        <Switch checked={newCourtIndoor} onCheckedChange={setNewCourtIndoor} />
-                        <span className="text-sm text-muted-foreground">{newCourtIndoor ? "Si" : "No"}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <Button type="button" className="bg-primary text-primary-foreground" onClick={handleCreateCourt} disabled={createCourt.isPending}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Crear cancha
-                  </Button>
-
-                  <div className="space-y-2">
-                    <Label>Canchas creadas</Label>
-                    <div className="grid gap-2">
-                      {(courtsQuery.data?.data ?? []).map((c: any) => (
-                        <div key={c.id} className="flex items-center justify-between rounded-lg border border-border/50 p-3">
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold">{c.name}</p>
-                            <p className="truncate text-xs text-muted-foreground">{c.venue}{c.isIndoor ? " • Indoor" : ""}</p>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => deleteCourt.mutateAsync({ tournamentId, courtId: c.id })}
-                            disabled={deleteCourt.isPending}
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Eliminar
-                          </Button>
-                        </div>
-                      ))}
-                      {(courtsQuery.data?.data ?? []).length === 0 ? (
-                        <p className="text-sm text-muted-foreground">Aun no hay canchas.</p>
-                      ) : null}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-border/50">
-                <CardHeader>
-                  <div className="flex items-center justify-between gap-3">
-                    <CardTitle className="font-display text-lg font-black uppercase tracking-wide">Horarios</CardTitle>
-                    <Button type="button" variant="outline" onClick={handleApplyScheduleToAllCourts} disabled={setAvailability.isPending}>
-                      Aplicar a todas las canchas
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <WeeklyScheduleEditor value={weeklySchedule} onChange={setWeeklySchedule} />
-                  <p className="text-xs text-muted-foreground">
-                    Esto reemplaza la disponibilidad semanal de cada cancha (puedes volver y ajustarla cuando quieras).
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+            tournamentId ? (
+              <CourtsAndSchedulesStep
+                ref={courtsStepRef}
+                tournamentId={tournamentId}
+                maxTeams={Number(maxTeams || 64)}
+                matchDurationMinutes={Number(matchDurationMinutes || 70)}
+                startDate={startDate}
+                endDate={endDate}
+                tournamentClass={tournamentClass}
+                format={format}
+                type={type}
+                onCapacityChange={(total, required) => {
+                  setCapacityTotal(total)
+                  setCapacityRequired(required)
+                }}
+              />
+            ) : (
+              <div className="rounded-lg border border-border/50 bg-muted/20 p-4 text-sm text-muted-foreground">
+                Primero define las categorías (paso 2) para crear el borrador del torneo.
+              </div>
+            )
           ) : null}
 
           {step.id === "registro" ? (
@@ -1071,99 +1123,60 @@ export function NewTournamentWizard() {
             </Card>
           ) : null}
 
-          {/* Nav actions: sticky en móvil, estático en desktop */}
-          <div className="sticky bottom-0 left-0 right-0 z-10 flex items-center justify-between border-t border-border bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:static md:border-0 md:bg-transparent md:p-0">
-            <Button type="button" variant="outline" onClick={goBack} disabled={stepIdx === 0}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Atras
-            </Button>
-            <Button type="button" className="bg-primary text-primary-foreground" onClick={goNext} disabled={stepIdx === steps.length - 1}>
+          {/* Footer de navegación: barra inferior fija, Siguiente en verde sólido */}
+          <div className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between border-t border-slate-200 bg-white/95 backdrop-blur-md p-4 px-6 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+            <div className="flex items-center gap-3">
+              <Button type="button" variant="ghost" className="text-slate-500 hover:text-slate-800" onClick={() => router.push({ pathname: "/club", query: { section: "torneos" } } as any)}>
+                Cancelar
+              </Button>
+              <Button type="button" variant="outline" onClick={goBack} disabled={stepIdx === 0} className="hidden sm:inline-flex">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Anterior
+              </Button>
+            </div>
+            <Button type="button" className="bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-primary/25 px-8 py-2.5 rounded-xl" onClick={goNext} disabled={stepIdx === steps.length - 1}>
               Siguiente
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
         </div>
 
-        {/* Right column: Summary */}
-        <div className="space-y-4 lg:sticky lg:top-6">
-          <Card className="border-border/50">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Resumen</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div className="flex flex-wrap gap-2">
-                <Badge className={TOURNAMENT_CLASS_BADGE_CLASS[tournamentClass]}>
-                  {(() => {
-                    const Icon = TOURNAMENT_CLASS_ICONS[TOURNAMENT_CLASS_ICON[tournamentClass]]
-                    return (
-                      <span className="flex items-center gap-1.5">
-                        <Icon className="h-3.5 w-3.5" />
-                        {TOURNAMENT_CLASS_LABELS[tournamentClass]} ({TOURNAMENT_CLASS_POINTS[tournamentClass]} pts)
-                      </span>
-                    )
-                  })()}
-                </Badge>
-                <Badge variant="outline">{format}</Badge>
-                <Badge variant="outline">{type === "FULL" ? "Torneo Inteligente" : "Sólo Difusión"}</Badge>
-                {currentStatus ? <Badge className="bg-primary/10 text-primary">{String(currentStatus)}</Badge> : null}
-              </div>
-
-              <div>
-                <p className="font-semibold text-foreground">{name || "Sin nombre"}</p>
-                <p className="text-xs text-muted-foreground">{venue || "Sede por definir"}</p>
-              </div>
-
-              <div className="rounded-lg border border-border/50 p-3">
-                <p className="text-xs text-muted-foreground">Categorias</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {modalities.length === 0 ? (
-                    <span className="text-sm text-muted-foreground">Sin categorias</span>
-                  ) : (
-                    modalities.map((m, i) => (
-                      <Badge key={`${m.modality}-${m.category}-${i}`} variant="outline">
-                        {m.modality} {m.category}
-                      </Badge>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              <div className="rounded-lg border border-border/50 p-3">
-                <p className="text-xs text-muted-foreground">Canchas</p>
-                <p className="mt-1 font-semibold">{(courtsQuery.data?.data ?? []).length}</p>
-              </div>
-
-              {requiredHoursHint ? (
-                <div className="rounded-lg border border-border/50 p-3">
-                  <p className="text-xs text-muted-foreground">Capacidad</p>
-                  <p className="mt-1 text-sm">
-                    {requiredHoursHint.required}h requeridas / {requiredHoursHint.available}h disponibles
-                  </p>
-                </div>
-              ) : null}
-
-              {posterUrl ? (
-                <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground">Cartel</p>
-                  <img src={posterUrl} alt="Cartel" className="h-28 w-full rounded-lg border border-border object-cover" />
-                </div>
-              ) : null}
-
-              {tournamentId ? (
-                <div className="pt-2 text-xs text-muted-foreground">
-                  ID: <span className="font-mono">{tournamentId}</span>
-                </div>
-              ) : null}
-
-              {tournamentQuery.data?.data?.status && tournamentQuery.data?.data?.status !== "DRAFT" ? (
-                <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-xs">
-                  Este torneo ya no esta en borrador: {String(tournamentQuery.data.data.status)}.
-                </div>
-              ) : null}
-            </CardContent>
-          </Card>
+        {/* Sidebar: Vista Previa (oculto en Paso 4 Registro para más espacio) */}
+        {step.id !== "registro" && (
+        <div className="hidden lg:block w-[380px] shrink-0 sticky top-6 self-start">
+          <WizardSidebar
+            name={name}
+            startDate={startDate}
+            endDate={endDate}
+            venue={venue}
+            inscriptionPrice={inscriptionPrice}
+            prize={prize}
+            format={format}
+            matchDurationMinutes={matchDurationMinutes}
+            tournamentClass={tournamentClass}
+            officialBall={officialBall}
+            posterUrl={posterUrl}
+            type={type}
+            registrationOpensAt={registrationOpensAt}
+            modalities={modalities.map((m) => ({
+              modality: m.modality,
+              category: m.category,
+              minPairs: m.minPairs ?? undefined,
+              maxPairs: m.maxPairs ?? undefined,
+            }))}
+            maxTeams={Number(maxTeams || 64)}
+            courtCount={(courtsQuery.data?.data ?? []).length}
+            stepId={step.id}
+            progressPercent={step1Progress}
+            capacityTotal={capacityTotal}
+            capacityRequired={capacityRequired}
+            pairCount={pairCount}
+            lastPairs={lastPairs}
+          />
         </div>
+        )}
       </div>
     </div>
   )
 }
+

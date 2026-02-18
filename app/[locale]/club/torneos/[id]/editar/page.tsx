@@ -1,4 +1,5 @@
-import { TournamentEditForm } from "@/components/club/tournament-edit-form"
+import { notFound } from "next/navigation"
+import { EditTournamentPage } from "@/components/club/edit-tournament-page"
 
 export default async function Page({
   params,
@@ -6,5 +7,6 @@ export default async function Page({
   params: Promise<{ locale?: string; id: string }>
 }) {
   const { id } = await params
-  return <TournamentEditForm tournamentId={id} />
+  if (!id) notFound()
+  return <EditTournamentPage tournamentId={id} />
 }

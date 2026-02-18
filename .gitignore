@@ -24,3 +24,6 @@ yarn.lock
 
 # Local scratch
 tmp/
+
+# Local uploads (fallback cuando Supabase no está configurado)
+public/uploads/

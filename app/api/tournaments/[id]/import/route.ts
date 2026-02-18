@@ -24,16 +24,77 @@ function parseFullName(full: string): { firstName: string; lastName: string } {
   return { firstName: parts[0], lastName: parts.slice(1).join(" ") }
 }
 
+/** Alias de categoría → valor normalizado en BD (ej: "4ta", "Open") */
+const CATEGORY_ALIASES: Record<string, string> = {
+  "1": "1ra", "1ra": "1ra", "primera": "1ra", "primero": "1ra",
+  "2": "2da", "2da": "2da", "segunda": "2da", "segundo": "2da", "2da fuerza": "2da",
+  "3": "3ra", "3ra": "3ra", "tercera": "3ra", "tercero": "3ra", "3ra fuerza": "3ra",
+  "4": "4ta", "4ta": "4ta", "cuarta": "4ta", "cuarto": "4ta", "4ta fuerza": "4ta", "cuarta fuerza": "4ta",
+  "5": "5ta", "5ta": "5ta", "quinta": "5ta", "quinto": "5ta",
+  "6": "6ta", "6ta": "6ta", "sexta": "6ta", "sexto": "6ta",
+  "open": "Open", "abierto": "Open",
+}
+
+/** Alias de modalidad → valor en BD */
+const MODALITY_ALIASES: Record<string, string> = {
+  "varonil": "VARONIL", "masculino": "VARONIL", "m": "VARONIL", "hombres": "VARONIL",
+  "femenil": "FEMENIL", "femenino": "FEMENIL", "f": "FEMENIL", "mujeres": "FEMENIL",
+  "mixto": "MIXTO", "mixed": "MIXTO",
+}
+
+function normalizeForMatch(s: string): string {
+  return s
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+}
+
+/**
+ * Valida categoría de forma flexible: 4ta varonil, cuarta, 4, CUARTA, cuarta varonil, etc.
+ * Si solo falla la categoría, el mapeo/validación permitirá corregir manualmente.
+ */
 function matchModalityByCategory(
   modalities: Array<{ id: string; modality: string; category: string }>,
   categoryStr: string
 ): { id: string } | null {
-  const normalized = categoryStr.trim().toUpperCase().replace(/\s+/g, " ")
+  const input = normalizeForMatch(categoryStr)
+  if (!input) return null
+
   for (const m of modalities) {
-    const modCat = `${m.modality} ${m.category}`.toUpperCase()
-    if (modCat === normalized || modCat.includes(normalized) || normalized.includes(modCat)) {
-      return { id: m.id }
+    const modNorm = m.modality.toUpperCase()
+    const catNorm = m.category
+
+    // Variantes de modalidad para este registro
+    const modKeys = Object.entries(MODALITY_ALIASES)
+      .filter(([, v]) => v === modNorm)
+      .map(([k]) => k)
+    if (modKeys.length === 0) modKeys.push(modNorm.toLowerCase())
+
+    // Variantes de categoría
+    const catKeys = Object.entries(CATEGORY_ALIASES)
+      .filter(([, v]) => v === catNorm)
+      .map(([k]) => k)
+    if (catKeys.length === 0) catKeys.push(catNorm.toLowerCase())
+
+    // Construir todas las combinaciones que matchearían
+    const variants: string[] = []
+    for (const ck of catKeys) {
+      for (const mk of modKeys) {
+        variants.push(`${ck} ${mk}`.trim(), `${mk} ${ck}`.trim())
+      }
+      variants.push(ck) // Solo categoría (ej: "4ta" cuando hay una sola modalidad)
     }
+
+    const matches = variants.some(
+      (v) =>
+        input === v ||
+        input.includes(v) ||
+        v.includes(input) ||
+        input.replace(/\s/g, "") === v.replace(/\s/g, "")
+    )
+    if (matches) return { id: m.id }
   }
   return null
 }
@@ -58,9 +119,7 @@ export async function POST(
     if (!["players", "pairs"].includes(importType)) {
       return NextResponse.json({ success: false, error: "importType invalido" }, { status: 400 })
     }
-    if (importType === "players" && !tournamentModalityId) {
-      return NextResponse.json({ success: false, error: "tournamentModalityId requerido para importar jugadores" }, { status: 400 })
-    }
+    // tournamentModalityId es opcional para players (solo se añaden al sistema)
 
     const tournament = await prisma.tournament.findUnique({
       where: { id },
@@ -117,20 +176,31 @@ export async function POST(
     for (const row of rows) {
       try {
         if (importType === "players") {
-          const firstName = pick(row, ["first_name", "nombre", "name"])
-          const lastName = pick(row, ["last_name", "apellido", "lastname"])
+          const firstName =
+            pick(row, ["first_name", "nombre", "name"]) ||
+            pick(row, ["nombre_jugador_1", "player1_first_name", "nombre1", "player1_name", "nombre_j1"])
+          const lastName =
+            pick(row, ["last_name", "apellido", "lastname"]) ||
+            pick(row, ["apellido_jugador_1", "player1_last_name", "apellido1", "player1_lastname", "apellido_j1"])
+          const phone =
+            pick(row, ["phone", "telefono", "celular"]) ||
+            pick(row, ["telefono_jugador_1", "player1_phone", "telefono1", "celular1", "telefono_j1"])
           if (!firstName || !lastName) throw new Error("Nombre incompleto")
+          if (!phone) throw new Error("Teléfono requerido")
 
-          await ensureImportedPlayer({
+          const imported = await ensureImportedPlayer({
             firstName,
             lastName,
-            phone: pick(row, ["phone", "telefono", "celular"]),
-            email: pick(row, ["email", "correo"]),
+            phone,
+            email:
+              pick(row, ["email", "correo"]) ||
+              pick(row, ["player1_email", "correo1", "email1", "email_j1"]),
             city: pick(row, ["city", "ciudad"]),
-            country: pick(row, ["country", "pais"]),
+            country: pick(row, ["country", "pais"]) || "MX",
             sex: (pick(row, ["sex", "genero"]) || "").toUpperCase() === "F" ? "F" : "M",
             sourceClubId: tournament.club.id,
           })
+          await ensureLinkedPlayer(imported.id)
         } else {
           // Soporte plantilla 7 columnas: Nombre J1, Apellido J1, Teléfono J1, Nombre J2, Apellido J2, Teléfono J2, Categoría
           // Soporte plantilla 8 columnas: Nombre J1, Teléfono J1, Email J1, Nombre J2, Teléfono J2, Email J2, Categoría

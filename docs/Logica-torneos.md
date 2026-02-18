@@ -77,7 +77,7 @@ El sistema mantiene un índice de jugadores multi-categoría que se consulta al 
 **Algoritmo:**
 - Si N es divisible entre 3: N/3 grupos de 3
 - Si N % 3 == 1: (N-4)/3 grupos de 3 + 1 grupo de 4
-- Si N % 3 == 2: (N-4)/3 grupos de 3 + 1 grupo de 4
+- Si N % 3 == 2: (N-8)/3 grupos de 3 + 2 grupos de 4
 
 **Tabla de referencia:**
 

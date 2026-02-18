@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec6d",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#102218",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>body {
+    font-family: "Lexend", sans-serif
+    }
+.glass-header {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px)
+    }
+.bg-pattern {
+    background-image: linear-gradient(rgba(246, 248, 247, 0.94), rgba(246, 248, 247, 0.94)), url(https://lh3.googleusercontent.com/aida-public/AB6AXuCKVAX1ytvddYqQpkOvwqHuyHDQ-9EjfF7MYxMSxYUFxaPfg8cqt_4ADBQWZBf9mITDf1TLQuEFNMrDFiS-m6sVnysUti76lpDmTAH8FYU_sv6V6E4XaY8-GJUeOak7P5_2R-4lil3JA3pn4vEQjj7I_7biyi6GVv0d8kHvlibHilI8-hQmSKnQyeFvODajeglb6fP9yDHmC4Lin3ZfaAcgWhGFAqA3_MYRJ2gNx7bHvn9Pgj16u6ex_IbYLgo1GoShxjtL9rWmWvI);
+    background-size: cover;
+    background-attachment: fixed
+    }</style>
+<title>Validación y Mapeo - Ranking Padel MX</title>
+</head>
+<body class="bg-background-light text-[#111814] bg-pattern min-h-screen pb-24">
+<!-- Top Navigation Bar -->
+<header class="glass-header sticky top-0 z-50 border-b border-[#dbe6e0] px-4 md:px-10 py-3">
+<div class="max-w-[1440px] mx-auto flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="bg-primary p-1.5 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-background-dark font-bold">sports_tennis</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight">Ranking Padel MX</h2>
+</div>
+<nav class="hidden lg:flex items-center gap-6">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Torneos</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Clubes</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Jugadores</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Reportes</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="bg-white border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary w-64" placeholder="Buscar jugadores..." type="text"/>
+</div>
+<button class="p-2 rounded-xl bg-white border border-[#dbe6e0] relative">
+<span class="material-symbols-outlined text-slate-600">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+</button>
+<div class="w-10 h-10 rounded-full bg-slate-200 border-2 border-primary overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Admin profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHNpm5p8o3fl86HFQPbL8wsQ5viqhA3lNaGznNklbyVaZvKf-B5sFY7kFZiBJP8y8KP_YdZ1CkXhBxGZ-0u8Io5uE49K-S_uhIYrB3IK3wAncmG77HfjG2gfCRdugBWY99uSMGcTW6MqMPSHnbxfIl9rX2zEMkQilLCdJPGdfN1wTVGeZHhwDeJ7MOHg1e-dZ8SnNjQY7f5MZBHkwDcK7PEvIxQBWJilNZkGfLEjtoLais3mHfyHAeToVHaTsNccbmlqM3Bw9lFjA"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto p-6 md:p-10">
+<!-- Breadcrumbs & Title -->
+<div class="mb-8">
+<nav class="flex items-center gap-2 text-sm text-slate-500 mb-2">
+<a class="hover:underline" href="#">Inicio</a>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<a class="hover:underline" href="#">Importación</a>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-slate-900 font-medium">Validación de Datos</span>
+</nav>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="text-4xl font-black tracking-tight text-slate-900">Validación y Mapeo</h1>
+<p class="text-slate-600 mt-2 text-lg">Revisa y corrige los datos de las parejas antes de finalizar el registro al torneo.</p>
+</div>
+<button class="flex items-center gap-2 bg-white px-5 py-2.5 rounded-xl border border-[#dbe6e0] text-sm font-semibold hover:bg-slate-50 transition-all shadow-sm">
+<span class="material-symbols-outlined text-red-500">download</span>
+                    Descargar Reporte de Errores
+                </button>
+</div>
+</div>
+<!-- Summary Bar -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<div class="bg-white p-6 rounded-2xl border-l-8 border-primary shadow-sm flex items-center justify-between">
+<div>
+<p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Parejas Válidas</p>
+<p class="text-4xl font-black text-slate-900">28</p>
+<p class="text-green-600 text-sm font-medium mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">check_circle</span>
+                        Todo listo para importar
+                    </p>
+</div>
+<div class="bg-primary/10 p-4 rounded-full">
+<span class="material-symbols-outlined text-primary text-4xl">check_circle</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-2xl border-l-8 border-amber-400 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Con Advertencias</p>
+<p class="text-4xl font-black text-slate-900">04</p>
+<p class="text-amber-600 text-sm font-medium mt-1">Requiere revisión manual</p>
+</div>
+<div class="bg-amber-50 p-4 rounded-full">
+<span class="material-symbols-outlined text-amber-500 text-4xl">warning</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-2xl border-l-8 border-red-500 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Errores Críticos</p>
+<p class="text-4xl font-black text-slate-900">02</p>
+<p class="text-red-600 text-sm font-medium mt-1">Impiden la importación</p>
+</div>
+<div class="bg-red-50 p-4 rounded-full">
+<span class="material-symbols-outlined text-red-500 text-4xl">error</span>
+</div>
+</div>
+</div>
+<!-- Validation Table -->
+<div class="bg-white rounded-2xl border border-[#dbe6e0] shadow-sm overflow-hidden">
+<div class="p-6 border-b border-[#dbe6e0] flex justify-between items-center bg-slate-50/50">
+<h3 class="font-bold text-lg text-slate-800">Detalle de Registros (34)</h3>
+<div class="flex gap-3">
+<select class="rounded-xl border-[#dbe6e0] text-sm py-2 bg-white focus:ring-primary">
+<option>Todos los estatus</option>
+<option>Sólo errores</option>
+<option>Válidos</option>
+</select>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 border-b border-[#dbe6e0]">
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Pareja (Jugadores)</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Teléfono / ID</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Categoría</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Estatus</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Acciones</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#dbe6e0]">
+<!-- Row 1: Valid -->
+<tr class="hover:bg-slate-50/50 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<div>
+<p class="font-semibold text-slate-900">Juan Pérez / Carlos Ruíz</p>
+<p class="text-xs text-slate-500">Importado desde: registro_master_2024.xlsx</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<p class="text-slate-600 font-medium">5512345678</p>
+</td>
+<td class="px-6 py-5">
+<span class="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold text-slate-700">2DA FUERZA</span>
+</td>
+<td class="px-6 py-5">
+<span class="text-green-600 text-sm font-medium">Listo para importar</span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-slate-400 hover:text-slate-600 p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</td>
+</tr>
+<!-- Row 2: Warning -->
+<tr class="bg-amber-50/20 hover:bg-amber-50/40 transition-colors">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-amber-500">warning</span>
+<div>
+<p class="font-semibold text-slate-900">Roberto Gómez / Luis M.</p>
+<p class="text-xs text-slate-500">Mapeo automático fallido</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<p class="text-slate-600 font-medium">5588776655</p>
+</td>
+<td class="px-6 py-5">
+<span class="bg-amber-100 px-3 py-1 rounded-full text-xs font-bold text-amber-700">4TA FUERZA</span>
+</td>
+<td class="px-6 py-5">
+<div class="max-w-xs">
+<p class="text-amber-700 text-sm font-medium">Categoría inconsistente</p>
+<p class="text-xs text-amber-600">Jugador A tiene ranking de 2da, pero el Excel indica 4ta.</p>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<button class="bg-white border border-amber-300 text-amber-700 px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm hover:bg-amber-50 flex items-center gap-1">
+                                        Reasignar
+                                        <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Error -->
+<tr class="bg-red-50/20 hover:bg-red-50/40 transition-colors">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-red-500">cancel</span>
+<div>
+<p class="font-semibold text-slate-900">Ana Kelly / Sofía T.</p>
+<p class="text-xs text-slate-500">Dato de origen faltante</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<p class="text-red-600 font-bold">5544332211</p>
+</td>
+<td class="px-6 py-5">
+<span class="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold text-slate-400 italic">No detectada</span>
+</td>
+<td class="px-6 py-5">
+<div class="max-w-xs">
+<p class="text-red-700 text-sm font-bold">ID no encontrado</p>
+<p class="text-xs text-red-600">El teléfono no coincide con ningún usuario registrado.</p>
+</div>
+</td>
+<td class="px-6 py-5">
+<button class="bg-red-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold shadow-md shadow-red-200 hover:bg-red-700 flex items-center gap-1 transition-all">
+<span class="material-symbols-outlined text-sm">person_add</span>
+                                    Registro Rápido
+                                </button>
+</td>
+</tr>
+<!-- Row 4: Valid Dummy -->
+<tr class="hover:bg-slate-50/50 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-opacity-40">check_circle</span>
+<div>
+<p class="font-semibold text-slate-900">Miguel Salas / David Ortiz</p>
+<p class="text-xs text-slate-500">Importado desde: registro_master_2024.xlsx</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<p class="text-slate-600 font-medium">5533221144</p>
+</td>
+<td class="px-6 py-5">
+<span class="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold text-slate-700">1RA FUERZA</span>
+</td>
+<td class="px-6 py-5">
+<span class="text-green-600 text-sm font-medium">Listo para importar</span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-slate-400 hover:text-slate-600 p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination-like footer -->
+<div class="px-6 py-4 border-t border-[#dbe6e0] flex justify-between items-center text-sm text-slate-500">
+<p>Mostrando 4 de 34 parejas cargadas</p>
+<div class="flex gap-2">
+<button class="px-4 py-2 border rounded-lg hover:bg-slate-50 disabled:opacity-50" disabled="">Anterior</button>
+<button class="px-4 py-2 border rounded-lg hover:bg-slate-50">Siguiente</button>
+</div>
+</div>
+</div>
+<!-- Quick Tips -->
+<div class="mt-8 flex flex-col md:flex-row gap-6">
+<div class="flex-1 bg-white/50 p-6 rounded-2xl border border-dashed border-slate-300 flex items-start gap-4">
+<div class="text-primary bg-primary/10 p-2 rounded-lg">
+<span class="material-symbols-outlined">lightbulb</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-800">Tip de Importación</h4>
+<p class="text-sm text-slate-600">Puedes re-validar el archivo completo si realizas cambios masivos en el Excel original.</p>
+</div>
+</div>
+<div class="flex-1 bg-white/50 p-6 rounded-2xl border border-dashed border-slate-300 flex items-start gap-4">
+<div class="text-slate-400 bg-slate-100 p-2 rounded-lg">
+<span class="material-symbols-outlined">sync</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-800">Sincronización</h4>
+<p class="text-sm text-slate-600">Los jugadores que crees como "Registro Rápido" se añadirán a tu base de datos global del club.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Sticky Action Footer -->
+<footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-[#dbe6e0] px-6 py-4 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.1)] z-50">
+<div class="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<button class="px-6 py-3 border-2 border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors uppercase text-sm tracking-wide">
+                    Anular Carga
+                </button>
+<div class="hidden md:flex h-8 w-[1px] bg-slate-200"></div>
+<div class="hidden md:block">
+<p class="text-xs text-slate-500 font-bold uppercase">Archivo seleccionado</p>
+<p class="text-sm font-medium text-slate-900 truncate max-w-xs">registro_master_2024.xlsx (2.4 MB)</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right hidden sm:block">
+<p class="text-sm text-slate-600 font-medium">Validación completada al 94%</p>
+<div class="w-48 h-2 bg-slate-100 rounded-full mt-1">
+<div class="h-full bg-primary rounded-full" style="width: 94%"></div>
+</div>
+</div>
+<button class="w-full sm:w-auto bg-primary text-background-dark px-8 py-4 rounded-xl font-black text-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3">
+                    CONFIRMAR E IMPORTAR 28 PAREJAS
+                    <span class="material-symbols-outlined">keyboard_double_arrow_right</span>
+</button>
+</div>
+</div>
+</footer>
+</body></html>

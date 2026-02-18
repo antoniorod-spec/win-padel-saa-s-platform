@@ -13,9 +13,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useImportTournamentFile } from "@/hooks/use-tournaments"
+import { useValidateImportTournamentFile, useImportTournamentFile } from "@/hooks/use-tournaments"
 import { useToast } from "@/hooks/use-toast"
-import { Upload, Download, CheckCircle, AlertCircle, FileSpreadsheet, Calendar, LayoutGrid } from "lucide-react"
+import { Upload, Download, CheckCircle, AlertCircle, FileSpreadsheet } from "lucide-react"
 import * as XLSX from "xlsx"
 
 type ModalityOption = {
@@ -24,12 +24,53 @@ type ModalityOption = {
   category: string
 }
 
+export type ValidationResult = {
+  fileName: string
+  valid: Array<{
+    rowIndex: number
+    status: "valid"
+    player1: string
+    player2: string
+    player1Id: string
+    player2Id: string
+    modalityId: string
+    modalityLabel: string
+    p1Phone: string
+    p2Phone: string
+  }>
+  warnings: Array<{
+    rowIndex: number
+    status: "warning"
+    player1: string
+    player2: string
+    player1Id?: string
+    player2Id?: string
+    modalityId?: string
+    modalityLabel?: string
+    reason: string
+    p1Phone: string
+    p2Phone: string
+  }>
+  errors: Array<{
+    rowIndex: number
+    status: "error"
+    player1?: string
+    player2?: string
+    reason: string
+    p1Phone?: string
+    p2Phone?: string
+    missingField?: string
+  }>
+  totalRows: number
+}
+
 interface ImportTeamsModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   tournamentId: string
   modalities: ModalityOption[]
   onSuccess?: () => void
+  onValidationComplete?: (data: ValidationResult) => void
   onGoToSchedule?: () => void
   onGoToBracket?: () => void
 }
@@ -80,6 +121,7 @@ export function ImportTeamsModal({
   tournamentId,
   modalities,
   onSuccess,
+  onValidationComplete,
   onGoToSchedule,
   onGoToBracket,
 }: ImportTeamsModalProps) {
@@ -89,17 +131,9 @@ export function ImportTeamsModal({
   const [file, setFile] = useState<File | null>(null)
   const [parsedRows, setParsedRows] = useState<Array<Record<string, string>>>([])
   const [isDragging, setIsDragging] = useState(false)
-  const [importResult, setImportResult] = useState<{
-    importedRows: number
-    failedRows: number
-    totalRows: number
-  } | null>(null)
+  const validator = useValidateImportTournamentFile()
+  const importFile = useImportTournamentFile()
 
-  const importer = useImportTournamentFile()
-
-  useEffect(() => {
-    if (!open) setImportResult(null)
-  }, [open])
 
   const handleFile = useCallback(async (f: File | null) => {
     setFile(f)
@@ -139,105 +173,93 @@ export function ImportTeamsModal({
 
   async function onSubmit() {
     if (!file) return
-    if (importType === "pairs" && !modalityId && modalities.length > 1) {
-      // Importación global: requiere columna Categoría en el Excel
-    }
-    if (importType === "players" && !modalityId) {
-      toast({ title: "Selecciona una categoría", variant: "destructive" })
+
+    if (importType === "players") {
+      try {
+        const result = await importFile.mutateAsync({
+          tournamentId,
+          file,
+          importType: "players",
+        })
+        if (!result?.success) {
+          toast({ title: result?.error || "No se pudo importar", variant: "destructive" })
+          return
+        }
+        const data = result.data as { importedRows: number; totalRows: number; failedRows: number }
+        toast({
+          title: "Jugadores importados",
+          description: `${data.importedRows} de ${data.totalRows} jugadores añadidos al sistema${data.failedRows > 0 ? `. ${data.failedRows} con errores.` : "."}`,
+        })
+        onSuccess?.()
+        onOpenChange(false)
+      } catch (err) {
+        toast({
+          title: "Error al importar jugadores",
+          description: err instanceof Error ? err.message : "No se pudo procesar el archivo",
+          variant: "destructive",
+        })
+      }
       return
     }
 
-    const result = await importer.mutateAsync({
-      tournamentId,
-      ...(modalityId ? { tournamentModalityId: modalityId } : {}),
-      importType,
-      file,
-    })
+    try {
+      const result = await validator.mutateAsync({
+        tournamentId,
+        ...(modalityId ? { tournamentModalityId: modalityId } : {}),
+        file,
+      })
 
-    if (!result?.success) {
-      toast({ title: result?.error || "No se pudo importar", variant: "destructive" })
-      return
+      if (!result?.success) {
+        toast({ title: result?.error || "No se pudo validar", variant: "destructive" })
+        return
+      }
+
+      const data = result.data as ValidationResult
+      if (data.valid?.length !== undefined || data.errors?.length !== undefined || data.warnings?.length !== undefined) {
+        onValidationComplete?.(data)
+        onOpenChange(false)
+      } else {
+        toast({ title: "Respuesta inesperada del servidor", variant: "destructive" })
+      }
+    } catch (err) {
+      toast({
+        title: "Error al validar",
+        description: err instanceof Error ? err.message : "No se pudo procesar el archivo",
+        variant: "destructive",
+      })
     }
-
-    const data = result.data as { importedRows?: number; failedRows?: number; totalRows?: number }
-    setImportResult({
-      importedRows: data.importedRows ?? 0,
-      failedRows: data.failedRows ?? 0,
-      totalRows: data.totalRows ?? 0,
-    })
-    onSuccess?.()
   }
 
-  const readyCount = importType === "pairs"
-    ? parsedRows.filter((row) => {
-        const p1 = pick(row, ["player1_phone", "telefono1", "celular1", "telefono_j1"])
-        const p2 = pick(row, ["player2_phone", "telefono2", "celular2", "telefono_j2"])
-        const p1Name = pick(row, ["player1_first_name", "nombre1", "player1_name", "nombre_j1"])
-        const p2Name = pick(row, ["player2_first_name", "nombre2", "player2_name", "nombre_j2"])
-        return p1 && p2 && (p1Name || p2Name)
-      }).length
-    : parsedRows.length
+  const readyCount =
+    importType === "pairs"
+      ? parsedRows.filter((row) => {
+          const p1 = pick(row, ["telefono_jugador_1", "player1_phone", "telefono1", "celular1", "telefono_j1"])
+          const p2 = pick(row, ["telefono_jugador_2", "player2_phone", "telefono2", "celular2", "telefono_j2"])
+          const p1Name = pick(row, ["nombre_jugador_1", "player1_first_name", "nombre1", "player1_name", "nombre_j1"])
+          const p2Name = pick(row, ["nombre_jugador_2", "player2_first_name", "nombre2", "player2_name", "nombre_j2"])
+          return p1 && p2 && (p1Name || p2Name)
+        }).length
+      : parsedRows.filter((row) => {
+          const name =
+            pick(row, ["first_name", "nombre", "name"]) ||
+            pick(row, ["nombre_jugador_1", "player1_first_name", "nombre1", "player1_name", "nombre_j1"])
+          const last =
+            pick(row, ["last_name", "apellido", "lastname"]) ||
+            pick(row, ["apellido_jugador_1", "player1_last_name", "apellido1", "player1_lastname", "apellido_j1"])
+          const phone =
+            pick(row, ["phone", "telefono", "celular"]) ||
+            pick(row, ["telefono_jugador_1", "player1_phone", "telefono1", "celular1", "telefono_j1"])
+          return name && last && phone
+        }).length
 
   const errorCount = parsedRows.length - readyCount
 
   function handleClose(open: boolean) {
     if (!open) {
-      setImportResult(null)
       setFile(null)
       setParsedRows([])
     }
     onOpenChange(open)
-  }
-
-  if (importResult) {
-    return (
-      <Dialog open={open} onOpenChange={handleClose}>
-        <DialogContent className="max-w-lg">
-          <div className="flex flex-col items-center gap-6 py-4">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20">
-              <CheckCircle className="h-12 w-12 text-primary" />
-            </div>
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold">¡Importación completada!</h2>
-              <p className="text-sm text-muted-foreground">
-                Los datos se han procesado correctamente.
-              </p>
-            </div>
-            <div className="grid w-full grid-cols-3 gap-3">
-              <div className="rounded-xl border bg-muted/30 p-4 text-center">
-                <p className="text-2xl font-bold">{importResult.importedRows}</p>
-                <p className="text-xs font-medium text-muted-foreground">Parejas añadidas</p>
-              </div>
-              <div className="rounded-xl border bg-muted/30 p-4 text-center">
-                <p className="text-2xl font-bold">{importResult.failedRows}</p>
-                <p className="text-xs font-medium text-muted-foreground">Con errores</p>
-              </div>
-              <div className="rounded-xl border bg-muted/30 p-4 text-center">
-                <p className="text-2xl font-bold">{importResult.totalRows}</p>
-                <p className="text-xs font-medium text-muted-foreground">Total procesadas</p>
-              </div>
-            </div>
-            <div className="flex flex-wrap justify-center gap-2 w-full">
-              {onGoToSchedule && (
-                <Button onClick={() => { onGoToSchedule(); handleClose(false); }} className="gap-2">
-                  <Calendar className="h-4 w-4" />
-                  Ir al Rol de Juegos
-                </Button>
-              )}
-              {onGoToBracket && (
-                <Button variant="outline" onClick={() => { onGoToBracket(); handleClose(false); }} className="gap-2">
-                  <LayoutGrid className="h-4 w-4" />
-                  Ver Cuadros
-                </Button>
-              )}
-              <Button variant="outline" onClick={() => handleClose(false)}>
-                Cerrar
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    )
   }
 
   return (
@@ -266,9 +288,9 @@ export function ImportTeamsModal({
               <Label>Categoría (opcional para importación global)</Label>
               <Select value={modalityId} onValueChange={setModalityId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Todas (usa columna Categoría)" />
+                  <SelectValue placeholder="Todas" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="item-aligned" className="z-[100]">
                   {modalities.map((m) => (
                     <SelectItem key={m.id} value={m.id}>
                       {m.modality} {m.category}
@@ -283,7 +305,7 @@ export function ImportTeamsModal({
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="item-aligned" className="z-[100]">
                   <SelectItem value="players">Solo jugadores</SelectItem>
                   <SelectItem value="pairs">Parejas</SelectItem>
                 </SelectContent>
@@ -338,18 +360,49 @@ export function ImportTeamsModal({
                   <TableHeader>
                     <TableRow>
                       <TableHead className="text-xs">#</TableHead>
-                      <TableHead className="text-xs">Jugador 1</TableHead>
-                      <TableHead className="text-xs">Jugador 2</TableHead>
-                      {importType === "pairs" ? <TableHead className="text-xs">Categoría</TableHead> : null}
+                      {importType === "pairs" ? (
+                        <>
+                          <TableHead className="text-xs">Jugador 1</TableHead>
+                          <TableHead className="text-xs">Jugador 2</TableHead>
+                          <TableHead className="text-xs">Categoría</TableHead>
+                        </>
+                      ) : (
+                        <TableHead className="text-xs">Jugador</TableHead>
+                      )}
                       <TableHead className="text-xs text-center">Estado</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {parsedRows.slice(0, 20).map((row, i) => {
-                      const p1 = pick(row, ["player1_phone", "telefono1", "celular1", "telefono_j1"])
-                      const p2 = pick(row, ["player2_phone", "telefono2", "celular2", "telefono_j2"])
-                      const p1Name = pick(row, ["player1_first_name", "nombre1", "player1_name", "nombre_j1"])
-                      const p2Name = pick(row, ["player2_first_name", "nombre2", "player2_name", "nombre_j2"])
+                      if (importType === "players") {
+                        const name =
+                          pick(row, ["first_name", "nombre", "name"]) ||
+                          pick(row, ["nombre_jugador_1", "player1_first_name", "nombre1", "player1_name", "nombre_j1"])
+                        const last =
+                          pick(row, ["last_name", "apellido", "lastname"]) ||
+                          pick(row, ["apellido_jugador_1", "player1_last_name", "apellido1", "player1_lastname", "apellido_j1"])
+                        const phone =
+                          pick(row, ["phone", "telefono", "celular"]) ||
+                          pick(row, ["telefono_jugador_1", "player1_phone", "telefono1", "celular1", "telefono_j1"])
+                        const ok = name && last && phone
+                        return (
+                          <TableRow key={i} className={!ok ? "bg-destructive/5" : ""}>
+                            <TableCell className="text-xs">{i + 1}</TableCell>
+                            <TableCell className="text-xs">{name && last ? `${name} ${last}` : name || last || phone || "-"}</TableCell>
+                            <TableCell className="text-center">
+                              {ok ? (
+                                <CheckCircle className="mx-auto h-4 w-4 text-primary" />
+                              ) : (
+                                <AlertCircle className="mx-auto h-4 w-4 text-destructive" />
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        )
+                      }
+                      const p1 = pick(row, ["telefono_jugador_1", "player1_phone", "telefono1", "celular1", "telefono_j1"])
+                      const p2 = pick(row, ["telefono_jugador_2", "player2_phone", "telefono2", "celular2", "telefono_j2"])
+                      const p1Name = pick(row, ["nombre_jugador_1", "player1_first_name", "nombre1", "player1_name", "nombre_j1"])
+                      const p2Name = pick(row, ["nombre_jugador_2", "player2_first_name", "nombre2", "player2_name", "nombre_j2"])
                       const cat = pick(row, ["categoria", "category"])
                       const ok = p1 && p2 && (p1Name || p2Name)
                       return (
@@ -357,7 +410,7 @@ export function ImportTeamsModal({
                           <TableCell className="text-xs">{i + 1}</TableCell>
                           <TableCell className="text-xs">{p1Name || p1 || "-"}</TableCell>
                           <TableCell className="text-xs">{p2Name || p2 || "-"}</TableCell>
-                          {importType === "pairs" ? <TableCell className="text-xs">{cat || "-"}</TableCell> : null}
+                          <TableCell className="text-xs">{cat || "-"}</TableCell>
                           <TableCell className="text-center">
                             {ok ? (
                               <CheckCircle className="mx-auto h-4 w-4 text-primary" />
@@ -384,10 +437,21 @@ export function ImportTeamsModal({
               Requisitos del archivo
             </h4>
             <ul className="grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
-              <li className="flex items-center gap-2">✓ Teléfono 1 y Teléfono 2 obligatorios</li>
-              <li className="flex items-center gap-2">✓ Categoría debe coincidir (o columna Categoría)</li>
-              <li className="flex items-center gap-2">✓ Máx. 100 parejas por archivo</li>
-              <li className="flex items-center gap-2">✓ Formato Excel (.xlsx) o CSV</li>
+              {importType === "pairs" ? (
+                <>
+                  <li className="flex items-center gap-2">✓ Teléfono 1 y Teléfono 2 obligatorios</li>
+                  <li className="flex items-center gap-2">✓ Categoría debe coincidir (o columna Categoría)</li>
+                  <li className="flex items-center gap-2">✓ Máx. 100 parejas por archivo</li>
+                  <li className="flex items-center gap-2">✓ Formato Excel (.xlsx) o CSV</li>
+                </>
+              ) : (
+                <>
+                  <li className="flex items-center gap-2">✓ Nombre, Apellido y Teléfono obligatorios por fila</li>
+                  <li className="flex items-center gap-2">✓ Usa la plantilla de parejas (se toma Jugador 1 de cada fila)</li>
+                  <li className="flex items-center gap-2">✓ Máx. 100 jugadores por archivo</li>
+                  <li className="flex items-center gap-2">✓ Formato Excel (.xlsx) o CSV</li>
+                </>
+              )}
             </ul>
           </div>
         </div>
@@ -398,9 +462,15 @@ export function ImportTeamsModal({
           </Button>
           <Button
             onClick={onSubmit}
-            disabled={!file || importer.isPending || (importType === "players" && !modalityId)}
+            disabled={!file || (importType === "pairs" ? validator.isPending : importFile.isPending)}
           >
-            {importer.isPending ? "Importando..." : importType === "pairs" ? "Confirmar y Añadir Parejas" : "Confirmar e Importar"}
+            {importType === "players"
+              ? importFile.isPending
+                ? "Importando..."
+                : "Importar Jugadores"
+              : validator.isPending
+                ? "Validando..."
+                : "Cargar y Procesar Excel"}
           </Button>
         </div>
       </DialogContent>

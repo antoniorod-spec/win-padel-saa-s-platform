@@ -200,8 +200,8 @@ export const POINTS_TABLE = {
 } as const
 
 export const CATEGORIES_BY_MODALITY: Record<string, string[]> = {
-  VARONIL: ["1ra", "2da", "3ra", "4ta", "5ta", "6ta"],
-  FEMENIL: ["1ra", "2da", "3ra", "4ta", "5ta", "6ta"],
+  VARONIL: ["1ra", "2da", "3ra", "4ta", "5ta", "6ta", "Senior", "10U", "12U", "14U", "16U", "18U"],
+  FEMENIL: ["1ra", "2da", "3ra", "4ta", "5ta", "6ta", "Senior", "10U", "12U", "14U", "16U", "18U"],
   MIXTO: ["A", "B", "C", "D"],
 }
 

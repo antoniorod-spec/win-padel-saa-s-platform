@@ -11,7 +11,7 @@ const availabilityItemSchema = z.object({
 })
 
 const setAvailabilitiesSchema = z.object({
-  availabilities: z.array(availabilityItemSchema).min(1),
+  availabilities: z.array(availabilityItemSchema),
 })
 
 async function assertTournamentOwner(tournamentId: string, userId: string, role: string) {

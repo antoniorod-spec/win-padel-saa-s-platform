@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { requireAuth } from "@/lib/auth-helpers"
 import { updatePlayerSchema } from "@/lib/validations/player"
+import { normalizePhone } from "@/lib/utils/file-parser"
 
 export async function GET(
   _request: NextRequest,
@@ -103,9 +104,14 @@ export async function PUT(
       )
     }
 
+    const data = { ...parsed.data }
+    if (data.phone !== undefined) {
+      data.phone = normalizePhone(data.phone) || data.phone
+    }
+
     const updated = await prisma.player.update({
       where: { id },
-      data: parsed.data,
+      data,
     })
 
     return NextResponse.json({ success: true, data: updated })

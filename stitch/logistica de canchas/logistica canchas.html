@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ranking Padel MX - Disponibilidad de Canchas Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Oswald:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00C853",
+                        "background-light": "#F8FAFC",
+                        "brand-dark": "#0F172A",
+                    },
+                    fontFamily: {
+                        "heading": ["Oswald", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.5rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            h1, h2, h3, h4 {
+                @apply font-heading uppercase tracking-tight;
+            }
+            body {
+                @apply font-sans;
+            }
+        }
+        .step-active { @apply text-primary border-primary bg-primary/5; }
+        .step-inactive { @apply text-slate-400 border-slate-200 bg-white; }
+        .step-completed { @apply text-white border-primary bg-primary; }
+        .time-slot-available { @apply bg-white border-slate-200 text-slate-600 hover:border-primary hover:bg-primary/5; }
+        .time-slot-blocked { @apply bg-slate-100 border-slate-200 text-slate-400 line-through; }
+        .time-slot-selected { @apply bg-primary/10 border-primary text-primary font-bold shadow-sm; }
+    </style>
+</head>
+<body class="bg-background-light text-slate-900 min-h-screen pb-24">
+<nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white text-xl text-center">sports_tennis</span>
+</div>
+<span class="text-xl font-bold tracking-tight text-brand-dark uppercase font-heading">Ranking Padel <span class="text-primary">MX</span></span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-3 pl-2 border-l border-slate-200">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-bold text-slate-900 uppercase">Organizador Pro</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider">Club de Padel México</p>
+</div>
+<div class="h-9 w-9 rounded-full overflow-hidden border-2 border-slate-100">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7VCSGkR29WgHvKn3d7gs1NlJEKzaVBv_Pewxro7x_4PbskyVNC6iNvvYx8JkbfcCozik7-VYsqVs2-ZntOtIw8G4ZDLcNYG1zVrs-DYqmN3MZ7vxqsuMpGJJUnPShoU3uecYEKR8MCNtlzgEYd7Kfjp3RCoLfy4sZcp3Ukx8ieAQkQ5GvH8Jufu8ExguEIXDdiF--3UrJGExpti_nsyALKtwVS6vNTK-MtdMsNDySfgPgfDE1yq-DrnxQuB7XZI5rsHugq9An4Uo"/>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-6 py-8">
+<div class="mb-10 overflow-x-auto">
+<div class="flex items-center justify-between min-w-[700px] px-2">
+<div class="flex items-center gap-3 group">
+<div class="w-10 h-10 rounded-full flex items-center justify-center border-2 step-completed font-bold shadow-sm">
+<span class="material-symbols-outlined text-base">check</span>
+</div>
+<div>
+<p class="text-sm font-bold text-primary leading-none font-heading uppercase">General</p>
+<p class="text-[10px] text-slate-400 uppercase tracking-tighter mt-1">Configuración</p>
+</div>
+</div>
+<div class="h-px bg-primary flex-1 mx-4"></div>
+<div class="flex items-center gap-3 group">
+<div class="w-10 h-10 rounded-full flex items-center justify-center border-2 step-completed font-bold shadow-sm">
+<span class="material-symbols-outlined text-base">check</span>
+</div>
+<div>
+<p class="text-sm font-bold text-primary leading-none font-heading uppercase">Categorías</p>
+<p class="text-[10px] text-slate-400 uppercase tracking-tighter mt-1">Niveles &amp; Ramas</p>
+</div>
+</div>
+<div class="h-px bg-primary flex-1 mx-4"></div>
+<div class="flex items-center gap-3 group">
+<div class="w-10 h-10 rounded-full flex items-center justify-center border-2 step-active font-bold shadow-sm ring-4 ring-primary/10">3</div>
+<div>
+<p class="text-sm font-bold text-primary leading-none font-heading uppercase">Logística</p>
+<p class="text-[10px] text-slate-400 uppercase tracking-tighter mt-1 font-sans">Canchas &amp; Horas</p>
+</div>
+</div>
+<div class="h-px bg-slate-200 flex-1 mx-4"></div>
+<div class="flex items-center gap-3 group">
+<div class="w-10 h-10 rounded-full flex items-center justify-center border-2 step-inactive font-bold">4</div>
+<div>
+<p class="text-sm font-bold text-slate-400 leading-none font-heading uppercase">Revisión</p>
+<p class="text-[10px] text-slate-400 uppercase tracking-tighter mt-1">Confirmar</p>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<div class="lg:col-span-8 space-y-6">
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+<div class="p-6 border-b border-slate-100 bg-white">
+<h1 class="text-2xl text-brand-dark mb-1">Disponibilidad de Canchas</h1>
+<p class="text-slate-500 text-sm font-sans">Gestiona los horarios y canchas destinadas para el torneo.</p>
+</div>
+<div class="p-6 space-y-8">
+<section>
+<h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 font-sans">1. Seleccionar Canchas</h2>
+<div class="flex flex-wrap gap-3">
+<button class="px-4 py-2 rounded-full border-2 border-primary bg-primary/10 text-primary text-sm font-bold flex items-center gap-2 transition-all">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                                Cancha 1
+                            </button>
+<button class="px-4 py-2 rounded-full border-2 border-primary bg-primary/10 text-primary text-sm font-bold flex items-center gap-2 transition-all">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                                Cancha 2
+                            </button>
+<button class="px-4 py-2 rounded-full border-2 border-primary bg-primary/10 text-primary text-sm font-bold flex items-center gap-2 transition-all">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                                Cancha 3
+                            </button>
+<button class="px-4 py-2 rounded-full border-2 border-slate-200 bg-white text-slate-500 text-sm font-bold hover:border-slate-300 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">circle</span>
+                                Cancha Central
+                            </button>
+<button class="px-3 py-2 rounded-full border-2 border-dashed border-slate-300 text-slate-400 text-sm font-bold hover:text-primary hover:border-primary transition-all flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">add</span>
+                                Añadir
+                            </button>
+</div>
+</section>
+<section>
+<h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 font-sans">2. Seleccionar Día</h2>
+<div class="flex border-b border-slate-100">
+<button class="px-6 py-3 border-b-2 border-primary text-primary font-bold text-sm font-heading tracking-wide">VIERNES 15</button>
+<button class="px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-600 font-bold text-sm font-heading tracking-wide">SÁBADO 16</button>
+<button class="px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-600 font-bold text-sm font-heading tracking-wide">DOMINGO 17</button>
+</div>
+</section>
+<section>
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest font-sans">3. Horarios Disponibles (Arrastra para seleccionar)</h2>
+<div class="flex items-center gap-4 text-[10px] font-bold uppercase text-slate-400">
+<div class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-primary/20 border border-primary"></span> Reservado</div>
+<div class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-white border border-slate-200"></span> Libre</div>
+<div class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-slate-100 border border-slate-200"></span> Bloqueado</div>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+<div class="time-slot-available time-slot-selected border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">07:00 - 08:00</span>
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+</div>
+<div class="time-slot-available time-slot-selected border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">08:00 - 09:00</span>
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+</div>
+<div class="time-slot-available time-slot-selected border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">09:00 - 10:00</span>
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+</div>
+<div class="time-slot-available border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">10:00 - 11:00</span>
+<span class="material-symbols-outlined text-slate-300 text-lg">radio_button_unchecked</span>
+</div>
+<div class="time-slot-available border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">11:00 - 12:00</span>
+<span class="material-symbols-outlined text-slate-300 text-lg">radio_button_unchecked</span>
+</div>
+<div class="time-slot-blocked border rounded-xl p-3 flex items-center justify-between cursor-not-allowed transition-all">
+<span class="font-heading font-medium">12:00 - 13:00</span>
+<span class="material-symbols-outlined text-slate-300 text-lg">block</span>
+</div>
+<div class="time-slot-available border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">13:00 - 14:00</span>
+<span class="material-symbols-outlined text-slate-300 text-lg">radio_button_unchecked</span>
+</div>
+<div class="time-slot-available time-slot-selected border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">14:00 - 15:00</span>
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+</div>
+<div class="time-slot-available time-slot-selected border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">15:00 - 16:00</span>
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+</div>
+<div class="time-slot-available time-slot-selected border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">16:00 - 17:00</span>
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+</div>
+<div class="time-slot-available time-slot-selected border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">17:00 - 18:00</span>
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+</div>
+<div class="time-slot-available time-slot-selected border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">18:00 - 19:00</span>
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+</div>
+<div class="time-slot-available time-slot-selected border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">19:00 - 20:00</span>
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+</div>
+<div class="time-slot-available time-slot-selected border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">20:00 - 21:00</span>
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+</div>
+<div class="time-slot-available time-slot-selected border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">21:00 - 22:00</span>
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+</div>
+<div class="time-slot-available border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all">
+<span class="font-heading font-medium">22:00 - 23:00</span>
+<span class="material-symbols-outlined text-slate-300 text-lg">radio_button_unchecked</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4 sticky top-24 space-y-6">
+<div class="bg-white rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100">
+<div class="p-6 border-b border-slate-50 bg-slate-50/50">
+<h3 class="text-lg text-brand-dark mb-0">Análisis de Capacidad</h3>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Cálculo en tiempo real</p>
+</div>
+<div class="p-6 space-y-6">
+<div class="bg-primary/5 rounded-2xl p-5 border border-primary/10">
+<div class="flex items-center justify-between mb-4">
+<div>
+<p class="text-[10px] font-bold text-primary uppercase">Capacidad Total</p>
+<h4 class="text-3xl text-brand-dark">48<span class="text-lg ml-1 text-slate-500 font-sans">h</span></h4>
+</div>
+<div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+</div>
+<div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[87%]"></div>
+</div>
+<p class="text-[10px] text-slate-500 mt-2 font-medium">Basado en 3 canchas seleccionadas</p>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-4 border border-slate-100 rounded-xl">
+<p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Partidos Est.</p>
+<p class="text-xl font-bold text-brand-dark font-heading">42</p>
+</div>
+<div class="p-4 border border-slate-100 rounded-xl">
+<p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Suficiencia</p>
+<div class="flex items-center gap-1.5 text-primary font-bold">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+<span class="text-sm font-heading">ÓPTIMO</span>
+</div>
+</div>
+</div>
+<div class="bg-slate-900 rounded-xl p-4 text-white">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">info</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Estado de Logística</span>
+</div>
+<p class="text-xs text-slate-400 leading-relaxed font-sans">
+                            Con la configuración actual de <span class="text-white">48 horas</span> y <span class="text-white">42 partidos</span>, tienes un margen de seguridad del <span class="text-primary font-bold">12.5%</span> para retrasos.
+                        </p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase mb-3 px-1">Resumen de Categorías (Paso 2)</p>
+<div class="space-y-2">
+<div class="flex items-center justify-between text-xs px-1">
+<span class="text-slate-600">Open Varonil (16 Parejas)</span>
+<span class="font-bold text-brand-dark">31 Partidos</span>
+</div>
+<div class="flex items-center justify-between text-xs px-1">
+<span class="text-slate-600">2da Fuerza (8 Parejas)</span>
+<span class="font-bold text-brand-dark">11 Partidos</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-gradient-to-br from-primary to-[#00B049] rounded-2xl p-6 text-white shadow-lg shadow-primary/20 relative overflow-hidden">
+<div class="relative z-10">
+<h4 class="font-bold mb-2">Sugerencia Pro</h4>
+<p class="text-xs opacity-90 leading-relaxed">
+                        Habilitar la <span class="font-bold">Cancha Central</span> para las finales del Domingo 17 aumentará la visibilidad de tus patrocinadores.
+                    </p>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-white/10 text-9xl">workspace_premium</span>
+</div>
+</div>
+</div>
+</main>
+<footer class="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md border-t border-slate-200 p-4 z-50">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<button class="px-6 py-2.5 text-slate-500 hover:text-slate-800 font-bold transition-colors font-heading uppercase text-sm">
+            Cancelar Proceso
+        </button>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-6 py-2.5 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-all font-heading uppercase text-sm">
+<span class="material-symbols-outlined text-lg">chevron_left</span>
+                Anterior
+            </button>
+<button class="flex items-center gap-2 px-10 py-2.5 rounded-xl bg-primary hover:bg-[#00B049] text-white font-bold shadow-lg shadow-primary/25 transition-all transform active:scale-95 font-heading uppercase text-sm tracking-wide">
+                Siguiente Paso
+                <span class="material-symbols-outlined text-lg">chevron_right</span>
+</button>
+</div>
+</div>
+</footer>
+
+</body></html>

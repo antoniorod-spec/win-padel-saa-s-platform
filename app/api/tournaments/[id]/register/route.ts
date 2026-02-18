@@ -72,6 +72,30 @@ export async function POST(
       )
     }
 
+    // Check if either player is already registered in this category with a different partner
+    const playerAlreadyInCategory = await prisma.tournamentRegistration.findFirst({
+      where: {
+        tournamentModalityId,
+        OR: [{ player1Id }, { player2Id }],
+      },
+      include: {
+        player1: { select: { firstName: true, lastName: true } },
+        player2: { select: { firstName: true, lastName: true } },
+      },
+    })
+    if (playerAlreadyInCategory) {
+      const isP1Dup =
+        playerAlreadyInCategory.player1Id === player1Id || playerAlreadyInCategory.player1Id === player2Id
+      const dupPlayer = isP1Dup ? playerAlreadyInCategory.player1 : playerAlreadyInCategory.player2
+      return NextResponse.json(
+        {
+          success: false,
+          error: `${dupPlayer.firstName} ${dupPlayer.lastName} ya está inscrito en esta categoría con otra pareja. Un jugador solo puede tener una pareja por categoría.`,
+        },
+        { status: 400 }
+      )
+    }
+
     const registration = await prisma.tournamentRegistration.create({
       data: {
         tournamentModalityId,

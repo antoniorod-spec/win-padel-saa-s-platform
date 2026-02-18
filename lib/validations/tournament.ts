@@ -1,13 +1,16 @@
 import { z } from "zod"
 
+/** Accepts full URLs (https://...) and local upload paths (/uploads/...) */
+const urlOrPath = z.union([z.string().url(), z.string().startsWith("/"), z.literal("")])
+
 const baseTournamentSchema = z.object({
   name: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
   description: z.string().optional(),
   venue: z.string().optional(),
-  startDate: z.string().datetime().or(z.string().min(1, "Fecha de inicio requerida")),
-  endDate: z.string().datetime().or(z.string().min(1, "Fecha de fin requerida")),
-  registrationDeadline: z.string().datetime().or(z.string().min(1)).optional(),
-  registrationOpensAt: z.string().datetime().or(z.string().min(1)).optional(),
+  startDate: z.union([z.string().datetime(), z.string().regex(/^\d{4}-\d{2}-\d{2}/), z.string().min(1)]),
+  endDate: z.union([z.string().datetime(), z.string().regex(/^\d{4}-\d{2}-\d{2}/), z.string().min(1)]),
+  registrationDeadline: z.union([z.string().datetime(), z.string().regex(/^\d{4}-\d{2}-\d{2}/), z.string().min(1)]).optional().nullable(),
+  registrationOpensAt: z.union([z.string().datetime(), z.string().regex(/^\d{4}-\d{2}-\d{2}/), z.string().min(1)]).optional().nullable(),
   officialBall: z.string().max(100).optional().nullable(),
   supportWhatsApp: z.string().max(50).optional().nullable(),
   category: z.enum(["ANUAL", "OPEN", "REGULAR", "EXPRESS"]),
@@ -16,12 +19,12 @@ const baseTournamentSchema = z.object({
   affectsRanking: z.boolean().optional(),
   prize: z.string().optional(),
   sponsorName: z.string().optional(),
-  sponsorLogoUrl: z.string().url().optional().or(z.literal("")),
-  logoUrl: z.string().url().optional().or(z.literal("")),
-  posterUrl: z.string().url().optional().or(z.literal("")),
+  sponsorLogoUrl: urlOrPath.optional().nullable(),
+  logoUrl: urlOrPath.optional().nullable(),
+  posterUrl: urlOrPath.optional().nullable(),
   externalRegistrationType: z.enum(["URL", "WHATSAPP", "INSTAGRAM", "FACEBOOK", "OTHER"]).optional(),
-  externalRegistrationLink: z.string().url().optional().or(z.literal("")),
-  images: z.array(z.string().url()).optional(),
+  externalRegistrationLink: z.union([z.string().url(), z.literal("")]).optional().nullable(),
+  images: z.array(urlOrPath).optional(),
   news: z.array(z.object({
     title: z.string().min(3),
     body: z.string().min(3),
@@ -31,7 +34,7 @@ const baseTournamentSchema = z.object({
   maxTeams: z.number().int().min(2).max(128).optional(),
   matchDurationMinutes: z.number().int().min(15).max(180).optional(),
   minPairsPerModality: z.number().int().min(2).max(128).optional(),
-  rulesPdfUrl: z.string().url().optional().or(z.literal("")),
+  rulesPdfUrl: urlOrPath.optional().nullable(),
   rules: z.object({
     setsPerMatch: z.number().int().min(1).max(5).optional(),
     gamesPerSet: z.number().int().optional(),
@@ -80,6 +83,7 @@ export const registerManualSchema = z.object({
     z.object({ playerId: z.string().cuid() }),
     playerByPhoneSchema,
   ]),
+  paymentStatus: z.enum(["PENDING", "CONFIRMED"]).optional(),
 })
 
 export type CreateTournamentInput = z.infer<typeof createTournamentSchema>

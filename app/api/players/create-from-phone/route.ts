@@ -59,6 +59,37 @@ export async function POST(request: NextRequest) {
     }
 
     const { prisma } = await import("@/lib/prisma")
+
+    if (parsed.data.suggestedCategory?.trim()) {
+      const cat = parsed.data.suggestedCategory.trim()
+      const validCats = ["1ra", "2da", "3ra", "4ta", "5ta", "6ta"]
+      if (validCats.includes(cat)) {
+        const modality = parsed.data.sex === "F" ? "FEMENIL" : "VARONIL"
+        await prisma.ranking.upsert({
+          where: {
+            playerId_modality_category_scope: {
+              playerId,
+              modality,
+              category: cat,
+              scope: "NATIONAL",
+            },
+          },
+          update: {},
+          create: {
+            playerId,
+            modality,
+            category: cat,
+            scope: "NATIONAL",
+            associationId: null,
+            points: 0,
+            played: 0,
+            wins: 0,
+            losses: 0,
+          },
+        })
+      }
+    }
+
     const player = await prisma.player.findUnique({
       where: { id: playerId },
       select: { id: true, firstName: true, lastName: true, phone: true },

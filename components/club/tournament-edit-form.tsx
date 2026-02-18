@@ -15,7 +15,8 @@ import {
   TOURNAMENT_CLASS_POINTS,
   TOURNAMENT_CLASS_BADGE_CLASS,
   TOURNAMENT_CLASS_ICON,
-  COMPETITION_CATEGORIES,
+  getCategoriesForModality,
+  getCategoryLabel,
   MODALITY_OPTIONS,
 } from "@/lib/tournament/categories"
 import { useTournament } from "@/hooks/use-tournaments"
@@ -60,7 +61,6 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
   const [matchDurationMinutes, setMatchDurationMinutes] = useState("70")
   const [prize, setPrize] = useState("")
   const [posterUrl, setPosterUrl] = useState("")
-  const [logoUrl, setLogoUrl] = useState("")
   const [officialBall, setOfficialBall] = useState("")
   const [supportWhatsApp, setSupportWhatsApp] = useState("")
   const [registrationOpensAt, setRegistrationOpensAt] = useState("")
@@ -120,7 +120,6 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
     setMatchDurationMinutes(String(tournament.matchDurationMinutes ?? 70))
     setPrize(tournament.prize ?? "")
     setPosterUrl(tournament.posterUrl ?? "")
-    setLogoUrl(tournament.logoUrl ?? "")
     setModalities(
       (tournament.modalities ?? []).map(
         (m: {
@@ -184,7 +183,6 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
         matchDurationMinutes: Number(matchDurationMinutes || 70),
         prize: prize || undefined,
         posterUrl: posterUrl || undefined,
-        logoUrl: logoUrl || undefined,
       }
       if (canEditModalities && !hasRegistrations && type === "FULL") {
         payload.modalities = modalities
@@ -236,16 +234,17 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="text-lg">Informacion general</CardTitle>
+            <CardTitle className="text-lg">Información general</CardTitle>
+            <p className="text-sm text-muted-foreground">Define la identidad y logística básica del torneo.</p>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
               <Label className="mb-1.5 block">Nombre del torneo</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej: Open SLP 2026" required />
+              <Input className="h-12" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej. Open CDMX 2024" required />
             </div>
             <div className="space-y-2">
-              <Label className="mb-1.5 block">Descripcion</Label>
-              <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} />
+              <Label className="mb-1.5 block">Descripción</Label>
+              <Textarea className="min-h-[80px]" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Detalla las reglas, formato de juego y políticas..." rows={4} />
             </div>
             <div className="grid gap-6 md:grid-cols-3">
               <div className="space-y-2">
@@ -282,42 +281,37 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
               </div>
               <div className="space-y-2">
                 <Label className="mb-1.5 block">Tipo de torneo</Label>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <button
-                    type="button"
-                    onClick={() => setType("FULL")}
-                    className={`relative flex flex-col items-start rounded-lg border-2 p-4 text-left transition-colors ${
-                      type === "FULL"
-                        ? "border-primary bg-primary/10"
-                        : "border-border bg-muted/20 hover:border-muted-foreground/30"
-                    }`}
-                  >
-                    {type === "FULL" && (
-                      <span className="absolute right-3 top-3 rounded-full bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground">
-                        RECOMENDADO
+                <div
+                  className={`relative flex flex-col items-start rounded-lg border-2 p-4 text-left ${
+                    type === "FULL" ? "border-primary bg-primary/5" : "border-border bg-muted/20"
+                  }`}
+                  aria-readonly
+                >
+                  {type === "FULL" && (
+                    <span className="absolute right-3 top-3 rounded-full bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground">
+                      RECOMENDADO
+                    </span>
+                  )}
+                  {type === "FULL" ? (
+                    <>
+                      <Bot className="mb-2 h-8 w-8 text-primary" />
+                      <span className="font-semibold">Torneo Inteligente</span>
+                      <span className="mt-1 text-sm text-muted-foreground">
+                        Gestión total: categorías, inscripciones, cuadros automáticos y rol de juegos en la plataforma.
                       </span>
-                    )}
-                    <Bot className={`mb-2 h-8 w-8 ${type === "FULL" ? "text-primary" : "text-muted-foreground"}`} />
-                    <span className="font-semibold">Torneo Inteligente</span>
-                    <span className="mt-1 text-sm text-muted-foreground">
-                      Gestión total: categorías, inscripciones, cuadros automáticos y rol de juegos en la plataforma.
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setType("BASIC")}
-                    className={`relative flex flex-col items-start rounded-lg border-2 p-4 text-left transition-colors ${
-                      type === "BASIC"
-                        ? "border-primary bg-primary/10"
-                        : "border-border bg-muted/20 hover:border-muted-foreground/30"
-                    }`}
-                  >
-                    <Megaphone className={`mb-2 h-8 w-8 ${type === "BASIC" ? "text-primary" : "text-muted-foreground"}`} />
-                    <span className="font-semibold">Sólo Difusión</span>
-                    <span className="mt-1 text-sm text-muted-foreground">
-                      Aparece en el calendario nacional. La gestión de inscripciones y cuadros es externa (WhatsApp/Link).
-                    </span>
-                  </button>
+                    </>
+                  ) : (
+                    <>
+                      <Megaphone className="mb-2 h-8 w-8 text-primary" />
+                      <span className="font-semibold">Sólo Difusión</span>
+                      <span className="mt-1 text-sm text-muted-foreground">
+                        Aparece en el calendario nacional. La gestión de inscripciones y cuadros es externa (WhatsApp/Link).
+                      </span>
+                    </>
+                  )}
+                  <p className="mt-2 text-xs text-muted-foreground italic">
+                    No se puede cambiar el tipo una vez creado el torneo.
+                  </p>
                 </div>
               </div>
             </div>
@@ -340,6 +334,7 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
 
             {/* Bloque 1: Reglamento y Reglas */}
             <div className="rounded-xl border border-border bg-slate-50 p-6 space-y-6">
+              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Reglamento y Reglas</h2>
               <div className="space-y-2">
                 <Label className="mb-1.5 block">Reglamento del torneo</Label>
                 <div className="border-2 border-dashed border-border rounded-2xl p-6 bg-background">
@@ -423,15 +418,17 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
 
             {/* Bloque 2: Configuración */}
             <div className="rounded-xl border border-border bg-slate-50 p-6">
+              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6">Configuración</h2>
               <div className="space-y-2">
-                <Label className="mb-1.5 block">Max parejas (global)</Label>
-                <Input className="h-12" type="number" min={2} value={maxTeams} onChange={(e) => setMaxTeams(e.target.value)} />
-                <p className="text-xs text-muted-foreground">El mínimo y máximo por categoría se configuran al agregar cada categoría.</p>
+                <Label className="mb-1.5 block">Máx. parejas (global)</Label>
+                <Input className="h-12 max-w-xs" type="number" min={2} value={maxTeams} onChange={(e) => setMaxTeams(e.target.value)} />
+                <p className="text-xs text-muted-foreground mt-1">El mínimo y máximo por categoría se configuran al agregar cada categoría.</p>
               </div>
             </div>
 
             {/* Bloque 3: Fechas y Logística */}
             <div className="rounded-xl border border-border bg-slate-50 p-6">
+              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6">Fechas y Logística</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-6">
                 <div className="space-y-2">
                   <Label className="mb-1.5 block">Duración del Torneo</Label>
@@ -469,7 +466,7 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
                   <Label className="mb-1.5 block">Sede (Club)</Label>
                   <div className="relative">
                     <MapPin className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input className="h-12 pr-12" value={venue} onChange={(e) => setVenue(e.target.value)} placeholder="Club / Dirección" />
+                    <Input className="h-12 pl-4 pr-12" value={venue} onChange={(e) => setVenue(e.target.value)} placeholder="Club / Dirección" />
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -496,20 +493,16 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Cartel del torneo</Label>
-              <p className="text-xs text-muted-foreground">
-                Sube una imagen. Si no subes cartel, se usará la imagen del club como predeterminada.
-              </p>
-              <ImageUploadField
-                label="Subir imagen"
-                endpoint="/api/uploads/club/tournament-poster"
-                value={posterUrl ? [posterUrl] : []}
-                onChange={(urls) => setPosterUrl(urls[0] || "")}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Logo (URL)</Label>
-              <Input value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} placeholder="https://..." />
+              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Cartel del Torneo</h2>
+              <div className="border-2 border-dashed border-border rounded-2xl p-8 bg-muted/20">
+                <ImageUploadField
+                  label="Haz clic o arrastra el cartel aquí"
+                  endpoint="/api/uploads/club/tournament-poster"
+                  value={posterUrl ? [posterUrl] : []}
+                  onChange={(urls) => setPosterUrl(urls[0] || "")}
+                />
+                <p className="text-xs text-muted-foreground mt-2">Formatos aceptados: JPG, PNG (Max. 5MB). Relación sugerida: 4:5</p>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -517,7 +510,7 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
         {canEditModalities && !hasRegistrations && type === "FULL" ? (
           <Card className="border-border/50">
             <CardHeader>
-              <CardTitle className="text-lg">Categorias y modalidades</CardTitle>
+              <CardTitle className="text-lg">Categorías y modalidades</CardTitle>
               <p className="text-sm text-muted-foreground">
                 Solo editable en borrador y sin parejas registradas.
               </p>
@@ -531,9 +524,14 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
                         <Label>Modalidad</Label>
                         <Select
                           value={m.modality}
-                          onValueChange={(v: (typeof MODALITY_OPTIONS)[number]) =>
-                            setModalities((prev) => prev.map((it, i) => (i === idx ? { ...it, modality: v } : it)))
-                          }
+                          onValueChange={(v: (typeof MODALITY_OPTIONS)[number]) => {
+                            const cats = getCategoriesForModality(v)
+                            const current = modalities[idx]
+                            const validCat = cats.includes(current.category) ? current.category : cats[0]
+                            setModalities((prev) => prev.map((it, i) =>
+                              i === idx ? { ...it, modality: v, category: validCat } : it
+                            ))
+                          }}
                         >
                           <SelectTrigger><SelectValue /></SelectTrigger>
                           <SelectContent>
@@ -544,7 +542,7 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Categoria</Label>
+                        <Label>Categoría</Label>
                         <Select
                           value={m.category}
                           onValueChange={(v) =>
@@ -553,8 +551,8 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
                         >
                           <SelectTrigger><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            {COMPETITION_CATEGORIES.map((opt) => (
-                              <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                            {getCategoriesForModality(m.modality).map((opt) => (
+                              <SelectItem key={opt} value={opt}>{getCategoryLabel(opt)}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -670,16 +668,16 @@ export function TournamentEditForm({ tournamentId }: TournamentEditFormProps) {
                 variant="outline"
                 onClick={() => setModalities((prev) => [...prev, { modality: "VARONIL", category: "4ta" }])}
               >
-                Anadir categoria
+                Añadir categoría
               </Button>
             </CardContent>
           </Card>
         ) : (
           <Card className="border-border/50">
             <CardHeader>
-              <CardTitle className="text-lg">Categorias</CardTitle>
+              <CardTitle className="text-lg">Categorías</CardTitle>
               <p className="text-sm text-muted-foreground">
-                Las categorias no se pueden editar (torneo ya publicado o con parejas registradas).
+                Las categorías no se pueden editar (torneo ya publicado o con parejas registradas).
               </p>
             </CardHeader>
             <CardContent>

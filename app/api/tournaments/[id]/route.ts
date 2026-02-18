@@ -136,8 +136,10 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateTournamentSchema.safeParse(body)
     if (!parsed.success) {
+      const flat = parsed.error.flatten()
+      const msg = Object.values(flat.fieldErrors).flat().filter(Boolean)[0] || parsed.error.message
       return NextResponse.json(
-        { success: false, error: "Datos invalidos", details: parsed.error.flatten() },
+        { success: false, error: msg || "Datos invalidos", details: flat },
         { status: 400 }
       )
     }
